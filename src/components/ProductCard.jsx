@@ -3,7 +3,12 @@ function ProductCard({ product }) {
     <div className="productCard">
       <div className="productImage">
         <img src={product.image} alt={product.name} />
-        <span>Oferta</span>
+
+        <span className="badge">Oferta</span>
+
+        <div className="overlay">
+          <button>Adicionar ao carrinho</button>
+        </div>
       </div>
 
       <div className="productInfo">
@@ -14,8 +19,6 @@ function ProductCard({ product }) {
           <small>R$ {product.oldPrice.toFixed(2)}</small>
           <strong>R$ {product.price.toFixed(2)}</strong>
         </div>
-
-        <button>Adicionar ao carrinho</button>
       </div>
     </div>
   );

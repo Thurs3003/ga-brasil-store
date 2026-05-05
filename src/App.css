@@ -5,50 +5,63 @@
 }
 
 body {
-  background: #fff4f8;
+  background: linear-gradient(180deg, #fff0f6, #ffffff);
   font-family: Arial, Helvetica, sans-serif;
   color: #2b1722;
 }
 
 .header {
   width: 100%;
-  height: 78px;
-  padding: 0 8%;
-  background: #ffffff;
+  height: 92px; /* aumentamos */
+  padding: 0 6%;
+  background: linear-gradient(90deg, #ffffff, #fff0f6);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 6px 24px rgba(194, 24, 91, 0.08);
+  box-shadow: 0 10px 30px rgba(194, 24, 91, 0.08);
   position: sticky;
   top: 0;
   z-index: 20;
 }
 
 .logo {
-  font-size: 26px;
+  font-size: 30px;
   font-weight: 900;
   color: #c2185b;
+  letter-spacing: 0.5px;
 }
 
 .header nav {
   display: flex;
-  gap: 32px;
+  gap: 36px;
 }
 
 .header nav a {
   text-decoration: none;
   color: #2b1722;
   font-weight: 700;
+  position: relative;
+  transition: 0.2s;
+}
+
+.header nav a:hover {
+  color: #c2185b;
 }
 
 .cartButton {
   border: none;
-  background: #c2185b;
+  background: linear-gradient(135deg, #c2185b, #ff4d8d);
   color: white;
-  padding: 12px 20px;
+  padding: 14px 22px;
   border-radius: 999px;
   font-weight: 800;
   cursor: pointer;
+  box-shadow: 0 8px 20px rgba(194, 24, 91, 0.25);
+  transition: 0.2s;
+}
+
+.cartButton:hover {
+  transform: translateY(-2px);
 }
 
 main {
@@ -82,12 +95,9 @@ main {
 }
 
 .heroText h1 {
-  margin: 18px 0;
-  font-size: 48px;
-  line-height: 1.05;
+  font-size: 52px;
   color: #2b1722;
 }
-
 .heroText p {
   font-size: 17px;
   line-height: 1.7;
@@ -95,21 +105,21 @@ main {
   max-width: 560px;
 }
 
-.heroButtons {
-  margin-top: 28px;
-  display: flex;
-  gap: 14px;
-}
-
 .heroButtons button,
 .productInfo button {
   border: none;
-  background: #c2185b;
+  background: linear-gradient(135deg, #c2185b, #ff4d8d);
   color: white;
-  padding: 13px 20px;
+  padding: 14px 22px;
   border-radius: 999px;
   font-weight: 800;
   cursor: pointer;
+  transition: 0.2s;
+}
+
+.heroButtons button:hover,
+.productInfo button:hover {
+  transform: translateY(-2px);
 }
 
 .heroButtons .outline {
@@ -204,17 +214,21 @@ main {
   background: #ffffff;
   border-radius: 28px;
   overflow: hidden;
-  box-shadow: 0 16px 44px rgba(194, 24, 91, 0.09);
-  transition: 0.2s;
+  box-shadow: 0 14px 40px rgba(194, 24, 91, 0.08);
+  transition: 0.35s ease;
+  position: relative;
 }
 
 .productCard:hover {
-  transform: translateY(-6px);
+  transform: translateY(-10px);
+  box-shadow: 0 30px 70px rgba(194, 24, 91, 0.18);
 }
 
+/* IMAGEM */
 .productImage {
-  height: 230px;
+  height: 240px;
   position: relative;
+  overflow: hidden;
   background: #fff0f6;
 }
 
@@ -222,6 +236,12 @@ main {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: 0.5s ease;
+}
+
+/* ZOOM NA IMAGEM */
+.productCard:hover img {
+  transform: scale(1.1);
 }
 
 .productImage span {
@@ -238,6 +258,55 @@ main {
 
 .productInfo {
   padding: 22px;
+  text-align: center;
+}
+
+/* BADGE */
+.badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: linear-gradient(135deg, #c2185b, #ff4d8d);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  z-index: 2;
+}
+
+/* OVERLAY */
+.overlay {
+  position: absolute;
+  bottom: -60px;
+  left: 0;
+  width: 100%;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  transition: 0.35s;
+}
+
+/* BOTÃO */
+.overlay button {
+  background: #c2185b;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(194, 24, 91, 0.3);
+}
+
+/* BOTÃO APARECE NO HOVER */
+.productCard:hover .overlay {
+  bottom: 10px;
+}
+
+/* INFO */
+.productInfo {
+  padding: 20px;
   text-align: center;
 }
 
@@ -259,15 +328,13 @@ main {
 }
 
 .prices small {
-  display: block;
   color: #999;
   text-decoration: line-through;
 }
 
 .prices strong {
-  display: block;
   color: #c2185b;
-  font-size: 25px;
+  font-size: 24px;
 }
 
 .productInfo button {
