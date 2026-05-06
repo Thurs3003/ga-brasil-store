@@ -107,7 +107,7 @@ body {
 
 .header nav {
   display: flex;
-  gap: 36px;
+  gap: 26px;
 }
 
 .header nav a {
@@ -126,7 +126,7 @@ body {
   border: none;
   background: linear-gradient(135deg, var(--primary-blue), #142cb8);
   color: white;
-  padding: 14px 22px;
+  padding: 13px 20px;
   border-radius: 999px;
   font-weight: 800;
   cursor: pointer;
@@ -613,7 +613,7 @@ main {
   height: 74px;
   border-radius: 18px;
   object-fit: cover;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
 }
 .cartItemInfo strong {
   display: block;
@@ -993,4 +993,46 @@ main {
   .modalInfo h2 {
     font-size: 32px;
   }
+}
+
+.searchBox {
+  width: 340px;
+  margin: 0 24px;
+  flex-shrink: 0;
+}
+
+.searchBox input {
+  width: 100%;
+  border: 2px solid #e6e9ff;
+  background: #ffffff;
+  padding: 13px 18px;
+  border-radius: 999px;
+  outline: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  transition: 0.2s;
+}
+
+.searchBox input:focus {
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 4px rgba(11, 31, 143, 0.08);
+}
+
+.emptySearch {
+  margin-top: 28px;
+  padding: 36px;
+  border-radius: 24px;
+  background: #f8f5ff;
+  text-align: center;
+}
+
+.emptySearch h3 {
+  color: var(--primary-blue);
+  font-size: 24px;
+}
+
+.emptySearch p {
+  margin-top: 8px;
+  color: #6b7280;
 }

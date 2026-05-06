@@ -1,6 +1,6 @@
 import logo from "../assets/ga-brasil.png";
 
-function Header({ cartItems, setIsCartOpen }) {
+function Header({ cartItems, setIsCartOpen, searchTerm, setSearchTerm }) {
   const totalItems = cartItems.reduce(
     (total, item) => total + item.quantity,
     0,
@@ -19,6 +19,15 @@ function Header({ cartItems, setIsCartOpen }) {
 
           <small>Distribuidora de Maquiagens</small>
         </div>
+      </div>
+
+      <div className="searchBox">
+        <input
+          type="text"
+          placeholder="Buscar produtos ou marcas..."
+          value={searchTerm}
+          onChange={(event) => setSearchTerm(event.target.value)}
+        />
       </div>
 
       <nav>

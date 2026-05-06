@@ -15,10 +15,25 @@ function Home({
   removeFromCart,
 }) {
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredProducts = products.filter((product) => {
+    const search = searchTerm.toLowerCase();
+
+    return (
+      product.name.toLowerCase().includes(search) ||
+      product.brand.toLowerCase().includes(search)
+    );
+  });
 
   return (
     <>
-      <Header cartItems={cartItems} setIsCartOpen={setIsCartOpen} />
+      <Header
+        cartItems={cartItems}
+        setIsCartOpen={setIsCartOpen}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
 
       <main>
         <section className="products">
@@ -28,7 +43,13 @@ function Home({
           </div>
 
           <div className="productGrid">
-            {products.map((product) => (
+            {filteredProducts.length === 0 && (
+              <div className="emptySearch">
+                <h3>Nenhum produto encontrado</h3>
+                <p>Tente buscar por outro nome ou marca.</p>
+              </div>
+            )}
+            {filteredProducts.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}
