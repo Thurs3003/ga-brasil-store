@@ -1,5 +1,7 @@
 import { useState } from "react";
+import {Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
+import ProductDetails from "./pages/ProductDetails";
 import "./App.css";
 
 function App() {
@@ -7,9 +9,9 @@ function App() {
   const[isCartOpen, setIsCartOpen] = useState(false);
 
   function addToCart(product) {
-    const existing = cartItems.find((item) => item.id === product.id);
+    const existingProduct = cartItems.find((item) => item.id === product.id);
 
-    if (existing) {
+    if (existingProduct) {
       setCartItems(
         cartItems.map((item) =>
           item.id === product.id
@@ -45,16 +47,21 @@ function App() {
     setCartItems(cartItems.filter((item) => item.id !== productId));
   }
 
+  const cartProps = {
+    cartItems,
+    addToCart,
+    isCartOpen,
+    setIsCartOpen,
+    increaseQuantity,
+    decreaseQuantity,
+    removeFromCart,
+  };
+
   return (
-    <Home
-      cartItems={cartItems}
-      addToCart={addToCart}
-      isCartOpen={isCartOpen}
-      setIsCartOpen={setIsCartOpen}
-      increaseQuantity={increaseQuantity}
-      decreaseQuantity={decreaseQuantity}
-      removeFromCart={removeFromCart}
-    />
+    <Routes>
+      <Route path="/" element={<Home {...cartProps} />} />
+      <Route path="/produto/:id" element={<ProductDetails {...cartProps} />} />
+    </Routes>
   );
 }
 

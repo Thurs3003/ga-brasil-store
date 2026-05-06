@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function ProductCard({ product, addToCart }) {
   return (
     <div className="productCard">
@@ -15,7 +17,9 @@ function ProductCard({ product, addToCart }) {
 
       <div className="productInfo">
         <p className="brand">{product.brand}</p>
-        <h3>{product.name}</h3>
+        <Link to={`/produto/${product.id}`} className="productLink">
+          <h3>{product.name}</h3>
+        </Link>
 
         <div className="prices">
           <small>R$ {product.oldPrice.toFixed(2)}</small>
