@@ -1,3 +1,26 @@
+:root {
+  --primary-blue: #0b1f8f;
+  --primary-blue-dark: #08186d;
+  --brand-yellow: #ffd600;
+  --brand-yellow-dark: #e6c100;
+  --text-dark: #1a1a1a;
+}
+
+.cartButton,
+.heroButtons button,
+.overlay button,
+.productInfo button {
+  background: var(--primary-blue);
+  color: white;
+}
+
+.cartButton:hover,
+.heroButtons button:hover,
+.overlay button:hover,
+.productInfo button:hover {
+  background: var(--primary-blue-dark);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -5,7 +28,7 @@
 }
 
 body {
-  background: linear-gradient(180deg, #fff0f6, #ffffff);
+  background: linear-gradient(180deg, #e1bef5, #ffffff);
   font-family: Arial, Helvetica, sans-serif;
   color: #2b1722;
 }
@@ -25,10 +48,61 @@ body {
 }
 
 .logo {
-  font-size: 30px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: transform 0.25s ease;
+}
+
+.logo:hover {
+  transform: scale(1.02);
+}
+
+.logo img {
+  height: 58px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(11, 31, 143, 0.15));
+}
+
+.logoText {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 28px;
   font-weight: 900;
-  color: #c2185b;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
+  line-height: 1;
+}
+
+.gaText {
+  color: var(--primary-blue);
+  text-shadow: 0 2px 6px rgba(11, 31, 143, 0.12);
+}
+
+.brasilGradient {
+  background-color: var(--primary-blue);
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+
+  filter: drop-shadow(0 2px 4px rgba(255, 174, 0, 0.18));
+}
+
+.brandBlock {
+  display: flex;
+  flex-direction: column;
+}
+
+.brandBlock small {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7280;
+  letter-spacing: 01.0px;
+  text-transform: uppercase;
+  margin-left: 2px;
 }
 
 .header nav {
@@ -50,7 +124,7 @@ body {
 
 .cartButton {
   border: none;
-  background: linear-gradient(135deg, #c2185b, #ff4d8d);
+  background: linear-gradient(135deg, var(--primary-blue), #142cb8);
   color: white;
   padding: 14px 22px;
   border-radius: 999px;
@@ -105,10 +179,10 @@ main {
   max-width: 560px;
 }
 
-.heroButtons button,
+.heroButtons button:not(.outline),
 .productInfo button {
   border: none;
-  background: linear-gradient(135deg, #c2185b, #ff4d8d);
+  background: linear-gradient(135deg, var(--primary-blue), #142cb8);
   color: white;
   padding: 14px 22px;
   border-radius: 999px;
@@ -117,15 +191,41 @@ main {
   transition: 0.2s;
 }
 
-.heroButtons button:hover,
+/* Hover dos botões principais */
+.heroButtons button:not(.outline):hover,
 .productInfo button:hover {
+  transform: translateY(-2px);
+  background: var(--primary-blue-dark);
+}
+
+/* Estilo do botão WhatsApp */
+.heroButtons .outline {
+  background: white;
+  color: #25d366;
+  border: 2px solid #25d366;
+  padding: 14px 22px;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+}
+
+/* Hover exclusivo do WhatsApp */
+.heroButtons .outline:hover {
+  background: #25d366;
+  color: white;
   transform: translateY(-2px);
 }
 
 .heroButtons .outline {
   background: white;
-  color: #c2185b;
-  border: 2px solid #c2185b;
+  color: #25d366;
+  border: 2px solid #25d366;
 }
 
 .heroCard {
@@ -262,19 +362,19 @@ main {
 }
 
 /* BADGE */
-.badge {
+.badge,
+.productImage span {
   position: absolute;
   top: 14px;
   left: 14px;
-  background: linear-gradient(135deg, #c2185b, #ff4d8d);
-  color: #fff;
+  background: var(--brand-yellow);
+  color: var(--text-dark);
   padding: 8px 14px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 900;
   z-index: 2;
 }
-
 /* OVERLAY */
 .overlay {
   position: absolute;
@@ -289,7 +389,7 @@ main {
 
 /* BOTÃO */
 .overlay button {
-  background: #c2185b;
+  background: var(--primary-blue);
   color: white;
   border: none;
   padding: 12px 20px;
