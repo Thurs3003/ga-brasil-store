@@ -13,6 +13,7 @@ function Home({
   increaseQuantity,
   decreaseQuantity,
   removeFromCart,
+  toastMessage,
 }) {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -143,6 +144,9 @@ function Home({
         onClose={() => setSelectedProduct(null)}
         addToCart={addToCart}
       />
+
+      {toastMessage && <div className="toast">✅ {toastMessage}</div>}
+      
     </>
   );
 }

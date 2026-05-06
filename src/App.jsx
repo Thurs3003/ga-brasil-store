@@ -14,6 +14,7 @@ function App() {
     return [];
   });
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   useEffect(() => {
     localStorage.setItem("@ga-brasil:cart", JSON.stringify(cartItems));
@@ -35,6 +36,12 @@ function App() {
     }
 
     setIsCartOpen(true);
+
+    setToastMessage(`${product.name} adicionado ao carrinho`);
+
+    setTimeout(() => {
+      setToastMessage("");
+    }, 2500);
   }
 
   function increaseQuantity(productId) {
@@ -73,7 +80,10 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Home {...cartProps} />} />
+      <Route
+        path="/"
+        element={<Home {...cartProps} toastMessage={toastMessage} />}
+      />
     </Routes>
   );
 }
