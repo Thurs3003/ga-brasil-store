@@ -2,6 +2,8 @@ import Header from "../components/Header.jsx";
 import ProductCard from "../components/ProductCard.jsx";
 import { products } from "../data/products";
 import CartDrawer from "../components/CartDrawer";
+import { useState } from "react";
+import ProductModal from "../components/ProductModal";
 
 function Home({
   cartItems,
@@ -12,6 +14,8 @@ function Home({
   decreaseQuantity,
   removeFromCart,
 }) {
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
   return (
     <>
       <Header cartItems={cartItems} setIsCartOpen={setIsCartOpen} />
@@ -29,6 +33,7 @@ function Home({
                 key={product.id}
                 product={product}
                 addToCart={addToCart}
+                onOpenDetails={setSelectedProduct}
               />
             ))}
           </div>
@@ -64,16 +69,6 @@ function Home({
             <div>🎨 Paletas</div>
             <div>🖌️ Pincéis</div>
           </div>
-
-          <div className="productGrid">
-            {products.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                addToCart={addToCart}
-              />
-            ))}
-          </div>
         </section>
       </main>
 
@@ -84,6 +79,11 @@ function Home({
         increaseQuantity={increaseQuantity}
         decreaseQuantity={decreaseQuantity}
         removeFromCart={removeFromCart}
+      />
+      <ProductModal
+        product={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        addToCart={addToCart}
       />
     </>
   );

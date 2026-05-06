@@ -1,10 +1,12 @@
-import { Link } from "react-router-dom";
-
-function ProductCard({ product, addToCart }) {
+function ProductCard({ product, addToCart, onOpenDetails }) {
   return (
     <div className="productCard">
       <div className="productImage">
-        <img src={product.image} alt={product.name} />
+        <img
+          src={product.image}
+          alt={product.name}
+          onClick={() => onOpenDetails(product)}
+        />
 
         <span className="badge">Oferta</span>
 
@@ -17,9 +19,10 @@ function ProductCard({ product, addToCart }) {
 
       <div className="productInfo">
         <p className="brand">{product.brand}</p>
-        <Link to={`/produto/${product.id}`} className="productLink">
-          <h3>{product.name}</h3>
-        </Link>
+
+        <h3 onClick={() => onOpenDetails(product)}>
+          {product.name}
+        </h3>
 
         <div className="prices">
           <small>R$ {product.oldPrice.toFixed(2)}</small>
