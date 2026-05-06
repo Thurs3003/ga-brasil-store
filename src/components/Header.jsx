@@ -1,6 +1,8 @@
 import logo from "../assets/ga-brasil.png";
 
-function Header() {
+function Header({ cartItems }) {
+  const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+
   return (
     <header className="header">
       <div className="logo">
@@ -23,7 +25,7 @@ function Header() {
         <a href="#">Contato</a>
       </nav>
 
-      <button className="cartButton">🛒 Carrinho</button>
+      <button className="cartButton">🛒 Carrinho ({totalItems})</button>
     </header>
   );
 }

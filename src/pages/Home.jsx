@@ -2,10 +2,10 @@ import Header from "../components/Header.jsx";
 import ProductCard from "../components/ProductCard.jsx";
 import { products } from "../data/products";
 
-function Home() {
+function Home({ cartItems, addToCart }) {
   return (
     <>
-      <Header />
+      <Header cartItems={cartItems} />
 
       <main>
         <section className="products">
@@ -16,7 +16,11 @@ function Home() {
 
           <div className="productGrid">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                addToCart={addToCart}
+              />
             ))}
           </div>
         </section>
@@ -54,7 +58,11 @@ function Home() {
 
           <div className="productGrid">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                addToCart={addToCart}
+              />
             ))}
           </div>
         </section>

@@ -28,7 +28,7 @@
 }
 
 body {
-  background: linear-gradient(180deg, #e1bef5, #ffffff);
+  background: linear-gradient(180deg, #eacdf9, #ffffff);
   font-family: Arial, Helvetica, sans-serif;
   color: #2b1722;
 }
@@ -266,7 +266,7 @@ main {
 .categories h2,
 .sectionTitle h2 {
   font-size: 34px;
-  color: #2b1722;
+  color: #000000;
 }
 
 .categoryGrid {
