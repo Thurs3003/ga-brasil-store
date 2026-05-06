@@ -16,14 +16,19 @@ function Home({
 }) {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Todos");
 
   const filteredProducts = products.filter((product) => {
     const search = searchTerm.toLowerCase();
 
-    return (
+    const matchesSearch =
       product.name.toLowerCase().includes(search) ||
-      product.brand.toLowerCase().includes(search)
-    );
+      product.brand.toLowerCase().includes(search);
+
+    const matchesCategory =
+      selectedCategory === "Todos" || product.category === selectedCategory;
+
+    return matchesSearch && matchesCategory;
   });
 
   return (
@@ -36,29 +41,6 @@ function Home({
       />
 
       <main>
-        <section className="products">
-          <div className="sectionTitle">
-            <h2>Produtos em destaque</h2>
-            <a href="#">Ver todos</a>
-          </div>
-
-          <div className="productGrid">
-            {filteredProducts.length === 0 && (
-              <div className="emptySearch">
-                <h3>Nenhum produto encontrado</h3>
-                <p>Tente buscar por outro nome ou marca.</p>
-              </div>
-            )}
-            {filteredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                addToCart={addToCart}
-                onOpenDetails={setSelectedProduct}
-              />
-            ))}
-          </div>
-        </section>
         <section className="hero">
           <div className="heroText">
             <span>Distribuidora de Maquiagens</span>
@@ -82,13 +64,68 @@ function Home({
         </section>
 
         <section className="categories">
-          <h2>Categorias</h2>
+          <div className="sectionTitle">
+            <h2>Categorias</h2>
+          </div>
 
           <div className="categoryGrid">
-            <div>💄 Batons</div>
-            <div>✨ Bases</div>
-            <div>🎨 Paletas</div>
-            <div>🖌️ Pincéis</div>
+            <button
+              className={selectedCategory === "Todos" ? "activeCategory" : ""}
+              onClick={() => setSelectedCategory("Todos")}
+            >
+              ✨ Todos
+            </button>
+
+            <button
+              className={selectedCategory === "Batons" ? "activeCategory" : ""}
+              onClick={() => setSelectedCategory("Batons")}
+            >
+              💄 Batons
+            </button>
+
+            <button
+              className={selectedCategory === "Bases" ? "activeCategory" : ""}
+              onClick={() => setSelectedCategory("Bases")}
+            >
+              ✨ Bases
+            </button>
+
+            <button
+              className={selectedCategory === "Paletas" ? "activeCategory" : ""}
+              onClick={() => setSelectedCategory("Paletas")}
+            >
+              🎨 Paletas
+            </button>
+
+            <button
+              className={selectedCategory === "Pincéis" ? "activeCategory" : ""}
+              onClick={() => setSelectedCategory("Pincéis")}
+            >
+              🖌️ Pincéis
+            </button>
+          </div>
+        </section>
+        <section className="products">
+          <div className="sectionTitle">
+            <h2>Produtos em destaque</h2>
+            <a href="#">Ver todos</a>
+          </div>
+
+          <div className="productGrid">
+            {filteredProducts.length === 0 && (
+              <div className="emptySearch">
+                <h3>Nenhum produto encontrado</h3>
+                <p>Tente buscar por outro nome ou marca.</p>
+              </div>
+            )}
+            {filteredProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                addToCart={addToCart}
+                onOpenDetails={setSelectedProduct}
+              />
+            ))}
           </div>
         </section>
       </main>

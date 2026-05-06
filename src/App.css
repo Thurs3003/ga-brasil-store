@@ -276,7 +276,7 @@ main {
   gap: 18px;
 }
 
-.categoryGrid div {
+.categoryGrid button {
   background: #ffffff;
   padding: 28px;
   border-radius: 26px;
@@ -284,7 +284,26 @@ main {
   font-size: 20px;
   font-weight: 900;
   box-shadow: 0 14px 40px rgba(194, 24, 91, 0.08);
-  transition: 0.2s;
+
+  border: none;
+  cursor: pointer;
+
+  transition: 0.25s;
+}
+
+.categoryGrid button:hover {
+  transform: translateY(-5px);
+  background: #f5f7ff;
+}
+
+.activeCategory {
+  background: linear-gradient(
+    135deg,
+    var(--primary-blue),
+    #142cb8
+  ) !important;
+
+  color: white;
 }
 
 .categoryGrid div:hover {
