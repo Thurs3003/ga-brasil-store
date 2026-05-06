@@ -1,11 +1,20 @@
 import Header from "../components/Header.jsx";
 import ProductCard from "../components/ProductCard.jsx";
 import { products } from "../data/products";
+import CartDrawer from "../components/CartDrawer";
 
-function Home({ cartItems, addToCart }) {
+function Home({
+  cartItems,
+  addToCart,
+  isCartOpen,
+  setIsCartOpen,
+  increaseQuantity,
+  decreaseQuantity,
+  removeFromCart,
+}) {
   return (
     <>
-      <Header cartItems={cartItems} />
+      <Header cartItems={cartItems} setIsCartOpen={setIsCartOpen} />
 
       <main>
         <section className="products">
@@ -67,6 +76,15 @@ function Home({ cartItems, addToCart }) {
           </div>
         </section>
       </main>
+
+      <CartDrawer
+        cartItems={cartItems}
+        isCartOpen={isCartOpen}
+        setIsCartOpen={setIsCartOpen}
+        increaseQuantity={increaseQuantity}
+        decreaseQuantity={decreaseQuantity}
+        removeFromCart={removeFromCart}
+      />
     </>
   );
 }

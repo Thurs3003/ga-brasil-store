@@ -1,7 +1,10 @@
 import logo from "../assets/ga-brasil.png";
 
-function Header({ cartItems }) {
-  const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+function Header({ cartItems, setIsCartOpen }) {
+  const totalItems = cartItems.reduce(
+    (total, item) => total + item.quantity,
+    0,
+  );
 
   return (
     <header className="header">
@@ -25,7 +28,9 @@ function Header({ cartItems }) {
         <a href="#">Contato</a>
       </nav>
 
-      <button className="cartButton">🛒 Carrinho ({totalItems})</button>
+      <button className="cartButton" onClick={() => setIsCartOpen(true)}>
+        🛒 Carrinho ({totalItems})
+      </button>
     </header>
   );
 }
