@@ -14,6 +14,8 @@ function Home({
   decreaseQuantity,
   removeFromCart,
   toastMessage,
+  favoriteIds,
+  toggleFavorite,
 }) {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -125,6 +127,8 @@ function Home({
                 product={product}
                 addToCart={addToCart}
                 onOpenDetails={setSelectedProduct}
+                favoriteIds={favoriteIds}
+                toggleFavorite={toggleFavorite}
               />
             ))}
           </div>
@@ -146,7 +150,6 @@ function Home({
       />
 
       {toastMessage && <div className="toast">✅ {toastMessage}</div>}
-      
     </>
   );
 }

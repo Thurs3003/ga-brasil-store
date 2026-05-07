@@ -15,10 +15,23 @@ function App() {
   });
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [favoriteIds, setFavoriteIds] = useState(() => {
+    const savedFavorites = localStorage.getItem("@ga-brasil:favorites");
+
+    if (savedFavorites) {
+      return JSON.parse(savedFavorites);
+    }
+
+    return [];
+  });
 
   useEffect(() => {
     localStorage.setItem("@ga-brasil:cart", JSON.stringify(cartItems));
   }, [cartItems]);
+
+  useEffect(() => {
+    localStorage.setItem("@ga-brasil:favorites", JSON.stringify(favoriteIds));
+  }, [favoriteIds]);
 
   function addToCart(product) {
     const existingProduct = cartItems.find((item) => item.id === product.id);
@@ -68,6 +81,14 @@ function App() {
     setCartItems(cartItems.filter((item) => item.id !== productId));
   }
 
+  function toggleFavorite(productId) {
+    if (favoriteIds.includes(productId)) {
+      setFavoriteIds(favoriteIds.filter((id) => id !== productId));
+    } else {
+      setFavoriteIds([...favoriteIds, productId]);
+    }
+  }
+
   const cartProps = {
     cartItems,
     addToCart,
@@ -76,6 +97,8 @@ function App() {
     increaseQuantity,
     decreaseQuantity,
     removeFromCart,
+    favoriteIds,
+    toggleFavorite,
   };
 
   return (

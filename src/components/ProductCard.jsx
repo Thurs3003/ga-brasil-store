@@ -1,4 +1,12 @@
-function ProductCard({ product, addToCart, onOpenDetails }) {
+function ProductCard({
+  product,
+  addToCart,
+  onOpenDetails,
+  favoriteIds,
+  toggleFavorite,
+}) {
+  const isFavorite = favoriteIds.includes(product.id);
+
   return (
     <div className="productCard">
       <div className="productImage">
@@ -10,6 +18,16 @@ function ProductCard({ product, addToCart, onOpenDetails }) {
 
         <span className="badge">Oferta</span>
 
+        <button
+          className={`favoriteButton ${isFavorite ? "isFavorite" : ""}`}
+          onClick={(event) => {
+            event.stopPropagation();
+            toggleFavorite(product.id);
+          }}
+        >
+          {isFavorite ? "♥" : "♡"}
+        </button>
+
         <div className="overlay">
           <button onClick={() => addToCart(product)}>
             Adicionar ao carrinho
@@ -20,9 +38,7 @@ function ProductCard({ product, addToCart, onOpenDetails }) {
       <div className="productInfo">
         <p className="brand">{product.brand}</p>
 
-        <h3 onClick={() => onOpenDetails(product)}>
-          {product.name}
-        </h3>
+        <h3 onClick={() => onOpenDetails(product)}>{product.name}</h3>
 
         <div className="prices">
           <small>R$ {product.oldPrice.toFixed(2)}</small>

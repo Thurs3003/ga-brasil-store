@@ -1231,3 +1231,53 @@ body {
     white-space: normal;
   }
 }
+
+.favoriteButton {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.92);
+  color: #c2185b;
+
+  font-size: 22px;
+  font-weight: 900;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+  transition: 0.2s;
+}
+
+.favoriteButton:hover {
+  transform: scale(1.08);
+}
+
+.favoriteButton.isFavorite {
+  background: #c2185b;
+  color: white;
+  animation: favoritePop 0.25s ease;
+}
+
+@keyframes favoritePop {
+  0% {
+    transform: scale(0.85);
+  }
+
+  70% {
+    transform: scale(1.15);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
