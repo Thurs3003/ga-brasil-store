@@ -4,6 +4,8 @@ import { products } from "../data/products";
 import CartDrawer from "../components/CartDrawer";
 import { useState } from "react";
 import ProductModal from "../components/ProductModal";
+import Footer from "../components/Footer";
+import Promotions from "../components/Promotions";
 
 function Home({
   cartItems,
@@ -44,7 +46,7 @@ function Home({
       />
 
       <main>
-        <section className="hero">
+        <section id="inicio" className="hero">
           <div className="heroText">
             <span>Distribuidora de Maquiagens</span>
             <h1>Produtos de beleza para quem compra e revende</h1>
@@ -66,7 +68,7 @@ function Home({
           </div>
         </section>
 
-        <section className="categories">
+        <section id="categorias" className="categories">
           <div className="sectionTitle">
             <h2>Categorias</h2>
           </div>
@@ -108,7 +110,10 @@ function Home({
             </button>
           </div>
         </section>
-        <section className="products">
+
+        <Promotions />
+
+        <section id="produtos" className="products">
           <div className="sectionTitle">
             <h2>Produtos em destaque</h2>
             <a href="#">Ver todos</a>
@@ -150,6 +155,7 @@ function Home({
       />
 
       {toastMessage && <div className="toast">✅ {toastMessage}</div>}
+      <Footer />
     </>
   );
 }

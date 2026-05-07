@@ -54,10 +54,10 @@ function Header({ cartItems, setIsCartOpen, searchTerm, setSearchTerm }) {
       </div>
 
       <nav>
-        <a href="#">Início</a>
-        <a href="#">Produtos</a>
-        <a href="#">Promoções</a>
-        <a href="#">Contato</a>
+        <a href="#inicio">Início</a>
+        <a href="#produtos">Produtos</a>
+        <a href="#promocoes">Promoções</a>
+        <a href="#contato">Contato</a>
       </nav>
 
       <button className="cartButton" onClick={() => setIsCartOpen(true)}>
