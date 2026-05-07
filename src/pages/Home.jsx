@@ -6,6 +6,7 @@ import { useState } from "react";
 import ProductModal from "../components/ProductModal";
 import Footer from "../components/Footer";
 import Promotions from "../components/Promotions";
+import HeroCarousel from "../components/HeroCarousel";
 
 function Home({
   cartItems,
@@ -46,27 +47,7 @@ function Home({
       />
 
       <main>
-        <section id="inicio" className="hero">
-          <div className="heroText">
-            <span>Distribuidora de Maquiagens</span>
-            <h1>Produtos de beleza para quem compra e revende</h1>
-            <p>
-              Encontre maquiagens, acessórios e kits promocionais com preços
-              especiais para lojistas e revendedoras.
-            </p>
-
-            <div className="heroButtons">
-              <button>Ver produtos</button>
-              <button className="outline"> Falar no WhatsApp</button>
-            </div>
-          </div>
-
-          <div className="heroCard">
-            <h2>Promoção da Semana</h2>
-            <p>Kits selecionados com descontos especiais</p>
-            <strong>até 30% OFF</strong>
-          </div>
-        </section>
+        <HeroCarousel />
 
         <section id="categorias" className="categories">
           <div className="sectionTitle">
