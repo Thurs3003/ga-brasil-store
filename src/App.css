@@ -297,11 +297,7 @@ main {
 }
 
 .activeCategory {
-  background: linear-gradient(
-    135deg,
-    var(--primary-blue),
-    #142cb8
-  ) !important;
+  background: linear-gradient(135deg, var(--primary-blue), #142cb8) !important;
 
   color: white;
 }
@@ -480,35 +476,9 @@ main {
   }
 }
 
-@media (max-width: 560px) {
-  .header {
-    padding: 0 20px;
-  }
-
-  .cartButton {
-    display: none;
-  }
-
-  main {
-    padding: 0 18px 50px;
-  }
-
-  .heroText {
-    padding: 34px 26px;
-  }
-
-  .heroText h1 {
-    font-size: 32px;
-  }
-
-  .heroButtons {
-    flex-direction: column;
-  }
-
-  .categoryGrid,
-  .productGrid {
-    grid-template-columns: 1fr;
-  }
+html,
+body {
+  overflow-x: hidden;
 }
 
 .cartBackdrop {
@@ -1014,12 +984,6 @@ main {
   }
 }
 
-.searchBox {
-  width: 340px;
-  margin: 0 24px;
-  flex-shrink: 0;
-}
-
 .searchBox input {
   width: 100%;
   border: 2px solid #e6e9ff;
@@ -1079,5 +1043,191 @@ main {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    width: 100%;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    height: auto;
+  }
+
+  .logo {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
+  .logo img {
+    height: 52px;
+  }
+
+  .brandBlock {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .logoText {
+    font-size: 24px;
+    flex-wrap: wrap;
+    line-height: 1;
+  }
+
+  .brandBlock small {
+    font-size: 10px;
+    letter-spacing: 0.8px;
+  }
+
+  .searchBox {
+    width: 100%;
+    margin: 0;
+  }
+
+  .searchBox input {
+    width: 100%;
+    height: 48px;
+    font-size: 14px;
+  }
+
+  .header nav {
+    display: none;
+  }
+
+  .cartButton {
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    padding: 14px;
+  }
+
+  main {
+    padding: 0 16px 60px;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 22px;
+    margin-top: 24px;
+  }
+
+  .heroText {
+    padding: 30px 22px;
+    border-radius: 28px;
+  }
+
+  .heroText h1 {
+    font-size: 36px;
+    line-height: 1.12;
+    margin-top: 12px;
+  }
+
+  .heroText p {
+    font-size: 16px;
+    margin-top: 18px;
+  }
+
+  .heroButtons {
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 24px;
+  }
+
+  .heroButtons button,
+  .heroButtons .outline {
+    width: 100%;
+  }
+
+  .heroCard {
+    min-height: 300px;
+    padding: 28px;
+    border-radius: 28px;
+  }
+
+  .heroCard h2 {
+    font-size: 34px;
+  }
+
+  .heroCard strong {
+    font-size: 42px;
+  }
+
+  .categoryGrid,
+  .productGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .productModal {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+
+  .modalImage {
+    min-height: 260px;
+  }
+
+  .modalInfo h2 {
+    font-size: 30px;
+  }
+
+  .cartDrawer {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 0;
+  }
+
+  .toast {
+    right: 16px;
+    left: 16px;
+    bottom: 16px;
+    text-align: center;
+  }
+
+  .cartDrawer {
+    right: -100%;
+    width: 100%;
+    max-width: 100%;
+    padding: 22px 18px;
+  }
+
+  .cartDrawer.open {
+    right: 0;
+  }
+
+  .cartItem {
+    grid-template-columns: 70px 1fr;
+    padding: 14px;
+  }
+
+  .removeItem {
+    right: 14px;
+    top: 14px;
+    bottom: auto;
+  }
+
+  .cartFooter {
+    background: linear-gradient(180deg, transparent, #ffffff 35%);
+    padding-bottom: 10px;
+  }
+
+  .heroText {
+    overflow: hidden;
+  }
+
+  .heroText h1,
+  .heroText p {
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+
+  .heroButtons button,
+  .heroButtons .outline {
+    min-width: 0;
+    white-space: normal;
   }
 }
