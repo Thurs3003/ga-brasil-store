@@ -1981,3 +1981,392 @@ section {
   min-width: 180px;
   flex: 0 0 auto;
 }
+
+.productCard {
+  border: 1px solid rgba(11, 31, 143, 0.06);
+}
+
+.discountBadge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: var(--brand-yellow);
+  color: var(--text-dark);
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 950;
+  z-index: 3;
+}
+
+.productMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.productMeta span {
+  background: #eef2ff;
+  color: var(--primary-blue);
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.productMeta small {
+  color: #f59e0b;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.prices em {
+  display: block;
+  margin-top: 4px;
+  color: #6b7280;
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.stockInfo {
+  margin-top: 12px;
+  color: #16a34a;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.productCard {
+  background: linear-gradient(135deg, #fff7fb 0%, #fff1f7 45%, #f8f4ff 100%);
+  border: 1px solid rgba(11, 31, 143, 0.08);
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0 18px 45px rgba(11, 31, 143, 0.08);
+  transition: 0.3s ease;
+}
+
+.productCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 28px 70px rgba(11, 31, 143, 0.16);
+}
+
+.productImage {
+  height: 255px;
+  background: #f5f1ff;
+}
+
+.productImage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 45%, rgba(11, 31, 143, 0.35));
+  opacity: 0;
+  transition: 0.3s;
+}
+
+.productCard:hover .productImage::after {
+  opacity: 1;
+}
+
+.discountBadge {
+  background: linear-gradient(135deg, #fff176, var(--brand-yellow));
+  color: #5e6979;
+  box-shadow: 0 8px 18px rgba(255, 214, 0, 0.28);
+}
+
+.favoriteButton {
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--primary-blue);
+}
+
+.favoriteButton.isFavorite {
+  background: #fff1f2;
+  color: #e11d48;
+}
+
+.productInfo {
+  padding: 22px;
+  text-align: left;
+}
+
+.productMeta span {
+  background: rgba(11, 31, 143, 0.08);
+  color: var(--primary-blue);
+}
+
+.productInfo h3 {
+  min-height: 46px;
+  font-size: 18px;
+  line-height: 1.25;
+  color: #111827;
+  margin: 10px 0 14px;
+}
+
+.prices {
+  margin-bottom: 12px;
+}
+
+.prices small {
+  font-size: 13px;
+}
+
+.prices strong {
+  font-size: 26px;
+  font-weight: 950;
+
+  background: linear-gradient(135deg, #e11d48 0%, #c2185b 45%, #9c27b0 100%);
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.prices small {
+  color: #9ca3af;
+  text-decoration-thickness: 2px;
+}
+
+.prices em {
+  color: #6b7280;
+}
+
+.stockInfo {
+  background: #ecfdf5;
+  color: #15803d;
+  padding: 8px 10px;
+  border-radius: 999px;
+  width: fit-content;
+}
+
+.overlay {
+  z-index: 4;
+}
+
+.overlay button {
+  background: linear-gradient(135deg, var(--primary-blue), #142cb8);
+  box-shadow: 0 14px 32px rgba(11, 31, 143, 0.28);
+}
+
+.categoryGrid {
+  margin-top: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.categoryGrid button {
+  position: relative;
+  overflow: hidden;
+
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 22px;
+
+  padding: 18px 24px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.92),
+    rgba(255, 244, 250, 0.9)
+  );
+
+  color: #1f2937;
+
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+
+  cursor: pointer;
+
+  backdrop-filter: blur(14px);
+
+  box-shadow:
+    0 14px 34px rgba(11, 31, 143, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+
+  transition: 0.28s ease;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.categoryGrid button::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.18),
+    rgba(255, 255, 255, 0)
+  );
+
+  opacity: 0;
+  transition: 0.28s;
+}
+
+.categoryGrid button:hover {
+  transform: translateY(-4px) scale(1.02);
+
+  background: linear-gradient(
+    135deg,
+    #fff7fb,
+    #f7f3ff
+  );
+
+  color: #c2185b;
+
+  box-shadow:
+    0 22px 48px rgba(194, 24, 91, 0.14),
+    0 10px 24px rgba(11, 31, 143, 0.08);
+}
+
+.categoryGrid button:hover::before {
+  opacity: 1;
+}
+
+.categoryGrid button.activeCategory {
+  background: linear-gradient(
+    135deg,
+    var(--primary-blue),
+    #142cb8
+  );
+
+  color: white;
+
+  border-color: transparent;
+
+  box-shadow:
+    0 24px 50px rgba(11, 31, 143, 0.24),
+    0 10px 20px rgba(11, 31, 143, 0.14);
+}
+
+.categoryGrid button.activeCategory::after {
+  content: "";
+
+  position: absolute;
+  bottom: 0;
+  left: 18px;
+
+  width: calc(100% - 36px);
+  height: 4px;
+
+  border-radius: 999px;
+
+  background: var(--brand-yellow);
+}
+
+@media (max-width: 560px) {
+  .categoryGrid {
+    gap: 12px;
+  }
+
+  .categoryGrid button {
+    flex: 1 1 calc(50% - 12px);
+    padding: 16px 14px;
+    font-size: 14px;
+    border-radius: 18px;
+  }
+}
+
+.socialProof {
+  margin-top: 38px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.socialProofCard {
+  position: relative;
+  overflow: hidden;
+  padding: 28px 24px;
+  border-radius: 30px;
+
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #fff4fa 48%,
+    #f7f3ff 100%
+  );
+
+  border: 1px solid rgba(11, 31, 143, 0.07);
+
+  box-shadow:
+    0 18px 44px rgba(11, 31, 143, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+
+  transition: 0.28s ease;
+}
+
+.socialProofCard::after {
+  content: "";
+
+  position: absolute;
+  left: 24px;
+  bottom: 0;
+
+  width: 54px;
+  height: 4px;
+
+  border-radius: 999px;
+
+  background: linear-gradient(
+    90deg,
+    var(--brand-yellow),
+    #ffb300
+  );
+
+  transition: 0.28s ease;
+}
+
+.socialProofCard:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 26px 60px rgba(194, 24, 91, 0.14),
+    0 10px 24px rgba(11, 31, 143, 0.08);
+}
+
+.socialProofCard:hover::after {
+  width: 86px;
+}
+
+.socialProofCard strong {
+  position: relative;
+  z-index: 1;
+  display: block;
+  font-size: 18px;
+  line-height: 1.3;
+  color: var(--primary-blue);
+  margin-bottom: 12px;
+}
+
+.socialProofCard p {
+  position: relative;
+  z-index: 1;
+  color: #6b7280;
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+@media (max-width: 1000px) {
+  .socialProof {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .socialProof {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-top: 28px;
+  }
+
+  .socialProofCard {
+    padding: 24px 22px;
+    border-radius: 24px;
+  }
+}

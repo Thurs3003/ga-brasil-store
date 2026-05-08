@@ -7,6 +7,7 @@ import ProductModal from "../components/ProductModal";
 import Footer from "../components/Footer";
 import Promotions from "../components/Promotions";
 import HeroCarousel from "../components/HeroCarousel";
+import SocialProof from "../components/SocialProof";
 
 function Home({
   cartItems,
@@ -48,6 +49,8 @@ function Home({
 
       <main>
         <HeroCarousel />
+
+        <SocialProof />
 
         <section id="categorias" className="categories">
           <div className="sectionTitle">

@@ -16,7 +16,7 @@ function ProductCard({
           onClick={() => onOpenDetails(product)}
         />
 
-        <span className="badge">Oferta</span>
+        <span className="discountBadge">-{product.discount}%</span>
 
         <button
           className={`favoriteButton ${isFavorite ? "isFavorite" : ""}`}
@@ -36,14 +36,22 @@ function ProductCard({
       </div>
 
       <div className="productInfo">
+        <div className="productMeta">
+          <span>{product.tag}</span>
+          <small>⭐ {product.rating}</small>
+        </div>
+
         <p className="brand">{product.brand}</p>
 
         <h3 onClick={() => onOpenDetails(product)}>{product.name}</h3>
 
         <div className="prices">
-          <small>R$ {product.oldPrice.toFixed(2)}</small>
-          <strong>R$ {product.price.toFixed(2)}</strong>
+          <small>R$ {product.oldPrice.toFixed(2).replace(".", ",")}</small>
+          <strong>R$ {product.price.toFixed(2).replace(".", ",")}</strong>
+          <em>{product.installment}</em>
         </div>
+
+        <p className="stockInfo">Em estoque • {product.stock} unidades</p>
       </div>
     </div>
   );
