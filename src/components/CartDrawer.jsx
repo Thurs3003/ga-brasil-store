@@ -8,25 +8,40 @@ function CartDrawer({
 }) {
   const total = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0
+    0,
   );
 
   function finishOrder() {
-    const message = cartItems
-      .map(
-        (item) =>
-          `${item.quantity}x ${item.name} - R$ ${(item.price * item.quantity)
-            .toFixed(2)
-            .replace(".", ",")}`
-      )
-      .join("%0A");
+    if (cartItems.length === 0) return;
 
-    const totalMessage = `Total: R$ ${total.toFixed(2).replace(".", ",")}`;
+    const productsMessage = cartItems
+      .map((item) => {
+        const subtotal = item.price * item.quantity;
 
-    window.open(
-      `https://wa.me/5511937739808?text=Olá! Gostaria de fazer um pedido:%0A%0A${message}%0A%0A${totalMessage}`,
-      "_blank"
-    );
+        return `• ${item.name}
+Marca: ${item.brand}
+Quantidade: ${item.quantity}
+Subtotal: R$ ${subtotal.toFixed(2).replace(".", ",")}`;
+      })
+      .join("\n\n");
+
+    const totalMessage = total.toFixed(2).replace(".", ",");
+
+    const message = `🛍️ Pedido G.A Brasil
+
+Olá! Gostaria de finalizar meu pedido.
+
+📦 Produtos:
+${productsMessage}
+
+💰 Total do pedido:
+R$ ${totalMessage}
+
+🚚 Aguardo as informações para pagamento e entrega.`;
+
+    const encodedMessage = encodeURIComponent(message);
+
+    window.open(`https://wa.me/5511937739808?text=${encodedMessage}`, "_blank");
   }
 
   return (
@@ -66,9 +81,13 @@ function CartDrawer({
                     <p>R$ {item.price.toFixed(2).replace(".", ",")}</p>
 
                     <div className="quantityControls">
-                      <button onClick={() => decreaseQuantity(item.id)}>-</button>
+                      <button onClick={() => decreaseQuantity(item.id)}>
+                        -
+                      </button>
                       <span>{item.quantity}</span>
-                      <button onClick={() => increaseQuantity(item.id)}>+</button>
+                      <button onClick={() => increaseQuantity(item.id)}>
+                        +
+                      </button>
                     </div>
                   </div>
 
