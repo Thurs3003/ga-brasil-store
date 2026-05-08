@@ -100,7 +100,9 @@ function HeroCarousel() {
         {slides.map((_, index) => (
           <button
             key={index}
-            className={currentSlide === index ? "activeDot" : ""}
+            type="button"
+            aria-label={`Ir para slide ${index + 1}`}
+            className={`carouselDot ${currentSlide === index ? "active" : ""}`}
             onClick={() => goToSlide(index)}
           />
         ))}

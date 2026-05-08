@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Search, ShoppingBag } from "lucide-react";
+import { Search, ShoppingBag, Menu, X } from "lucide-react";
 import logo from "../assets/ga-brasil.png";
 
 function Header({ cartItems, setIsCartOpen, searchTerm, setSearchTerm }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const totalItems = cartItems.reduce(
     (total, item) => total + item.quantity,
@@ -27,6 +28,13 @@ function Header({ cartItems, setIsCartOpen, searchTerm, setSearchTerm }) {
         </div>
 
         <div className="mobileActions">
+          <button
+            className="mobileIconButton"
+            onClick={() => setIsMenuOpen(true)}
+          >
+            <Menu size={20} strokeWidth={2.3} />
+          </button>
+
           <button
             className="mobileIconButton"
             onClick={() => setIsSearchOpen(!isSearchOpen)}
@@ -59,6 +67,34 @@ function Header({ cartItems, setIsCartOpen, searchTerm, setSearchTerm }) {
         <a href="#promocoes">Promoções</a>
         <a href="#contato">Contato</a>
       </nav>
+
+      <div
+        className={`mobileMenuBackdrop ${isMenuOpen ? "show" : ""}`}
+        onClick={() => setIsMenuOpen(false)}
+      />
+
+      <aside className={`mobileMenu ${isMenuOpen ? "open" : ""}`}>
+        <div className="mobileMenuHeader">
+          <strong>Menu</strong>
+
+          <button onClick={() => setIsMenuOpen(false)}>
+            <X size={20} />
+          </button>
+        </div>
+
+        <a href="#inicio" onClick={() => setIsMenuOpen(false)}>
+          Início
+        </a>
+        <a href="#produtos" onClick={() => setIsMenuOpen(false)}>
+          Produtos
+        </a>
+        <a href="#promocoes" onClick={() => setIsMenuOpen(false)}>
+          Promoções
+        </a>
+        <a href="#contato" onClick={() => setIsMenuOpen(false)}>
+          Contato
+        </a>
+      </aside>
 
       <button className="cartButton" onClick={() => setIsCartOpen(true)}>
         🛒 Carrinho ({totalItems})
