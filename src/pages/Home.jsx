@@ -38,6 +38,10 @@ function Home({
     return matchesSearch && matchesCategory;
   });
 
+  const favoriteProducts = products.filter((product) =>
+    favoriteIds.includes(product.id),
+  );
+
   return (
     <>
       <Header
@@ -96,6 +100,28 @@ function Home({
         </section>
 
         <Promotions />
+
+        {favoriteProducts.length > 0 && (
+          <section className="favoritesSection">
+            <div className="sectionTitle">
+              <h2>Produtos salvos para você</h2>
+              <a href="#produtos">Ver catálogo</a>
+            </div>
+
+            <div className="productGrid">
+              {favoriteProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  addToCart={addToCart}
+                  onOpenDetails={setSelectedProduct}
+                  favoriteIds={favoriteIds}
+                  toggleFavorite={toggleFavorite}
+                />
+              ))}
+            </div>
+          </section>
+        )}
 
         <section id="produtos" className="products">
           <div className="sectionTitle">

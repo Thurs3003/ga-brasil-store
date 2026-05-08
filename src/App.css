@@ -2370,3 +2370,54 @@ section {
     border-radius: 24px;
   }
 }
+
+.favoritesSection {
+  margin-top: 80px;
+  padding: 38px;
+  border-radius: 38px;
+
+  background:
+    linear-gradient(135deg, rgba(194, 24, 91, 0.08), rgba(11, 31, 143, 0.06)),
+    linear-gradient(135deg, #fff7fb, #f8f4ff);
+
+  border: 1px solid rgba(194, 24, 91, 0.12);
+
+  box-shadow:
+    0 26px 70px rgba(194, 24, 91, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.favoritesSection .sectionTitle {
+  margin-bottom: 26px;
+}
+
+.favoritesSection .sectionTitle h2 {
+  color: #c2185b;
+  font-size: 32px;
+}
+
+.favoritesSection .sectionTitle a {
+  background: white;
+  color: var(--primary-blue);
+  padding: 10px 16px;
+  border-radius: 999px;
+  box-shadow: 0 10px 24px rgba(11, 31, 143, 0.08);
+}
+
+.favoritesSection .productGrid {
+  margin-top: 0;
+}
+
+@media (max-width: 768px) {
+  .favoritesSection {
+    margin-top: 60px;
+    padding: 24px;
+    border-radius: 30px;
+  }
+
+  .favoritesSection .sectionTitle {
+    align-items: flex-start;
+    gap: 12px;
+    flex-direction: column;
+  }
+}
