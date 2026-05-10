@@ -2,7 +2,14 @@ import { useState } from "react";
 import { Search, ShoppingBag, Menu, X } from "lucide-react";
 import logo from "../assets/ga-brasil.png";
 
-function Header({ cartItems, setIsCartOpen, searchTerm, setSearchTerm }) {
+function Header({
+  cartItems,
+  setIsCartOpen,
+  searchTerm,
+  setSearchTerm,
+  searchResults,
+  onOpenProduct,
+}) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -59,6 +66,29 @@ function Header({ cartItems, setIsCartOpen, searchTerm, setSearchTerm }) {
           value={searchTerm}
           onChange={(event) => setSearchTerm(event.target.value)}
         />
+
+        {searchTerm && searchResults.length > 0 && (
+          <div className="searchResults">
+            {searchResults.slice(0, 4).map((product) => (
+              <button
+                key={product.id}
+                onClick={() => {
+                  onOpenProduct(product);
+                  setSearchTerm("");
+                }}
+              >
+                <img src={product.image} alt={product.name} />
+
+                <div>
+                  <strong>{product.name}</strong>
+                  <span>{product.brand}</span>
+                </div>
+
+                <small>R$ {product.price.toFixed(2).replace(".", ",")}</small>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <nav>

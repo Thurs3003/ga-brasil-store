@@ -27,17 +27,17 @@ Subtotal: R$ ${subtotal.toFixed(2).replace(".", ",")}`;
 
     const totalMessage = total.toFixed(2).replace(".", ",");
 
-    const message = `🛍️ Pedido G.A Brasil
+    const message = `Pedido G.A Brasil
 
 Olá! Gostaria de finalizar meu pedido.
 
-📦 Produtos:
+Produtos:
 ${productsMessage}
 
-💰 Total do pedido:
+Total do pedido:
 R$ ${totalMessage}
 
-🚚 Aguardo as informações para pagamento e entrega.`;
+Aguardo as informações para pagamento e entrega.`;
 
     const encodedMessage = encodeURIComponent(message);
 

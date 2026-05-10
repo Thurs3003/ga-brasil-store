@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 const slides = [
   {
@@ -35,6 +35,8 @@ const slides = [
 
 function HeroCarousel() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
   function goToSlide(index) {
     setCurrentSlide(index);
@@ -52,6 +54,26 @@ function HeroCarousel() {
     );
   }
 
+  function handleTouchStart(event) {
+    touchStartX.current = event.touches[0].clientX;
+  }
+
+  function handleTouchMove(event) {
+    touchEndX.current = event.touches[0].clientX;
+  }
+
+  function handleTouchEnd() {
+    const distance = touchStartX.current - touchEndX.current;
+
+    if (distance > 50) {
+      nextSlide();
+    }
+
+    if (distance < -50) {
+      previousSlide();
+    }
+  }
+
   useEffect(() => {
     const interval = setInterval(nextSlide, 5000);
 
@@ -61,7 +83,13 @@ function HeroCarousel() {
   const slide = slides[currentSlide];
 
   return (
-    <section id="inicio" className="heroCarousel">
+    <section
+      id="inicio"
+      className="heroCarousel"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       <div className="heroCarouselContent">
         <div className="heroCarouselText">
           <span>{slide.eyebrow}</span>

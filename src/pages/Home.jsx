@@ -51,12 +51,47 @@ function Home({
         setIsCartOpen={setIsCartOpen}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
+        searchResults={filteredProducts}
+        onOpenProduct={setSelectedProduct}
       />
 
       <main>
         <HeroCarousel />
 
         <SocialProof />
+
+        <BestSellers
+          addToCart={addToCart}
+          setSelectedProduct={setSelectedProduct}
+          favoriteIds={favoriteIds}
+          toggleFavorite={toggleFavorite}
+        />
+
+        <Promotions />
+
+        <Brands />
+
+        {favoriteProducts.length > 0 && (
+          <section className="favoritesSection">
+            <div className="sectionTitle">
+              <h2>Produtos salvos para você</h2>
+              <a href="#produtos">Ver catálogo</a>
+            </div>
+
+            <div className="productGrid">
+              {favoriteProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  addToCart={addToCart}
+                  onOpenDetails={setSelectedProduct}
+                  favoriteIds={favoriteIds}
+                  toggleFavorite={toggleFavorite}
+                />
+              ))}
+            </div>
+          </section>
+        )}
 
         <section id="categorias" className="categories">
           <div className="sectionTitle">
@@ -100,39 +135,6 @@ function Home({
             </button>
           </div>
         </section>
-
-        <BestSellers
-          addToCart={addToCart}
-          setSelectedProduct={setSelectedProduct}
-          favoriteIds={favoriteIds}
-          toggleFavorite={toggleFavorite}
-        />
-
-        <Promotions />
-        
-        <Brands />
-
-        {favoriteProducts.length > 0 && (
-          <section className="favoritesSection">
-            <div className="sectionTitle">
-              <h2>Produtos salvos para você</h2>
-              <a href="#produtos">Ver catálogo</a>
-            </div>
-
-            <div className="productGrid">
-              {favoriteProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  addToCart={addToCart}
-                  onOpenDetails={setSelectedProduct}
-                  favoriteIds={favoriteIds}
-                  toggleFavorite={toggleFavorite}
-                />
-              ))}
-            </div>
-          </section>
-        )}
 
         <section id="produtos" className="products">
           <div className="sectionTitle">

@@ -9,7 +9,10 @@ function ProductModal({ product, onClose, addToCart }) {
 
   return (
     <div className="productModalBackdrop" onClick={onClose}>
-      <div className="productModal" onClick={(event) => event.stopPropagation()}>
+      <div
+        className="productModal"
+        onClick={(event) => event.stopPropagation()}
+      >
         <button className="modalCloseButton" onClick={onClose}>
           ✕
         </button>
@@ -71,7 +74,10 @@ function ProductModal({ product, onClose, addToCart }) {
 
           <button
             className="detailsAddButton"
-            onClick={() => addToCart(product)}
+            onClick={() => {
+              addToCart(product);
+              onClose();
+            }}
           >
             Adicionar ao carrinho 🛒
           </button>
