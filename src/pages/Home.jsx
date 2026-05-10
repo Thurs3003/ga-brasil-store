@@ -8,6 +8,8 @@ import Footer from "../components/Footer";
 import Promotions from "../components/Promotions";
 import HeroCarousel from "../components/HeroCarousel";
 import SocialProof from "../components/SocialProof";
+import Brands from "../components/Brands";
+import BestSellers from "../components/BestSellers";
 
 function Home({
   cartItems,
@@ -99,7 +101,16 @@ function Home({
           </div>
         </section>
 
+        <BestSellers
+          addToCart={addToCart}
+          setSelectedProduct={setSelectedProduct}
+          favoriteIds={favoriteIds}
+          toggleFavorite={toggleFavorite}
+        />
+
         <Promotions />
+        
+        <Brands />
 
         {favoriteProducts.length > 0 && (
           <section className="favoritesSection">

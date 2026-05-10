@@ -7,6 +7,10 @@ function ProductCard({
 }) {
   const isFavorite = favoriteIds.includes(product.id);
 
+  const discount = Math.round(
+    ((product.oldPrice - product.price) / product.oldPrice) * 100,
+  );
+
   return (
     <div className="productCard">
       <div className="productImage">
@@ -16,7 +20,7 @@ function ProductCard({
           onClick={() => onOpenDetails(product)}
         />
 
-        <span className="discountBadge">-{product.discount}%</span>
+        <span className="discountBadge">-{discount}%</span>
 
         <button
           className={`favoriteButton ${isFavorite ? "isFavorite" : ""}`}
@@ -37,7 +41,7 @@ function ProductCard({
 
       <div className="productInfo">
         <div className="productMeta">
-          <span>{product.tag}</span>
+          {product.tag && <span>{product.tag}</span>}
           <small>⭐ {product.rating}</small>
         </div>
 

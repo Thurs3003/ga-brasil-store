@@ -265,8 +265,31 @@ main {
 
 .categories h2,
 .sectionTitle h2 {
-  font-size: 34px;
-  color: #000000;
+  font-size: 46px;
+  line-height: 1.05;
+
+  color: #111827;
+
+  font-weight: 950;
+
+  letter-spacing: -1.6px;
+
+  max-width: 680px;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+
+  margin-bottom: 28px;
+}
+
+.sectionTitle p {
+  color: #6b7280;
+  max-width: 540px;
+  line-height: 1.7;
 }
 
 .categoryGrid {
@@ -900,6 +923,9 @@ html {
   width: min(980px, 100%);
   max-height: 92vh;
   overflow-y: auto;
+  overflow-x: hidden;
+
+  scrollbar-width: none;
   background: linear-gradient(135deg, #f8f5ff, #f3efff);
   border-radius: 34px;
   padding: 28px;
@@ -908,6 +934,7 @@ html {
   gap: 32px;
   position: relative;
   box-shadow: 0 30px 90px rgba(11, 31, 143, 0.22);
+  max-height: 92vh;
 }
 
 .modalCloseButton {
@@ -950,6 +977,8 @@ html {
   flex-direction: column;
   justify-content: center;
   padding-right: 12px;
+  overflow-y: auto;
+  padding-right: 6px;
 }
 
 .modalInfo h2 {
@@ -1537,6 +1566,7 @@ section {
   gap: 36px;
   box-shadow: 0 24px 60px rgba(11, 31, 143, 0.22);
   overflow: hidden;
+
 }
 
 .promotionText {
@@ -1582,6 +1612,7 @@ section {
 .promotionText a:hover {
   transform: translateY(-2px);
   background: #ffe45c;
+  
 }
 
 .promotionDiscount {
@@ -1619,6 +1650,7 @@ section {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 22px;
+  margin-bottom: 20px;
 }
 
 .promotionCards div {
@@ -1683,6 +1715,7 @@ section {
 
   .promotionCards {
     grid-template-columns: 1fr;
+    margin-bottom: 20px;
   }
 }
 
@@ -2269,6 +2302,7 @@ section {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 18px;
+  
 }
 
 .socialProofCard {
@@ -2807,4 +2841,268 @@ section {
 
   background: var(--primary-blue) !important;
   box-shadow: 0 4px 10px rgba(11, 31, 143, 0.18) !important;
+}
+
+.modalGallery {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modalThumbnails {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.modalThumbnails button {
+  border: 2px solid transparent;
+  border-radius: 16px;
+  overflow: hidden;
+  height: 82px;
+  cursor: pointer;
+  background: #f5f1ff;
+  transition: 0.2s;
+}
+
+.modalThumbnails button:hover,
+.modalThumbnails .activeThumb {
+  border-color: var(--primary-blue);
+  transform: translateY(-2px);
+}
+
+.modalThumbnails img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modalBadges {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.modalBadges span {
+  background: var(--brand-yellow);
+  color: var(--text-dark);
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.modalRating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.modalRating strong {
+  color: #f59e0b;
+  font-size: 15px;
+}
+
+.modalRating small {
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.modalTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+
+.modalTags span {
+  background: rgba(11, 31, 143, 0.08);
+  color: var(--primary-blue);
+
+  padding: 10px 14px;
+
+  border-radius: 999px;
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.detailsPrice em {
+  display: block;
+  margin-top: 6px;
+  color: #6b7280;
+  font-style: normal;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+@media (max-width: 768px) {
+  .modalThumbnails {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .modalThumbnails button {
+    width: 92px;
+    height: 92px;
+    border-radius: 18px;
+  }
+
+  .modalBadges {
+    margin-top: 8px;
+  }
+}
+
+.modalInfo::-webkit-scrollbar {
+  display: none;
+}
+
+.modalInfo {
+  scrollbar-width: none;
+}
+
+.brandsSection {
+  margin-top: 80px;
+}
+
+.sectionEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 10px 16px;
+
+  border-radius: 999px;
+
+  background: rgba(194, 24, 91, 0.08);
+
+  color: #c2185b;
+
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+
+  border: 1px solid rgba(194, 24, 91, 0.12);
+
+  margin-bottom: 18px;
+}
+
+.brandsGrid {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.brandCard {
+  position: relative;
+
+  min-height: 150px;
+
+  border-radius: 34px;
+
+  overflow: hidden;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 244, 250, 0.92),
+    rgba(247, 243, 255, 0.92)
+  );
+
+  border: 1px solid rgba(11, 31, 143, 0.08);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  box-shadow:
+    0 22px 50px rgba(11, 31, 143, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+  transition: 0.32s ease;
+}
+
+.brandCard:hover {
+  transform: translateY(-8px) scale(1.02);
+
+  box-shadow: 0 30px 70px rgba(194, 24, 91, 0.14);
+
+  border-color: rgba(194, 24, 91, 0.16);
+}
+
+.brandCard::before {
+  content: "";
+
+  position: absolute;
+
+  width: 160px;
+  height: 160px;
+
+  border-radius: 50%;
+
+  background: radial-gradient(rgba(194, 24, 91, 0.12), transparent 70%);
+
+  top: -60px;
+  right: -60px;
+}
+
+.brandCard span {
+  font-size: 14px;
+  font-weight: 800;
+  color: #c2185b;
+
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  margin-bottom: 10px;
+}
+
+.brandCard strong {
+  color: var(--primary-blue);
+
+  font-size: 32px;
+  font-weight: 950;
+
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 900px) {
+  .brandsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .brandsSection {
+    margin-top: 60px;
+  }
+
+  .brandsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .brandCard {
+    min-height: 92px;
+  }
+}
+
+.bestSellersSection {
+  margin-top: 80px;
+}
+
+.bestSellersSection .productGrid {
+  margin-top: 28px;
+}
+
+@media (max-width: 768px) {
+  .bestSellersSection {
+    margin-top: 60px;
+  }
 }

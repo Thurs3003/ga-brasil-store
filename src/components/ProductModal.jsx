@@ -1,5 +1,11 @@
+import { useState } from "react";
+
 function ProductModal({ product, onClose, addToCart }) {
+  const [selectedImage, setSelectedImage] = useState("");
+
   if (!product) return null;
+
+  const currentImage = selectedImage || product.image;
 
   return (
     <div className="productModalBackdrop" onClick={onClose}>
@@ -8,26 +14,57 @@ function ProductModal({ product, onClose, addToCart }) {
           ✕
         </button>
 
-        <div className="modalImage">
-          <img src={product.image} alt={product.name} />
+        <div className="modalGallery">
+          <div className="modalImage">
+            <img src={currentImage} alt={product.name} />
+          </div>
+
+          {product.gallery && (
+            <div className="modalThumbnails">
+              {[product.image, ...product.gallery].map((image, index) => (
+                <button
+                  key={index}
+                  className={currentImage === image ? "activeThumb" : ""}
+                  onClick={() => setSelectedImage(image)}
+                >
+                  <img src={image} alt={`${product.name} ${index + 1}`} />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="modalInfo">
+          <div className="modalBadges">
+            {product.isNew && <span>Novo</span>}
+            {product.featured && <span>Mais vendido</span>}
+          </div>
+
           <span className="detailsBrand">{product.brand}</span>
+
           <h2>{product.name}</h2>
 
-          <p>
-            Produto ideal para revendedoras, lojistas e clientes que buscam
-            qualidade com preço competitivo.
-          </p>
+          <div className="modalRating">
+            <strong>⭐ {product.rating}</strong>
+            <small>({product.reviews} avaliações)</small>
+          </div>
+
+          <p>{product.description}</p>
+
+          <div className="modalTags">
+            {product.tags?.map((tag) => (
+              <span key={tag}>#{tag}</span>
+            ))}
+          </div>
 
           <div className="detailsPrice">
             <small>R$ {product.oldPrice.toFixed(2).replace(".", ",")}</small>
             <strong>R$ {product.price.toFixed(2).replace(".", ",")}</strong>
+            <em>{product.installment}</em>
           </div>
 
           <div className="detailsBenefits">
-            <span>✅ Produto disponível</span>
+            <span>✅ Em estoque: {product.stock} unidades</span>
             <span>📦 Ideal para revenda</span>
             <span>💬 Pedido rápido pelo WhatsApp</span>
           </div>
