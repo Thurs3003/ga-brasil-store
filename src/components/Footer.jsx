@@ -21,7 +21,7 @@ function Footer() {
             </a>
 
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/gabrasiloficial/?hl=en"
               target="_blank"
               rel="noreferrer"
               aria-label="Instagram"

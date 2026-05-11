@@ -41,7 +41,7 @@ Aguardo as informações para pagamento e entrega.`;
 
     const encodedMessage = encodeURIComponent(message);
 
-    window.open(`https://wa.me/5511937739808?text=${encodedMessage}`, "_blank");
+    window.open(`https://wa.me/5511975795839?text=${encodedMessage}`, "_blank");
   }
 
   return (
