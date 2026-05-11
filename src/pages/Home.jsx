@@ -1,6 +1,5 @@
 import Header from "../components/Header.jsx";
 import ProductCard from "../components/ProductCard.jsx";
-import { products } from "../data/products";
 import CartDrawer from "../components/CartDrawer";
 import { useState } from "react";
 import ProductModal from "../components/ProductModal";
@@ -19,15 +18,18 @@ function Home({
   increaseQuantity,
   decreaseQuantity,
   removeFromCart,
-  toastMessage,
   favoriteIds,
   toggleFavorite,
+  toastMessage,
+  supabaseProducts,
 }) {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todos");
 
-  const filteredProducts = products.filter((product) => {
+  const productsToShow = supabaseProducts;
+
+  const filteredProducts = productsToShow.filter((product) => {
     const search = searchTerm.toLowerCase();
 
     const matchesSearch =
@@ -40,7 +42,7 @@ function Home({
     return matchesSearch && matchesCategory;
   });
 
-  const favoriteProducts = products.filter((product) =>
+  const favoriteProducts = productsToShow.filter((product) =>
     favoriteIds.includes(product.id),
   );
 
@@ -61,12 +63,12 @@ function Home({
         <SocialProof />
 
         <BestSellers
+          products={productsToShow}
           addToCart={addToCart}
           setSelectedProduct={setSelectedProduct}
           favoriteIds={favoriteIds}
           toggleFavorite={toggleFavorite}
         />
-
         <Promotions />
 
         <Brands />

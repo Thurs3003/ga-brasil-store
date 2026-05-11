@@ -1421,7 +1421,6 @@ section {
   user-select: none;
 }
 
-
 .heroCarouselContent {
   background: transparent !important;
   box-shadow: none !important;
@@ -1669,7 +1668,6 @@ section {
   transform: translateY(-8px);
   box-shadow: 0 28px 70px rgba(11, 31, 143, 0.16);
 }
-
 
 .productImage {
   position: relative;
@@ -2657,7 +2655,6 @@ section {
   user-select: none;
 }
 
-
 @media (min-width: 769px) {
   .heroCarouselContent {
     display: grid !important;
@@ -2688,4 +2685,207 @@ section {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.adminDashboard {
+  padding: 40px;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f8f5ff, #ffffff);
+}
+
+.adminHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 34px;
+}
+
+.adminHeader h1 {
+  font-size: 42px;
+  color: #111827;
+}
+
+.adminHeader button {
+  border: none;
+  background: #dc2626;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.adminForm {
+  background: white;
+  padding: 28px;
+  border-radius: 28px;
+  box-shadow: 0 18px 50px rgba(11, 31, 143, 0.08);
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+
+  margin-bottom: 34px;
+}
+
+.adminForm h2 {
+  grid-column: 1/-1;
+  color: var(--primary-blue);
+}
+
+.adminForm input,
+.adminForm textarea {
+  width: 100%;
+  border: 2px solid #eef2ff;
+  border-radius: 16px;
+  padding: 14px;
+  font-size: 14px;
+  outline: none;
+}
+
+.adminForm input:focus,
+.adminForm textarea:focus {
+  border-color: var(--primary-blue);
+}
+
+.adminForm button {
+  grid-column: 1/-1;
+
+  border: none;
+  background: linear-gradient(135deg, var(--primary-blue), #142cb8);
+
+  color: white;
+  padding: 16px;
+  border-radius: 18px;
+
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.adminTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  background: white;
+  border-radius: 28px;
+  overflow: hidden;
+
+  box-shadow: 0 18px 50px rgba(11, 31, 143, 0.08);
+}
+
+.adminTable th {
+  background: #eef2ff;
+  color: var(--primary-blue);
+  text-align: left;
+  padding: 18px;
+}
+
+.adminTable td {
+  padding: 18px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.adminTable img {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .adminDashboard {
+    padding: 18px;
+  }
+
+  .adminHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .adminForm {
+    grid-template-columns: 1fr;
+  }
+
+  .adminTable {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+.adminFormActions {
+  grid-column: 1/-1;
+  display: flex;
+  gap: 14px;
+}
+
+.cancelEditButton {
+  background: #eef2ff !important;
+  color: var(--primary-blue) !important;
+}
+
+.adminPreviewImage {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 22px;
+  border: 2px solid #eef2ff;
+  box-shadow: 0 10px 24px rgba(11, 31, 143, 0.08);
+}
+
+.adminPreviewWrapper {
+  grid-column: 1 / 2;
+  margin-top: -6px;
+}
+
+.adminGalleryPreview {
+  grid-column: 2 / 3;
+  margin-top: -6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.adminGalleryPreview img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 18px;
+  border: 2px solid #eef2ff;
+}
+
+.adminActions {
+  display: flex;
+  gap: 10px;
+}
+
+.editButton,
+.deleteButton {
+  border: none;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.editButton {
+  background: #eef2ff;
+  color: var(--primary-blue);
+}
+
+.editButton:hover {
+  background: var(--primary-blue);
+  color: white;
+}
+
+.deleteButton {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.deleteButton:hover {
+  background: #dc2626;
+  color: white;
 }

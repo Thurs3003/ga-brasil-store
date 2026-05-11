@@ -7,9 +7,12 @@ function ProductCard({
 }) {
   const isFavorite = favoriteIds.includes(product.id);
 
-  const discount = Math.round(
-    ((product.oldPrice - product.price) / product.oldPrice) * 100,
-  );
+  const discount =
+    product.oldPrice && product.oldPrice > 0
+      ? Math.round(
+          ((product.oldPrice - product.price) / product.oldPrice) * 100,
+        )
+      : null;
 
   return (
     <div className="productCard">
@@ -20,7 +23,7 @@ function ProductCard({
           onClick={() => onOpenDetails(product)}
         />
 
-        <span className="discountBadge">-{discount}%</span>
+        {discount && <div className="discountBadge">-{discount}%</div>}
 
         <button
           className={`favoriteButton ${isFavorite ? "isFavorite" : ""}`}
@@ -50,7 +53,9 @@ function ProductCard({
         <h3 onClick={() => onOpenDetails(product)}>{product.name}</h3>
 
         <div className="prices">
-          <small>R$ {product.oldPrice.toFixed(2).replace(".", ",")}</small>
+          {product.old_price && (
+            <small>R$ {Number(product.old_price).toFixed(2)}</small>
+          )}
           <strong>R$ {product.price.toFixed(2).replace(".", ",")}</strong>
           <em>{product.installment}</em>
         </div>

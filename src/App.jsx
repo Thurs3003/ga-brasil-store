@@ -2,28 +2,48 @@ import { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import "./App.css";
+import { supabase } from "./lib/supabaseClient";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
+  const [supabaseProducts, setSupabaseProducts] = useState([]);
+
   const [cartItems, setCartItems] = useState(() => {
     const savedCart = localStorage.getItem("@ga-brasil:cart");
-
-    if (savedCart) {
-      return JSON.parse(savedCart);
-    }
-
-    return [];
+    return savedCart ? JSON.parse(savedCart) : [];
   });
+
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+
   const [favoriteIds, setFavoriteIds] = useState(() => {
     const savedFavorites = localStorage.getItem("@ga-brasil:favorites");
+    return savedFavorites ? JSON.parse(savedFavorites) : [];
+  });
 
-    if (savedFavorites) {
-      return JSON.parse(savedFavorites);
+  useEffect(() => {
+    async function loadProducts() {
+      const { data, error } = await supabase.from("products").select("*");
+
+      if (error) {
+        console.log(error);
+        return;
+      }
+
+      const formattedProducts = (data || []).map((product) => ({
+        ...product,
+        oldPrice: product.old_price,
+        isNew: product.is_new,
+        gallery: product.gallery || [],
+      }));
+
+      setSupabaseProducts(formattedProducts);
     }
 
-    return [];
-  });
+    loadProducts();
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("@ga-brasil:cart", JSON.stringify(cartItems));
@@ -49,7 +69,6 @@ function App() {
     }
 
     setIsCartOpen(true);
-
     setToastMessage(`${product.name} adicionado ao carrinho`);
 
     setTimeout(() => {
@@ -99,6 +118,7 @@ function App() {
     removeFromCart,
     favoriteIds,
     toggleFavorite,
+    supabaseProducts,
   };
 
   return (
@@ -106,6 +126,17 @@ function App() {
       <Route
         path="/"
         element={<Home {...cartProps} toastMessage={toastMessage} />}
+      />
+
+      <Route path="/admin/login" element={<AdminLogin />} />
+
+      <Route
+        path="/admin/dashboard"
+        element={
+          <ProtectedRoute>
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
       />
     </Routes>
   );

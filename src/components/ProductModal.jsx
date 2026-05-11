@@ -1,7 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function ProductModal({ product, onClose, addToCart }) {
   const [selectedImage, setSelectedImage] = useState("");
+
+  useEffect(() => {
+    if (product) {
+      setSelectedImage(product.image || "");
+    }
+  }, [product]);
 
   if (!product) return null;
 
@@ -61,8 +67,14 @@ function ProductModal({ product, onClose, addToCart }) {
           </div>
 
           <div className="detailsPrice">
-            <small>R$ {product.oldPrice.toFixed(2).replace(".", ",")}</small>
-            <strong>R$ {product.price.toFixed(2).replace(".", ",")}</strong>
+            {product.oldPrice && (
+              <small>
+                R$ {Number(product.oldPrice).toFixed(2).replace(".", ",")}
+              </small>
+            )}
+            <strong>
+              R$ {Number(product.price).toFixed(2).replace(".", ",")}
+            </strong>
             <em>{product.installment}</em>
           </div>
 

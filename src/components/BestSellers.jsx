@@ -1,14 +1,14 @@
 import ProductCard from "./ProductCard";
-import { products } from "../data/products";
 
 function BestSellers({
+  products,
   addToCart,
   setSelectedProduct,
   favoriteIds,
   toggleFavorite,
 }) {
-  const bestSellers = products.filter((product) => product.featured);
-
+  const bestSellers = products.slice(0, 4);
+  
   return (
     <section className="bestSellersSection">
       <div className="sectionTitle">
