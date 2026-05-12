@@ -649,6 +649,8 @@ html {
   width: min(980px, 100%);
   max-height: 92vh;
   overflow-y: auto;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
   overflow-x: hidden;
 
   scrollbar-width: none;
@@ -705,7 +707,7 @@ html {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  overflow-y: auto;
+  overflow: visible;
   padding-right: 6px;
 }
 
@@ -2431,10 +2433,6 @@ section {
   display: none;
 }
 
-.brandsSection {
-  margin-top: 80px;
-}
-
 .sectionEyebrow {
   display: inline-flex;
   align-items: center;
@@ -2456,88 +2454,6 @@ section {
   border: 1px solid rgba(194, 24, 91, 0.12);
 
   margin-bottom: 18px;
-}
-
-.brandsGrid {
-  margin-top: 28px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 18px;
-}
-
-.brandCard {
-  position: relative;
-
-  min-height: 150px;
-
-  border-radius: 34px;
-
-  overflow: hidden;
-
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.95),
-    rgba(255, 244, 250, 0.92),
-    rgba(247, 243, 255, 0.92)
-  );
-
-  border: 1px solid rgba(11, 31, 143, 0.08);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-
-  box-shadow:
-    0 22px 50px rgba(11, 31, 143, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-
-  transition: 0.32s ease;
-}
-
-.brandCard:hover {
-  transform: translateY(-8px) scale(1.02);
-
-  box-shadow: 0 30px 70px rgba(194, 24, 91, 0.14);
-
-  border-color: rgba(194, 24, 91, 0.16);
-}
-
-.brandCard::before {
-  content: "";
-
-  position: absolute;
-
-  width: 160px;
-  height: 160px;
-
-  border-radius: 50%;
-
-  background: radial-gradient(rgba(194, 24, 91, 0.12), transparent 70%);
-
-  top: -60px;
-  right: -60px;
-}
-
-.brandCard span {
-  font-size: 14px;
-  font-weight: 800;
-  color: #c2185b;
-
-  text-transform: uppercase;
-  letter-spacing: 1px;
-
-  margin-bottom: 10px;
-}
-
-.brandCard strong {
-  color: var(--primary-blue);
-
-  font-size: 32px;
-  font-weight: 950;
-
-  position: relative;
-  z-index: 2;
 }
 
 @media (max-width: 900px) {
@@ -2888,4 +2804,428 @@ section {
 .deleteButton:hover {
   background: #dc2626;
   color: white;
+}
+
+@media (max-width: 768px) {
+  .productModalBackdrop {
+    align-items: flex-start;
+    padding: 12px;
+    overflow-y: auto;
+  }
+
+  .productModal {
+    width: 100%;
+    max-height: none;
+    min-height: auto;
+    overflow: visible;
+    grid-template-columns: 1fr;
+    border-radius: 26px;
+    padding: 18px;
+    margin: 12px 0;
+  }
+
+  .modalGallery {
+    width: 100%;
+  }
+
+  .modalImage {
+    min-height: 260px;
+    height: 260px;
+  }
+
+  .modalInfo {
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  .detailsAddButton {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .productModalBackdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    padding: 10px !important;
+
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .productModal {
+    width: 100% !important;
+    max-width: calc(100vw - 20px) !important;
+    min-width: 0 !important;
+
+    max-height: none !important;
+    height: auto !important;
+
+    margin: 10px auto 28px !important;
+    padding: 16px !important;
+
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+
+    overflow: visible !important;
+    border-radius: 24px !important;
+  }
+
+  .modalGallery,
+  .modalInfo,
+  .modalImage,
+  .modalThumbnails {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .modalImage {
+    height: 260px !important;
+    min-height: 260px !important;
+  }
+
+  .modalInfo {
+    overflow: visible !important;
+  }
+
+  .modalInfo h2,
+  .modalInfo p {
+    max-width: 100% !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .modalThumbnails {
+    display: flex !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding-bottom: 6px !important;
+  }
+
+  .modalThumbnails button {
+    flex: 0 0 82px !important;
+  }
+}
+
+.brands {
+  padding: 72px 6% 48px;
+  background: linear-gradient(180deg, #f7efff 0%, #fbf8ff 100%);
+}
+
+.brands .sectionTitle {
+  margin-bottom: 28px;
+}
+
+.brands .sectionTitle h2 {
+  font-size: clamp(28px, 3vw, 42px);
+}
+
+.brands .sectionTitle p {
+  color: #4b5563;
+  max-width: 720px;
+  margin-top: 8px;
+}
+
+.categories {
+  padding-top: 52px;
+}
+
+@media (max-width: 900px) {
+  .brandGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .brands {
+    padding: 56px 5% 34px;
+  }
+}
+
+@media (max-width: 520px) {
+  .brandGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .brandCard {
+    min-height: 96px;
+  }
+}
+
+@keyframes brandsScroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 768px) {
+  .brandCard {
+    min-width: 220px;
+  }
+}
+
+.brandsSection .sectionEyebrow,
+.brandsSection .sectionTitle {
+  margin-left: 6%;
+  margin-right: 6%;
+}
+
+@keyframes brandsScroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.brandsSection {
+  margin-top: 80px;
+  padding: 72px 0 56px;
+  background: transparent;
+  overflow: hidden;
+}
+
+.brandsSection .sectionEyebrow,
+.brandsSection .sectionTitle {
+  margin-left: 6%;
+  margin-right: 6%;
+}
+
+.brandsCarousel {
+  margin-top: 28px;
+  width: 100%;
+  overflow: hidden;
+  padding: 24px 0 34px;
+  background: transparent;
+}
+
+.brandsTrack {
+  display: flex;
+  gap: 18px;
+  width: max-content;
+  padding: 8px 0;
+  animation: brandsScroll 36s linear infinite;
+}
+
+.brandsTrack:hover {
+  animation-play-state: paused;
+}
+
+.brandCard {
+  flex: 0 0 280px;
+  min-height: 118px;
+  border-radius: 28px;
+  padding: 24px 18px;
+
+  background: linear-gradient(135deg, #ffffff 0%, #fff7fb 100%);
+  border: 1px solid rgba(221, 214, 254, 0.9);
+  box-shadow: 0 18px 42px rgba(11, 31, 143, 0.08);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  transition: 0.25s ease;
+}
+
+.brandCard:hover {
+  transform: translateY(-4px);
+}
+
+.brandCard span {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #c2185b;
+  margin-bottom: 12px;
+}
+
+.brandCard strong {
+  font-size: 30px;
+  color: var(--primary-blue);
+  text-align: center;
+  line-height: 1.05;
+}
+
+@keyframes brandsScroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 768px) {
+  .brandsSection {
+    margin-top: 60px;
+    padding: 56px 0 42px;
+  }
+
+  .brandCard {
+    flex-basis: 220px;
+    min-height: 100px;
+  }
+
+  .brandCard strong {
+    font-size: 24px;
+  }
+}
+
+.brandsSection .sectionTitle {
+  width: min(1180px, 88%);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.brandsSection .sectionEyebrow {
+  width: fit-content;
+  margin-left: 6%;
+  margin-right: 0;
+}
+
+.brandsSection .sectionTitle {
+  display: block;
+}
+
+.brandsSection .sectionTitle h2 {
+  max-width: 760px;
+  font-size: clamp(32px, 4vw, 56px);
+  line-height: 1.02;
+  letter-spacing: -2px;
+  margin-bottom: 12px;
+}
+
+.brandsSection .sectionTitle p {
+  max-width: 620px;
+  font-size: 17px;
+  line-height: 1.65;
+  color: #5f6678;
+}
+
+.brandsCarousel {
+  margin-top: 44px;
+  width: 100%;
+  overflow: hidden;
+  padding: 12px 0 36px;
+  position: relative;
+}
+
+.brandsCarousel::before,
+.brandsCarousel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 120px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.brandsCarousel::before {
+  left: 0;
+  background: linear-gradient(90deg, #f6eaff, transparent);
+}
+
+.brandsCarousel::after {
+  right: 0;
+  background: linear-gradient(270deg, #f6eaff, transparent);
+}
+
+.brandsTrack {
+  display: flex;
+  gap: 18px;
+  width: max-content;
+  padding: 8px 0;
+  animation: brandsScroll 38s linear infinite;
+}
+
+.brandCard {
+  flex: 0 0 260px;
+  min-height: 104px;
+  border-radius: 26px;
+  padding: 22px 18px;
+}
+
+.brandCard span {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  margin-bottom: 10px;
+}
+
+.brandCard strong {
+  font-size: 26px;
+  letter-spacing: -0.8px;
+}
+
+@media (max-width: 768px) {
+  .brandsSection {
+    padding: 52px 0 44px;
+  }
+}
+
+.sectionEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 10px 16px;
+
+  border-radius: 999px;
+
+  background: rgba(194, 24, 91, 0.08);
+
+  color: #c2185b;
+
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+
+  border: 1px solid rgba(194, 24, 91, 0.12);
+
+  margin-bottom: 18px;
+}
+.brandsSection .sectionTitle h2 {
+  font-size: 32px;
+  letter-spacing: -1px;
+}
+
+.brandsSection .sectionTitle p {
+  font-size: 15px;
+}
+
+.brandsCarousel::before,
+.brandsCarousel::after {
+  width: 48px;
+}
+
+.brandCard {
+  flex-basis: 210px;
+  min-height: 92px;
+}
+
+.brandCard strong {
+  font-size: 22px;
+}
+
+.brandsSection .sectionEyebrow,
+.brandsSection .sectionTitle {
+  margin-left: 6%;
+  margin-right: 6%;
 }

@@ -1,28 +1,39 @@
-const brands = ["Ruby Rose", "Belle Angel", "Macrilan", "Max Love"];
+const brands = [
+  "Max Love",
+  "Mahav",
+  "Fenzza",
+  "Febella",
+  "Face Beautiful",
+  "Vivai",
+  "Kyrav",
+  "Miss France",
+  "Lady Beauty",
+  "4Angels",
+];
 
 function Brands() {
   return (
-    <section className="brandSection">
-      <div className="sectionTItle">
+    <section className="brandsSection">
+      <span className="sectionEyebrow">✨ Marcas parceiras</span>
+
+      <div className="sectionTitle">
         <div>
-          <span className="sectionEyebrow">✨ Marcas parceiras</span>
-
-          <h2>Trabalhamos com marcas que fazem sucesso no mercado</h2>
-
+          <h2>Trabalhamos com marcas reconhecidas no mercado</h2>
           <p>
-            Produtos de marcas reconhecidas por lojistas, maquiadores e
-            revendedores em todo o Brasil.
+            Produtos selecionados de marcas parceiras para lojas, profissionais e revendedoras.
           </p>
         </div>
       </div>
 
-      <div className="brandsGrid">
-        {brands.map((brand) => (
-          <div className="brandCard" key={brand}>
-            <span>Parceira</span>
-            <strong>{brand}</strong>
-          </div>
-        ))}
+      <div className="brandsCarousel">
+        <div className="brandsTrack">
+          {[...brands, ...brands].map((brand, index) => (
+            <div className="brandCard" key={`${brand}-${index}`}>
+              <span>Parceira</span>
+              <strong>{brand}</strong>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
