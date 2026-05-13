@@ -9,6 +9,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   const [supabaseProducts, setSupabaseProducts] = useState([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
 
   const [cartItems, setCartItems] = useState(() => {
     const savedCart = localStorage.getItem("@ga-brasil:cart");
@@ -40,6 +41,7 @@ function App() {
       }));
 
       setSupabaseProducts(formattedProducts);
+      setIsLoadingProducts(false);
     }
 
     loadProducts();
@@ -119,6 +121,7 @@ function App() {
     favoriteIds,
     toggleFavorite,
     supabaseProducts,
+    isLoadingProducts,
   };
 
   return (

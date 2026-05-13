@@ -1,5 +1,6 @@
 import Header from "../components/Header.jsx";
 import ProductCard from "../components/ProductCard.jsx";
+import ProductCardSkeleton from "../components/ProductCardSkeleton.jsx";
 import CartDrawer from "../components/CartDrawer";
 import { useState } from "react";
 import ProductModal from "../components/ProductModal";
@@ -23,6 +24,7 @@ function Home({
   toggleFavorite,
   toastMessage,
   supabaseProducts,
+  isLoadingProducts,
 }) {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -32,6 +34,24 @@ function Home({
   const productsTitleRef = useScrollReveal();
 
   const productsToShow = supabaseProducts;
+
+  const categories = [
+    "Todos",
+    ...Array.from(new Set(productsToShow.map((p) => p.category).filter(Boolean))),
+  ];
+
+  const categoryIcons = {
+    Todos: "✨",
+    Batons: "💄",
+    Bases: "✨",
+    Paletas: "🎨",
+    "Pincéis": "🖌️",
+  };
+
+  const countByCategory = productsToShow.reduce((acc, p) => {
+    acc[p.category] = (acc[p.category] || 0) + 1;
+    return acc;
+  }, {});
 
   const filteredProducts = productsToShow.filter((product) => {
     const search = searchTerm.toLowerCase();
@@ -105,40 +125,19 @@ function Home({
           </div>
 
           <div className="categoryGrid">
-            <button
-              className={selectedCategory === "Todos" ? "activeCategory" : ""}
-              onClick={() => setSelectedCategory("Todos")}
-            >
-              ✨ Todos
-            </button>
-
-            <button
-              className={selectedCategory === "Batons" ? "activeCategory" : ""}
-              onClick={() => setSelectedCategory("Batons")}
-            >
-              💄 Batons
-            </button>
-
-            <button
-              className={selectedCategory === "Bases" ? "activeCategory" : ""}
-              onClick={() => setSelectedCategory("Bases")}
-            >
-              ✨ Bases
-            </button>
-
-            <button
-              className={selectedCategory === "Paletas" ? "activeCategory" : ""}
-              onClick={() => setSelectedCategory("Paletas")}
-            >
-              🎨 Paletas
-            </button>
-
-            <button
-              className={selectedCategory === "Pincéis" ? "activeCategory" : ""}
-              onClick={() => setSelectedCategory("Pincéis")}
-            >
-              🖌️ Pincéis
-            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                className={selectedCategory === cat ? "activeCategory" : ""}
+                onClick={() => setSelectedCategory(cat)}
+              >
+                <span className="catIcon">{categoryIcons[cat] ?? "🏷️"}</span>
+                <span>{cat}</span>
+                <span className="catCount">
+                  {cat === "Todos" ? productsToShow.length : (countByCategory[cat] ?? 0)}
+                </span>
+              </button>
+            ))}
           </div>
         </section>
 
@@ -149,22 +148,30 @@ function Home({
           </div>
 
           <div className="productGrid">
-            {filteredProducts.length === 0 && (
-              <div className="emptySearch">
-                <h3>Nenhum produto encontrado</h3>
-                <p>Tente buscar por outro nome ou marca.</p>
-              </div>
+            {isLoadingProducts ? (
+              Array.from({ length: 8 }).map((_, i) => (
+                <ProductCardSkeleton key={i} />
+              ))
+            ) : (
+              <>
+                {filteredProducts.length === 0 && (
+                  <div className="emptySearch">
+                    <h3>Nenhum produto encontrado</h3>
+                    <p>Tente buscar por outro nome ou marca.</p>
+                  </div>
+                )}
+                {filteredProducts.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    addToCart={addToCart}
+                    onOpenDetails={setSelectedProduct}
+                    favoriteIds={favoriteIds}
+                    toggleFavorite={toggleFavorite}
+                  />
+                ))}
+              </>
             )}
-            {filteredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                addToCart={addToCart}
-                onOpenDetails={setSelectedProduct}
-                favoriteIds={favoriteIds}
-                toggleFavorite={toggleFavorite}
-              />
-            ))}
           </div>
         </section>
       </main>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Search, ShoppingBag, Menu, X } from "lucide-react";
 import logo from "../assets/ga-brasil.png";
 
@@ -12,6 +12,17 @@ function Header({
 }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const searchBoxRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (searchBoxRef.current && !searchBoxRef.current.contains(e.target)) {
+        setSearchTerm("");
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [setSearchTerm]);
 
   const totalItems = cartItems.reduce(
     (total, item) => total + item.quantity,
@@ -59,34 +70,58 @@ function Header({
         </div>
       </div>
 
-      <div className={`searchBox ${isSearchOpen ? "searchOpen" : ""}`}>
-        <input
-          type="text"
-          placeholder="Buscar produtos ou marcas..."
-          value={searchTerm}
-          onChange={(event) => setSearchTerm(event.target.value)}
-        />
+      <div ref={searchBoxRef} className={`searchBox ${isSearchOpen ? "searchOpen" : ""}`}>
+        <div className="searchInputWrapper">
+          <Search size={16} className="searchIcon" />
+          <input
+            type="text"
+            placeholder="Buscar produtos ou marcas..."
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+          />
+          {searchTerm && (
+            <button className="searchClear" onClick={() => setSearchTerm("")}>
+              <X size={14} />
+            </button>
+          )}
+        </div>
 
-        {searchTerm && searchResults.length > 0 && (
+        {searchTerm && (
           <div className="searchResults">
-            {searchResults.slice(0, 4).map((product) => (
-              <button
-                key={product.id}
-                onClick={() => {
-                  onOpenProduct(product);
-                  setSearchTerm("");
-                }}
-              >
-                <img src={product.image} alt={product.name} />
+            {searchResults.length === 0 ? (
+              <div className="searchEmpty">
+                <span>😕</span>
+                <p>Nenhum produto encontrado para <strong>"{searchTerm}"</strong></p>
+              </div>
+            ) : (
+              <>
+                {searchResults.slice(0, 5).map((product) => (
+                  <button
+                    key={product.id}
+                    onClick={() => {
+                      onOpenProduct(product);
+                      setSearchTerm("");
+                    }}
+                  >
+                    <img src={product.image} alt={product.name} />
 
-                <div>
-                  <strong>{product.name}</strong>
-                  <span>{product.brand}</span>
-                </div>
+                    <div>
+                      <strong>{product.name}</strong>
+                      <span>{product.brand}{product.category ? ` · ${product.category}` : ""}</span>
+                    </div>
 
-                <small>R$ {product.price.toFixed(2).replace(".", ",")}</small>
-              </button>
-            ))}
+                    <small>R$ {product.price.toFixed(2).replace(".", ",")}</small>
+                  </button>
+                ))}
+
+                {searchResults.length > 5 && (
+                  <div className="searchFooter">
+                    <span>{searchResults.length} resultados</span>
+                    <a href="#produtos" onClick={() => setSearchTerm("")}>Ver todos</a>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         )}
       </div>
