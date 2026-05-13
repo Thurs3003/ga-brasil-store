@@ -1,21 +1,31 @@
+import { useScrollReveal } from '../hooks/useScrollReveal';
+
 function ProductCard({
   product,
   addToCart,
   onOpenDetails,
   favoriteIds,
   toggleFavorite,
+  revealDelay = 0,
 }) {
   const isFavorite = favoriteIds.includes(product.id);
+  const ref = useScrollReveal();
+
+  const oldPrice = product.old_price || product.oldPrice;
 
   const discount =
-    product.oldPrice && product.oldPrice > 0
+    oldPrice && oldPrice > 0
       ? Math.round(
-          ((product.oldPrice - product.price) / product.oldPrice) * 100,
+          ((oldPrice - product.price) / oldPrice) * 100,
         )
       : null;
 
   return (
-    <div className="productCard">
+    <div
+      ref={ref}
+      className="productCard reveal"
+      style={revealDelay ? { '--reveal-delay': `${revealDelay}s` } : undefined}
+    >
       <div className="productImage">
         <img
           src={product.image}
@@ -35,11 +45,6 @@ function ProductCard({
           {isFavorite ? "♥" : "♡"}
         </button>
 
-        <div className="overlay">
-          <button onClick={() => addToCart(product)}>
-            Adicionar ao carrinho
-          </button>
-        </div>
       </div>
 
       <div className="productInfo">
@@ -61,6 +66,10 @@ function ProductCard({
         </div>
 
         <p className="stockInfo">Em estoque • {product.stock} unidades</p>
+
+        <button className="cardAddButton" onClick={() => addToCart(product)}>
+          Adicionar ao carrinho
+        </button>
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import { useScrollReveal } from '../hooks/useScrollReveal';
 import ProductCard from "./ProductCard";
 
 function BestSellers({
@@ -7,11 +8,12 @@ function BestSellers({
   favoriteIds,
   toggleFavorite,
 }) {
+  const titleRef = useScrollReveal();
   const bestSellers = products.slice(0, 4);
-  
+
   return (
     <section className="bestSellersSection">
-      <div className="sectionTitle">
+      <div ref={titleRef} className="sectionTitle reveal">
         <div>
           <span className="sectionEyebrow">Destaques da loja</span>
           <h2>Mais vendidos</h2>
@@ -21,7 +23,7 @@ function BestSellers({
       </div>
 
       <div className="productGrid">
-        {bestSellers.map((product) => (
+        {bestSellers.map((product, index) => (
           <ProductCard
             key={product.id}
             product={product}
@@ -29,6 +31,7 @@ function BestSellers({
             onOpenDetails={setSelectedProduct}
             favoriteIds={favoriteIds}
             toggleFavorite={toggleFavorite}
+            revealDelay={index * 0.12}
           />
         ))}
       </div>

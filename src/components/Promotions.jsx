@@ -1,6 +1,10 @@
+import { useScrollReveal } from '../hooks/useScrollReveal';
+
 function Promotions() {
+  const ref = useScrollReveal();
+
   return (
-    <section id="promocoes" className="promotions">
+    <section ref={ref} id="promocoes" className="promotions reveal">
       <div className="promotionBanner">
         <div className="promotionText">
           <span>🔥 Semana da Beleza</span>

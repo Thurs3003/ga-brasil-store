@@ -1,3 +1,5 @@
+import { useScrollReveal } from '../hooks/useScrollReveal';
+
 const brands = [
   "Max Love",
   "Mahav",
@@ -12,8 +14,10 @@ const brands = [
 ];
 
 function Brands() {
+  const ref = useScrollReveal();
+
   return (
-    <section className="brandsSection">
+    <section ref={ref} className="brandsSection reveal">
       <span className="sectionEyebrow">✨ Marcas parceiras</span>
 
       <div className="sectionTitle">

@@ -9,6 +9,7 @@ import HeroCarousel from "../components/HeroCarousel";
 import SocialProof from "../components/SocialProof";
 import Brands from "../components/Brands";
 import BestSellers from "../components/BestSellers";
+import { useScrollReveal } from "../hooks/useScrollReveal";
 
 function Home({
   cartItems,
@@ -26,6 +27,9 @@ function Home({
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todos");
+
+  const categoriesRef = useScrollReveal();
+  const productsTitleRef = useScrollReveal();
 
   const productsToShow = supabaseProducts;
 
@@ -95,7 +99,7 @@ function Home({
           </section>
         )}
 
-        <section id="categorias" className="categories">
+        <section ref={categoriesRef} id="categorias" className="categories reveal">
           <div className="sectionTitle">
             <h2>Categorias</h2>
           </div>
@@ -139,7 +143,7 @@ function Home({
         </section>
 
         <section id="produtos" className="products">
-          <div className="sectionTitle">
+          <div ref={productsTitleRef} className="sectionTitle reveal">
             <h2>Produtos em destaque</h2>
             <a href="#">Ver todos</a>
           </div>

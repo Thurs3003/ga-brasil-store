@@ -92,11 +92,11 @@ function HeroCarousel() {
     >
       <div className="heroCarouselContent">
         <div className="heroCarouselText">
-          <span>{slide.eyebrow}</span>
-          <h1>{slide.title}</h1>
-          <p>{slide.description}</p>
+          <span key={`eyebrow-${currentSlide}`} className="heroSlideIn" style={{ animationDelay: "0s" }}>{slide.eyebrow}</span>
+          <h1 key={`title-${currentSlide}`} className="heroSlideIn" style={{ animationDelay: "0.08s" }}>{slide.title}</h1>
+          <p key={`desc-${currentSlide}`} className="heroSlideIn" style={{ animationDelay: "0.16s" }}>{slide.description}</p>
 
-          <div className="heroButtons">
+          <div key={`btns-${currentSlide}`} className="heroButtons heroSlideIn" style={{ animationDelay: "0.24s" }}>
             <a href={slide.link}>{slide.button}</a>
             <a className="outline" href="#contato">
               Falar no WhatsApp
@@ -105,7 +105,8 @@ function HeroCarousel() {
         </div>
 
         <div
-          className="heroCarouselImage"
+          key={`img-${currentSlide}`}
+          className="heroCarouselImage heroImageReveal"
           style={{ backgroundImage: `url(${slide.image})` }}
         >
           <div className="heroCarouselBadge">
