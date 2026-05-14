@@ -10,7 +10,6 @@ function Header({
   searchTerm,
   setSearchTerm,
   searchResults,
-  onOpenProduct,
 }) {
   const { user, profile, signOut } = useUser();
   const navigate = useNavigate();

@@ -138,7 +138,7 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
   if (loading || isLoadingProducts) {
     return (
       <>
-        <Header cartItems={cartItems} setIsCartOpen={setIsCartOpen} searchTerm={searchTerm} setSearchTerm={setSearchTerm} searchResults={[]} onOpenProduct={() => {}} />
+        <Header cartItems={cartItems} setIsCartOpen={setIsCartOpen} searchTerm={searchTerm} setSearchTerm={setSearchTerm} searchResults={[]} />
         <div className="productPageLoading"><span className="adminSpinner large" /><p>Carregando produto...</p></div>
         <Footer />
       </>
@@ -201,7 +201,7 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
         <meta name="twitter:image" content={product.image} />
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
-      <Header cartItems={cartItems} setIsCartOpen={setIsCartOpen} searchTerm={searchTerm} setSearchTerm={setSearchTerm} searchResults={[]} onOpenProduct={() => {}} />
+      <Header cartItems={cartItems} setIsCartOpen={setIsCartOpen} searchTerm={searchTerm} setSearchTerm={setSearchTerm} searchResults={[]} />
 
       <main className="productPage">
         <div className="productPageInner">

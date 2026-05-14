@@ -38,10 +38,7 @@ function App() {
     async function loadProducts() {
       const { data, error } = await supabase.from("products").select("*");
 
-      if (error) {
-        console.log(error);
-        return;
-      }
+      if (error) return;
 
       const formattedProducts = (data || []).map((product) => ({
         ...product,

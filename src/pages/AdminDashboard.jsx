@@ -269,16 +269,13 @@ function AdminDashboard() {
     };
 
     if (editingProductId) {
-      console.log("[GA Brasil] UPDATE payload:", payload);
       const { error } = await supabase.from("products").update(payload).eq("id", editingProductId);
       if (error) {
-        console.error("[GA Brasil] Erro ao atualizar:", error);
         showToast(`Erro: ${error.message}`, "error");
       } else { showToast("Produto atualizado com sucesso!"); resetForm(); }
     } else {
       const { error } = await supabase.from("products").insert([{ ...payload, is_new: true }]);
       if (error) {
-        console.error("[GA Brasil] Erro ao cadastrar:", error);
         showToast(`Erro: ${error.message}`, "error");
       } else { showToast("Produto cadastrado com sucesso!"); resetForm(); }
     }
@@ -426,7 +423,6 @@ function AdminDashboard() {
       .select("*")
       .order("created_at", { ascending: false });
     if (error) {
-      console.error("[GA Brasil] Erro ao carregar pedidos:", error.message);
       showToast(`Erro ao carregar pedidos: ${error.message}`, "error");
     } else {
       setOrders(data || []);
@@ -588,14 +584,7 @@ function AdminDashboard() {
         showToast("📲 Cliente abriu o WhatsApp para finalizar um pedido!", "success");
         playNotificationSound();
       })
-      .subscribe((status, err) => {
-        if (status === "SUBSCRIBED") {
-          console.log("[GA Brasil] Realtime conectado — aguardando novos pedidos");
-        }
-        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-          console.error("[GA Brasil] Realtime erro:", err?.message || status);
-        }
-      });
+      .subscribe();
     return () => supabase.removeChannel(channel);
   }, []);
 

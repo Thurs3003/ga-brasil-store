@@ -101,7 +101,6 @@ function Home({
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         searchResults={filteredProducts}
-        onOpenProduct={setSelectedProduct}
       />
 
       <main>

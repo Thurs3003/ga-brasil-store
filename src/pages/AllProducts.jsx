@@ -110,7 +110,6 @@ function AllProducts({
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         searchResults={filtered}
-        onOpenProduct={setSelectedProduct}
       />
 
       <main className="catalogPage">
