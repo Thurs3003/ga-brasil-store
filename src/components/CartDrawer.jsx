@@ -2,8 +2,35 @@ import { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { getOrdersWA, buildWAUrl } from "../lib/whatsapp";
 
-const FREIGHT = {
-  SP: { price: 0,  days: "1-2 dias úteis",  label: "Grátis" },
+// CEP de origem da loja: 01027-001 — São Paulo, SP
+const STORE_LAT = -23.5414;
+const STORE_LNG = -46.6353;
+
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const toRad = (d) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+}
+
+function rateByDistance(km) {
+  if (km <= 50)   return { price: 0,  days: "1-2 dias úteis" };
+  if (km <= 150)  return { price: 15, days: "2-3 dias úteis" };
+  if (km <= 300)  return { price: 22, days: "2-3 dias úteis" };
+  if (km <= 600)  return { price: 32, days: "3-5 dias úteis" };
+  if (km <= 1000) return { price: 42, days: "4-6 dias úteis" };
+  if (km <= 1500) return { price: 52, days: "5-8 dias úteis" };
+  if (km <= 2500) return { price: 62, days: "7-10 dias úteis" };
+  return { price: 75, days: "10-14 dias úteis" };
+}
+
+// Fallback por UF caso o geocoding falhe
+const FREIGHT_FALLBACK = {
+  SP: { price: 0,  days: "1-2 dias úteis" },
   RJ: { price: 22, days: "2-3 dias úteis" },
   MG: { price: 18, days: "2-3 dias úteis" },
   ES: { price: 28, days: "3-4 dias úteis" },
@@ -57,13 +84,31 @@ function CartDrawer({
     setFreightError("");
     setFreight(null);
     try {
-      const res = await fetch(`https://viacep.com.br/ws/${cleaned}/json/`);
-      const data = await res.json();
-      if (data.erro) { setFreightError("CEP não encontrado."); setFreightLoading(false); return; }
-      const rate = FREIGHT[data.uf] || { price: 50, days: "5-10 dias úteis" };
-      setFreight({ ...rate, city: data.localidade, state: data.uf });
+      // 1. Buscar cidade/estado do CEP
+      const cepRes = await fetch(`https://viacep.com.br/ws/${cleaned}/json/`);
+      const cepData = await cepRes.json();
+      if (cepData.erro) { setFreightError("CEP não encontrado."); setFreightLoading(false); return; }
+
+      // 2. Buscar coordenadas do CEP via Nominatim (OpenStreetMap)
+      const geoRes = await fetch(
+        `https://nominatim.openstreetmap.org/search?postalcode=${cleaned}&country=Brazil&format=json&limit=1`,
+        { headers: { "Accept-Language": "pt-BR", "User-Agent": "GABrasilStore/1.0" } }
+      );
+      const geoData = await geoRes.json();
+
+      if (!geoData.length) {
+        // Fallback por estado quando o geocoding não retorna resultado
+        const rate = FREIGHT_FALLBACK[cepData.uf] || { price: 50, days: "5-10 dias úteis" };
+        setFreight({ ...rate, city: cepData.localidade, state: cepData.uf, km: null });
+        setFreightLoading(false);
+        return;
+      }
+
+      const km = haversineKm(STORE_LAT, STORE_LNG, parseFloat(geoData[0].lat), parseFloat(geoData[0].lon));
+      const rate = rateByDistance(km);
+      setFreight({ ...rate, city: cepData.localidade, state: cepData.uf, km });
     } catch {
-      setFreightError("Erro ao consultar CEP. Tente novamente.");
+      setFreightError("Erro ao calcular frete. Tente novamente.");
     }
     setFreightLoading(false);
   }
@@ -82,7 +127,7 @@ function CartDrawer({
     const { error: orderError } = await supabase.from("orders").insert([{
       items: orderItems,
       total,
-      status: "novo",
+      status: "aguardando",
       user_id: user?.id || null,
     }]);
     if (orderError) {
@@ -198,7 +243,10 @@ Aguardo as informações para pagamento e entrega.`;
                 {freight && (
                   <div className="freightResult">
                     <div className="freightResultLeft">
-                      <span className="freightCity">{freight.city} — {freight.state}</span>
+                      <span className="freightCity">
+                        {freight.city} — {freight.state}
+                        {freight.km != null && <em className="freightKm"> ≈ {freight.km} km</em>}
+                      </span>
                       <span className="freightDays">⏱ {freight.days}</span>
                     </div>
                     <span className="freightPrice">

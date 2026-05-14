@@ -47,7 +47,7 @@ function ProductCard({
     >
       <div className="productImage">
         <Link to={`/produto/${product.id}`}>
-          <img src={product.image} alt={product.name} />
+          <img src={product.image} alt={product.name} loading="lazy" decoding="async" />
         </Link>
 
         {product.featured && <div className="bestSellerBadge">🔥 Mais vendido</div>}

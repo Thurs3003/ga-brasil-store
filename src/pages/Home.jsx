@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import Header from "../components/Header.jsx";
 import ProductCard from "../components/ProductCard.jsx";
 import ProductCardSkeleton from "../components/ProductCardSkeleton.jsx";
@@ -79,6 +80,21 @@ function Home({
 
   return (
     <>
+      <Helmet>
+        <title>G.A Brasil | Distribuidora de Maquiagens e Cosméticos</title>
+        <meta name="description" content="Distribuidora de maquiagens e acessórios para lojistas e revendedores. Batons, bases, paletas, pincéis e muito mais com preços especiais de atacado." />
+        <meta name="keywords" content="maquiagem atacado, distribuidora maquiagem, cosméticos lojistas, revendedores maquiagem, batons, bases, paletas" />
+        <link rel="canonical" href="https://gabrasil.com.br/" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://gabrasil.com.br/" />
+        <meta property="og:title" content="G.A Brasil | Distribuidora de Maquiagens e Cosméticos" />
+        <meta property="og:description" content="Distribuidora de maquiagens e acessórios para lojistas e revendedores. Preços especiais de atacado." />
+        <meta property="og:image" content="https://gabrasil.com.br/preview.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="G.A Brasil | Distribuidora de Maquiagens" />
+        <meta name="twitter:description" content="Distribuidora de maquiagens e acessórios para lojistas e revendedores." />
+        <meta name="twitter:image" content="https://gabrasil.com.br/preview.png" />
+      </Helmet>
       <Header
         cartItems={cartItems}
         setIsCartOpen={setIsCartOpen}

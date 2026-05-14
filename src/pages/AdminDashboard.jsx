@@ -66,7 +66,8 @@ const PRODUCT_TAGS = [
 ];
 
 const ORDER_STATUSES = [
-  { value: "novo",          label: "🆕 Novo",          color: "#3b82f6" },
+  { value: "aguardando",    label: "📲 Aguardando",     color: "#94a3b8" },
+  { value: "novo",          label: "🆕 Novo",           color: "#3b82f6" },
   { value: "em_andamento",  label: "⏳ Em andamento",   color: "#f59e0b" },
   { value: "em_separacao",  label: "📦 Em separação",   color: "#8b5cf6" },
   { value: "enviado",       label: "🚚 Enviado",        color: "#06b6d4" },
@@ -450,11 +451,11 @@ function AdminDashboard() {
   }
 
   async function clearFinishedOrders() {
-    if (!confirm("Excluir todos os pedidos concluídos e cancelados?")) return;
+    if (!confirm("Excluir todos os pedidos concluídos, cancelados e aguardando?")) return;
     const { error } = await supabase.from("orders")
-      .delete().in("status", ["concluido", "cancelado"]);
+      .delete().in("status", ["concluido", "cancelado", "aguardando"]);
     if (error) { showToast("Erro ao limpar pedidos", "error"); }
-    else { showToast("Pedidos concluídos/cancelados removidos!"); loadOrders(); }
+    else { showToast("Pedidos removidos!"); loadOrders(); }
   }
 
   async function clearAllOrders() {
@@ -561,7 +562,7 @@ function AdminDashboard() {
       .channel("orders-realtime")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "orders" }, (payload) => {
         setOrders((prev) => [payload.new, ...prev]);
-        showToast("🛒 Novo pedido recebido!", "success");
+        showToast("📲 Cliente abriu o WhatsApp para finalizar um pedido!", "success");
         playNotificationSound();
       })
       .subscribe((status, err) => {
@@ -582,7 +583,7 @@ function AdminDashboard() {
   const lowStockCount = products.filter((p) => p.stock > 0 && p.stock <= 5).length;
 
   // Orders report
-  const activeOrders = orders.filter((o) => o.status !== "cancelado");
+  const activeOrders = orders.filter((o) => o.status !== "cancelado" && o.status !== "aguardando");
   const totalRevenue = activeOrders.reduce((s, o) => s + Number(o.total || 0), 0);
   const orderCountByStatus = ORDER_STATUSES.reduce((acc, s) => {
     acc[s.value] = orders.filter((o) => o.status === s.value).length;
@@ -989,6 +990,19 @@ function AdminDashboard() {
 
                     {isExpanded && (
                       <div className="orderCardBody">
+                        {order.status === "aguardando" && (
+                          <div className="orderAwaitingBanner">
+                            <p>Cliente abriu o WhatsApp mas ainda não confirmou. Confirme quando receber a mensagem ou descarte se não chegar.</p>
+                            <div className="orderAwaitingActions">
+                              <button className="orderConfirmBtn" onClick={() => updateOrderStatus(order.id, "novo")}>
+                                ✅ Recebi a mensagem — confirmar pedido
+                              </button>
+                              <button className="orderDiscardBtn" onClick={() => updateOrderStatus(order.id, "cancelado")}>
+                                🗑️ Descartar
+                              </button>
+                            </div>
+                          </div>
+                        )}
                         <div className="orderItems">
                           {(order.items || []).map((item, i) => (
                             <div key={i} className="orderItemRow">

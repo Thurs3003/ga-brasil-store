@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
 import ProductCardSkeleton from "../components/ProductCardSkeleton";
@@ -81,8 +82,28 @@ function AllProducts({
       return (a.sort_order ?? 9999) - (b.sort_order ?? 9999);
     });
 
+  const categoryLabel = selectedCategory !== "Todos" ? ` — ${selectedCategory}` : "";
+  const pageTitle = `Catálogo${categoryLabel} | G.A Brasil`;
+  const pageDesc = selectedCategory !== "Todos"
+    ? `Explore nossa linha de ${selectedCategory} com os melhores preços para lojistas e revendedores.`
+    : "Catálogo completo de maquiagens e cosméticos. Batons, bases, paletas, pincéis e muito mais com preços especiais de atacado.";
+
   return (
     <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDesc} />
+        <meta name="keywords" content={`catálogo maquiagem, ${selectedCategory !== "Todos" ? selectedCategory + ", " : ""}distribuidora cosméticos, atacado beleza`} />
+        <link rel="canonical" href="https://gabrasil.com.br/produtos" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://gabrasil.com.br/produtos" />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDesc} />
+        <meta property="og:image" content="https://gabrasil.com.br/preview.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDesc} />
+      </Helmet>
       <Header
         cartItems={cartItems}
         setIsCartOpen={setIsCartOpen}

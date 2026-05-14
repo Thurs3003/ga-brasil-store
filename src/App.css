@@ -3582,6 +3582,7 @@ section {
 
 .orderCard:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
 
+.orderCard.aguardando    { border-left: 4px solid #94a3b8; opacity: 0.85; }
 .orderCard.novo          { border-left: 4px solid #3b82f6; }
 .orderCard.em_andamento  { border-left: 4px solid #f59e0b; }
 .orderCard.em_separacao  { border-left: 4px solid #8b5cf6; }
@@ -3628,6 +3629,52 @@ section {
   border-top: 1.5px solid #f1f5f9;
   background: white;
 }
+
+.orderAwaitingBanner {
+  background: #fef9c3;
+  border: 1.5px solid #fde047;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.orderAwaitingBanner p {
+  font-size: 13px;
+  color: #713f12;
+  margin: 0;
+  line-height: 1.4;
+}
+.orderAwaitingActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.orderConfirmBtn {
+  background: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.orderConfirmBtn:hover { background: #15803d; }
+.orderDiscardBtn {
+  background: white;
+  color: #dc2626;
+  border: 1.5px solid #fca5a5;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s;
+}
+.orderDiscardBtn:hover { background: #fef2f2; border-color: #dc2626; }
 
 .orderItems {
   display: flex;
@@ -4604,6 +4651,51 @@ section {
 
 .authBackLink:hover { color: #6366f1; }
 
+.authFieldLabelRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.authForgotLink {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6366f1;
+  cursor: pointer;
+  text-decoration: none;
+}
+.authForgotLink:hover { text-decoration: underline; }
+
+.authSentIcon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.authSentNote {
+  font-size: 13px;
+  color: #94a3b8;
+  text-align: center;
+  margin: 0 0 20px;
+}
+.authSentNote a { color: #6366f1; font-weight: 600; text-decoration: none; }
+
+.authLinkBtn {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  margin-top: 14px;
+  font-size: 13px;
+  color: #94a3b8;
+  cursor: pointer;
+  text-align: center;
+  font-family: inherit;
+}
+.authLinkBtn:hover { color: #6366f1; }
+
 /* ========================
    HEADER USER MENU
    ======================== */
@@ -4938,6 +5030,7 @@ section {
 
 .freightResultLeft { display: flex; flex-direction: column; gap: 2px; }
 .freightCity { font-size: 13px; font-weight: 700; color: #1e293b; }
+.freightKm { font-size: 11px; font-weight: 400; color: #94a3b8; font-style: normal; }
 .freightDays { font-size: 11px; color: #64748b; }
 
 .freightPrice {
@@ -5272,6 +5365,7 @@ section {
 .productCard {
   position: relative;
   overflow: hidden;
+  contain: layout style;
 
   display: flex;
   flex-direction: column;
@@ -5571,6 +5665,11 @@ section {
   margin-bottom: 0;
 }
 
+.productNameLink {
+  text-decoration: none;
+  color: inherit;
+}
+
 .productInfo h3 {
   min-height: 46px;
   font-size: 20px;
@@ -5719,33 +5818,36 @@ section {
 @media (prefers-reduced-motion: no-preference) {
   .reveal {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(20px);
+    will-change: opacity, transform;
     transition:
-      opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     transition-delay: var(--reveal-delay, 0s);
   }
 
   .reveal.revealed {
     opacity: 1;
     transform: none;
+    will-change: auto;
   }
 
   .revealGroup > .revealItem {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(16px);
+    will-change: opacity, transform;
     transition:
-      opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .revealGroup.revealed > .revealItem { opacity: 1; transform: none; }
+  .revealGroup.revealed > .revealItem { opacity: 1; transform: none; will-change: auto; }
   .revealGroup.revealed > .revealItem:nth-child(1) { transition-delay: 0s; }
-  .revealGroup.revealed > .revealItem:nth-child(2) { transition-delay: 0.10s; }
-  .revealGroup.revealed > .revealItem:nth-child(3) { transition-delay: 0.20s; }
-  .revealGroup.revealed > .revealItem:nth-child(4) { transition-delay: 0.30s; }
-  .revealGroup.revealed > .revealItem:nth-child(5) { transition-delay: 0.40s; }
-  .revealGroup.revealed > .revealItem:nth-child(6) { transition-delay: 0.50s; }
+  .revealGroup.revealed > .revealItem:nth-child(2) { transition-delay: 0.08s; }
+  .revealGroup.revealed > .revealItem:nth-child(3) { transition-delay: 0.16s; }
+  .revealGroup.revealed > .revealItem:nth-child(4) { transition-delay: 0.24s; }
+  .revealGroup.revealed > .revealItem:nth-child(5) { transition-delay: 0.32s; }
+  .revealGroup.revealed > .revealItem:nth-child(6) { transition-delay: 0.40s; }
 }
 
 /* ─── Skeleton Loading ───────────────────────────────────── */

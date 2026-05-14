@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { supabase } from "../lib/supabaseClient";
 import { getSupportWA, buildWAUrl } from "../lib/whatsapp";
 import { addRecentlyViewed } from "../lib/recentlyViewed";
@@ -112,8 +113,12 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
     if (error) { setReviewError("Erro ao enviar avaliação. Tente novamente."); }
     else {
       setReviewSuccess(true);
-      const { data } = await supabase.from("reviews").select("*, profiles(name)").eq("product_id", id).order("created_at", { ascending: false });
-      setReviews(data || []);
+      const [{ data: reviewsData }, { data: updatedProduct }] = await Promise.all([
+        supabase.from("reviews").select("*, profiles(name)").eq("product_id", id).order("created_at", { ascending: false }),
+        supabase.from("products").select("rating").eq("id", id).single(),
+      ]);
+      setReviews(reviewsData || []);
+      if (updatedProduct) setProduct((p) => ({ ...p, rating: updatedProduct.rating }));
     }
     setSubmitting(false);
   }
@@ -146,8 +151,56 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
   const oldPrice = product.old_price || product.oldPrice;
   const discount = oldPrice && oldPrice > 0 ? Math.round(((oldPrice - product.price) / oldPrice) * 100) : null;
 
+  const productUrl = `https://gabrasil.com.br/produto/${product.id}`;
+  const productDesc = product.description
+    ? product.description.slice(0, 155)
+    : `${product.brand} — ${product.name}. Preço especial para lojistas e revendedores. R$ ${Number(product.price).toFixed(2).replace(".", ",")}`;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description || productDesc,
+    brand: { "@type": "Brand", name: product.brand },
+    image: product.image,
+    url: productUrl,
+    offers: {
+      "@type": "Offer",
+      price: product.price,
+      priceCurrency: "BRL",
+      availability: product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      seller: { "@type": "Organization", name: "G.A Brasil" },
+    },
+    ...(avgRating ? {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: avgRating,
+        reviewCount: reviews.length,
+      },
+    } : {}),
+  };
+
   return (
     <>
+      <Helmet>
+        <title>{product.name} — {product.brand} | G.A Brasil</title>
+        <meta name="description" content={productDesc} />
+        <meta name="keywords" content={`${product.name}, ${product.brand}, ${product.category || "maquiagem"}, cosméticos atacado, distribuidora maquiagem`} />
+        <link rel="canonical" href={productUrl} />
+        <meta property="og:type" content="product" />
+        <meta property="og:url" content={productUrl} />
+        <meta property="og:title" content={`${product.name} — ${product.brand} | G.A Brasil`} />
+        <meta property="og:description" content={productDesc} />
+        <meta property="og:image" content={product.image} />
+        <meta property="og:image:alt" content={product.name} />
+        <meta property="product:price:amount" content={product.price} />
+        <meta property="product:price:currency" content="BRL" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${product.name} | G.A Brasil`} />
+        <meta name="twitter:description" content={productDesc} />
+        <meta name="twitter:image" content={product.image} />
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+      </Helmet>
       <Header cartItems={cartItems} setIsCartOpen={setIsCartOpen} searchTerm={searchTerm} setSearchTerm={setSearchTerm} searchResults={[]} onOpenProduct={() => {}} />
 
       <main className="productPage">
@@ -170,7 +223,7 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
             <div className="productPageGallery">
               <div className="productPageMainImage">
                 {discount && <div className="productPageDiscount">-{discount}%</div>}
-                <img src={selectedImage || product.image} alt={product.name} />
+                <img src={selectedImage || product.image} alt={product.name} fetchpriority="high" />
               </div>
               {allImages.length > 1 && (
                 <div className="productPageThumbs">
@@ -180,7 +233,7 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
                       className={`productPageThumb ${selectedImage === img ? "active" : ""}`}
                       onClick={() => setSelectedImage(img)}
                     >
-                      <img src={img} alt={`${product.name} ${i + 1}`} />
+                      <img src={img} alt={`${product.name} ${i + 1}`} loading="lazy" decoding="async" />
                     </button>
                   ))}
                 </div>
@@ -312,7 +365,7 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
               <div className="productPageRelatedGrid">
                 {relatedProducts.map((p) => (
                   <Link key={p.id} to={`/produto/${p.id}`} className="relatedCard">
-                    <img src={p.image} alt={p.name} />
+                    <img src={p.image} alt={p.name} loading="lazy" decoding="async" />
                     <div className="relatedCardInfo">
                       <span>{p.brand}</span>
                       <strong>{p.name}</strong>

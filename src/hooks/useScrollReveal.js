@@ -1,32 +1,35 @@
 import { useEffect, useRef } from 'react';
 
+// Observer singleton — um único observer para toda a página em vez de um por card
+let _observer = null;
+
+function getObserver() {
+  if (!_observer) {
+    _observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+            _observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
+    );
+  }
+  return _observer;
+}
+
 export function useScrollReveal() {
   const ref = useRef(null);
-  const isRevealed = useRef(false);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
-
-    if (isRevealed.current) {
-      el.classList.add('revealed');
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.classList.add('revealed');
-          isRevealed.current = true;
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.12, rootMargin: '0px 0px -48px 0px' }
-    );
-
+    if (!el || el.classList.contains('revealed')) return;
+    const observer = getObserver();
     observer.observe(el);
-    return () => observer.disconnect();
-  });
+    return () => observer.unobserve(el);
+  }, []); // array vazio: roda só na montagem
 
   return ref;
 }

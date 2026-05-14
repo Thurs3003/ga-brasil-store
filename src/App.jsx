@@ -1,17 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import AllProducts from "./pages/AllProducts";
 import ProductPage from "./pages/ProductPage";
 import "./App.css";
 import { supabase } from "./lib/supabaseClient";
-import AdminLogin from "./pages/AdminLogin";
-import AdminDashboard from "./pages/AdminDashboard";
-import CustomerLogin from "./pages/CustomerLogin";
-import CustomerRegister from "./pages/CustomerRegister";
-import MyOrders from "./pages/MyOrders";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useUser } from "./hooks/useUser";
+
+const AdminLogin = lazy(() => import("./pages/AdminLogin"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const CustomerLogin = lazy(() => import("./pages/CustomerLogin"));
+const CustomerRegister = lazy(() => import("./pages/CustomerRegister"));
+const CustomerResetPassword = lazy(() => import("./pages/CustomerResetPassword"));
+const MyOrders = lazy(() => import("./pages/MyOrders"));
 
 function App() {
   const { user, profile } = useUser();
@@ -134,28 +136,31 @@ function App() {
   };
 
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={<Home {...cartProps} toastMessage={toastMessage} />}
-      />
+    <Suspense fallback={<div className="productPageLoading"><span className="adminSpinner large" /></div>}>
+      <Routes>
+        <Route
+          path="/"
+          element={<Home {...cartProps} toastMessage={toastMessage} />}
+        />
 
-      <Route path="/produtos" element={<AllProducts {...cartProps} toastMessage={toastMessage} />} />
-      <Route path="/produto/:id" element={<ProductPage {...cartProps} toastMessage={toastMessage} />} />
-      <Route path="/login" element={<CustomerLogin />} />
-      <Route path="/cadastro" element={<CustomerRegister />} />
-      <Route path="/meus-pedidos" element={<MyOrders />} />
+        <Route path="/produtos" element={<AllProducts {...cartProps} toastMessage={toastMessage} />} />
+        <Route path="/produto/:id" element={<ProductPage {...cartProps} toastMessage={toastMessage} />} />
+        <Route path="/login" element={<CustomerLogin />} />
+        <Route path="/cadastro" element={<CustomerRegister />} />
+        <Route path="/reset-senha" element={<CustomerResetPassword />} />
+        <Route path="/meus-pedidos" element={<MyOrders />} />
 
-      <Route path="/admin/login" element={<AdminLogin />} />
-      <Route
-        path="/admin/dashboard"
-        element={
-          <ProtectedRoute>
-            <AdminDashboard />
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </Suspense>
   );
 }
 
