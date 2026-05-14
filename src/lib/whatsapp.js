@@ -1,11 +1,10 @@
-export const WA_LS_KEY          = "ga_brasil_whatsapp";
-export const WA_SUPPORT_LS_KEY  = "ga_brasil_whatsapp_support";
-export const WA_FOOTER_LS_KEY   = "ga_brasil_whatsapp_footer";
-export const DEFAULT_WA_NUMBER  = "5511975795839";
+import { getSetting, DEFAULT_WA_NUMBER } from "./settings";
 
-export function getOrdersWA()  { return localStorage.getItem(WA_LS_KEY)         || DEFAULT_WA_NUMBER; }
-export function getSupportWA() { return localStorage.getItem(WA_SUPPORT_LS_KEY) || DEFAULT_WA_NUMBER; }
-export function getFooterWA()  { return localStorage.getItem(WA_FOOTER_LS_KEY)  || DEFAULT_WA_NUMBER; }
+export { DEFAULT_WA_NUMBER };
+
+export function getOrdersWA()  { return getSetting("wa_orders",  DEFAULT_WA_NUMBER); }
+export function getSupportWA() { return getSetting("wa_support", DEFAULT_WA_NUMBER); }
+export function getFooterWA()  { return getSetting("wa_footer",  DEFAULT_WA_NUMBER); }
 
 export function buildWAUrl(number, text) {
   return `https://wa.me/${number}${text ? `?text=${encodeURIComponent(text)}` : ""}`;

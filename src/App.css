@@ -1167,7 +1167,8 @@ section {
 }
 
 .footerColumn a,
-.footerColumn span {
+.footerColumn span
+.footerJobLink {
   color: #d1d5db;
   text-decoration: none;
   font-size: 14px;
@@ -1177,6 +1178,10 @@ section {
 .footerColumn a:hover {
   color: white;
   transform: translateX(4px);
+}
+
+.footerJobLink:hover {
+  color: white !important;
 }
 
 .footerBottom {
@@ -2095,7 +2100,7 @@ section {
 
 @media (max-width: 768px) {
   .heroCarousel {
-    margin-top: 22px;
+    margin-top: 130px;
   }
 
   .heroCarouselContent {

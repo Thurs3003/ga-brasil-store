@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-
-const HERO_LS_KEY = "ga_brasil_hero_slides";
+import { getSetting, subscribeToSettings } from "../lib/settings";
 
 const DEFAULT_SLIDES = [
   {
@@ -32,19 +31,20 @@ const DEFAULT_SLIDES = [
   },
 ];
 
-function getSlides() {
-  try {
-    const stored = localStorage.getItem(HERO_LS_KEY);
-    if (stored) return JSON.parse(stored);
-  } catch {}
-  return DEFAULT_SLIDES;
-}
-
 function HeroCarousel() {
-  const [slides, setSlides] = useState(getSlides);
+  const [slides, setSlides] = useState(() => getSetting("hero_slides", DEFAULT_SLIDES));
   const [currentSlide, setCurrentSlide] = useState(0);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
+
+  useEffect(() => {
+    return subscribeToSettings((settings) => {
+      const updated = settings.hero_slides;
+      if (updated && Array.isArray(updated) && updated.length > 0) {
+        setSlides(updated);
+      }
+    });
+  }, []);
 
   function goToSlide(index) {
     setCurrentSlide(index);
@@ -81,14 +81,6 @@ function HeroCarousel() {
       previousSlide();
     }
   }
-
-  useEffect(() => {
-    function onStorage(e) {
-      if (e.key === HERO_LS_KEY) setSlides(getSlides());
-    }
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
 
   useEffect(() => {
     const interval = setInterval(nextSlide, 5000);

@@ -1,7 +1,22 @@
-import { getFooterWA, buildWAUrl } from "../lib/whatsapp";
+import { useState, useEffect } from "react";
+import { getSetting, subscribeToSettings, DEFAULT_WA_NUMBER } from "../lib/settings";
+import { buildWAUrl } from "../lib/whatsapp";
 
 function Footer() {
-  const waUrl = buildWAUrl(getFooterWA());
+  const [waFooter, setWaFooter] = useState(() => getSetting("wa_footer", DEFAULT_WA_NUMBER));
+
+  useEffect(() => {
+    return subscribeToSettings((settings) => {
+      setWaFooter(settings.wa_footer ?? DEFAULT_WA_NUMBER);
+    });
+  }, []);
+
+  const waUrl = buildWAUrl(waFooter);
+  const curriculumUrl = buildWAUrl(
+    waFooter,
+    "Olá! Gostaria de enviar meu currículo para trabalhar na G.A Brasil. Poderia me informar como proceder?"
+  );
+
   return (
     <footer id="contato" className="footer">
       <div className="footerContent">
@@ -44,11 +59,7 @@ function Footer() {
 
         <div className="footerColumn">
           <h3>Contato</h3>
-          <a
-            href={waUrl}
-            target="_blank"
-            rel="noreferrer"
-          >
+          <a href={waUrl} target="_blank" rel="noreferrer">
             Whatsapp
           </a>
           <a href="https://www.instagram.com/gabrasiloficial/?hl=en" target="_blank" rel="noreferrer">
@@ -71,7 +82,14 @@ function Footer() {
           <h3>Navegação</h3>
           <a href="#inicio">Início</a>
           <a href="#produtos">Produtos</a>
-          <a href="#contato">Contato</a>
+          <a
+            href={curriculumUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="footerJobLink"
+          >
+            Trabalhe conosco
+          </a>
         </div>
       </div>
 

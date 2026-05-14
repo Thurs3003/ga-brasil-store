@@ -5,6 +5,7 @@ import AllProducts from "./pages/AllProducts";
 import ProductPage from "./pages/ProductPage";
 import "./App.css";
 import { supabase } from "./lib/supabaseClient";
+import { loadSettings, startSettingsSync } from "./lib/settings";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useUser } from "./hooks/useUser";
 
@@ -54,6 +55,9 @@ function App() {
     }
 
     loadProducts();
+    loadSettings();
+    const channel = startSettingsSync();
+    return () => supabase.removeChannel(channel);
   }, []);
 
   useEffect(() => {

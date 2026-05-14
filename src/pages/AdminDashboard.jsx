@@ -1,9 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
-import { WA_LS_KEY, DEFAULT_WA_NUMBER } from "../lib/whatsapp";
-
-const HERO_LS_KEY = "ga_brasil_hero_slides";
+import { saveSetting, DEFAULT_WA_NUMBER } from "../lib/settings";
 
 const DEFAULT_HERO_SLIDES = [
   {
@@ -31,14 +29,6 @@ const DEFAULT_HERO_SLIDES = [
     image: "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=1200&q=80",
   },
 ];
-
-function getHeroSlides() {
-  try {
-    const stored = localStorage.getItem(HERO_LS_KEY);
-    if (stored) return JSON.parse(stored);
-  } catch {}
-  return DEFAULT_HERO_SLIDES;
-}
 
 const EMPTY_FORM = {
   name: "", brand: "", category: "", description: "",
@@ -147,7 +137,7 @@ function AdminDashboard() {
   const [stockDelta, setStockDelta] = useState("1");
 
   // Hero carousel
-  const [heroSlides, setHeroSlides] = useState(getHeroSlides);
+  const [heroSlides, setHeroSlides] = useState(DEFAULT_HERO_SLIDES);
   const [editingSlideIdx, setEditingSlideIdx] = useState(null);
   const [slideForm, setSlideForm] = useState(EMPTY_SLIDE);
   const [isCarouselOpen, setIsCarouselOpen] = useState(false);
@@ -173,9 +163,9 @@ function AdminDashboard() {
   const [orderMinValue, setOrderMinValue] = useState("");
 
   // WhatsApp settings (3 numbers: orders, support, footer)
-  const [waOrders, setWaOrders] = useState(() => localStorage.getItem(WA_LS_KEY) || DEFAULT_WA_NUMBER);
-  const [waSupport, setWaSupport] = useState(() => localStorage.getItem("ga_brasil_whatsapp_support") || DEFAULT_WA_NUMBER);
-  const [waFooter, setWaFooter] = useState(() => localStorage.getItem("ga_brasil_whatsapp_footer") || DEFAULT_WA_NUMBER);
+  const [waOrders, setWaOrders] = useState(DEFAULT_WA_NUMBER);
+  const [waSupport, setWaSupport] = useState(DEFAULT_WA_NUMBER);
+  const [waFooter, setWaFooter] = useState(DEFAULT_WA_NUMBER);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   function showToast(message, type = "success") {
@@ -326,7 +316,6 @@ function AdminDashboard() {
       gallery: product.gallery || [],
     });
     setImagePreview(product.image || "");
-    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   async function deleteProduct(id) {
@@ -365,9 +354,11 @@ function AdminDashboard() {
     setImagePreview(URL.createObjectURL(file));
   }, []);
 
-  function saveHeroSlides(slides) {
-    localStorage.setItem(HERO_LS_KEY, JSON.stringify(slides));
+  async function saveHeroSlides(slides) {
+    const error = await saveSetting("hero_slides", slides);
+    if (error) { showToast("Erro ao salvar slides", "error"); return false; }
     setHeroSlides(slides);
+    return true;
   }
 
   const handleSlideImageFile = useCallback((file) => {
@@ -408,23 +399,24 @@ function AdminDashboard() {
     const updated = editingSlideIdx === -1
       ? [...heroSlides, slideData]
       : heroSlides.map((s, i) => i === editingSlideIdx ? slideData : s);
-    saveHeroSlides(updated);
+    const ok = await saveHeroSlides(updated);
+    if (!ok) return;
     setEditingSlideIdx(null);
     setSlideImageFile(null);
     setSlideImagePreview("");
     showToast("Slide salvo com sucesso!");
   }
 
-  function deleteSlide(idx) {
+  async function deleteSlide(idx) {
     if (!confirm("Excluir este slide?")) return;
-    saveHeroSlides(heroSlides.filter((_, i) => i !== idx));
-    showToast("Slide excluído!");
+    const ok = await saveHeroSlides(heroSlides.filter((_, i) => i !== idx));
+    if (ok) showToast("Slide excluído!");
   }
 
-  function resetHeroSlides() {
+  async function resetHeroSlides() {
     if (!confirm("Restaurar os slides padrão? As alterações serão perdidas.")) return;
-    saveHeroSlides(DEFAULT_HERO_SLIDES);
-    showToast("Slides restaurados!");
+    const ok = await saveHeroSlides(DEFAULT_HERO_SLIDES);
+    if (ok) showToast("Slides restaurados!");
   }
 
   async function loadOrders() {
@@ -450,7 +442,7 @@ function AdminDashboard() {
     // Recarrega produtos quando o estoque é afetado pelo trigger do banco
     const estoqueAfetado =
       (status === "novo" && prevOrder?.status !== "novo") ||
-      (status === "cancelado" && prevOrder?.status === "novo");
+      status === "cancelado";
     if (estoqueAfetado) {
       await loadProducts();
       showToast(
@@ -490,11 +482,17 @@ function AdminDashboard() {
     else { setProducts((prev) => prev.map((p) => p.id === product.id ? { ...p, is_new: !p.is_new } : p)); }
   }
 
-  function saveWhatsAppSettings() {
-    localStorage.setItem(WA_LS_KEY, waOrders);
-    localStorage.setItem("ga_brasil_whatsapp_support", waSupport);
-    localStorage.setItem("ga_brasil_whatsapp_footer", waFooter);
-    showToast("Números de WhatsApp salvos!");
+  async function saveWhatsAppSettings() {
+    const errors = await Promise.all([
+      saveSetting("wa_orders", waOrders),
+      saveSetting("wa_support", waSupport),
+      saveSetting("wa_footer", waFooter),
+    ]);
+    if (errors.some(Boolean)) {
+      showToast("Erro ao salvar números", "error");
+    } else {
+      showToast("Números de WhatsApp salvos!");
+    }
   }
 
   async function duplicateProduct(product) {
@@ -588,7 +586,19 @@ function AdminDashboard() {
     return () => supabase.removeChannel(channel);
   }, []);
 
-  useEffect(() => { loadProducts(); loadOrders(); }, []);
+  useEffect(() => {
+    loadProducts();
+    loadOrders();
+    supabase.from("settings").select("key, value").then(({ data }) => {
+      if (!data) return;
+      data.forEach(({ key, value }) => {
+        if (key === "hero_slides" && Array.isArray(value) && value.length > 0) setHeroSlides(value);
+        if (key === "wa_orders" && value) setWaOrders(value);
+        if (key === "wa_support" && value) setWaSupport(value);
+        if (key === "wa_footer" && value) setWaFooter(value);
+      });
+    });
+  }, []);
 
   const totalStock = products.reduce((s, p) => s + (p.stock || 0), 0);
   const featuredCount = products.filter((p) => p.featured).length;
