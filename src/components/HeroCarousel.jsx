@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
-import { getSetting, subscribeToSettings } from "../lib/settings";
+import { supabase } from "../lib/supabaseClient";
+import { subscribeToSettings } from "../lib/settings";
 
 const DEFAULT_SLIDES = [
   {
@@ -32,16 +33,28 @@ const DEFAULT_SLIDES = [
 ];
 
 function HeroCarousel() {
-  const [slides, setSlides] = useState(() => getSetting("hero_slides", DEFAULT_SLIDES));
+  const [slides, setSlides] = useState(DEFAULT_SLIDES);
   const [currentSlide, setCurrentSlide] = useState(0);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
   useEffect(() => {
+    // Leitura direta do Supabase — sem depender de cache compartilhado
+    supabase
+      .from("settings")
+      .select("value")
+      .eq("key", "hero_slides")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.value && Array.isArray(data.value) && data.value.length > 0) {
+          setSlides(data.value);
+        }
+      });
+
+    // Recebe atualizações ao vivo quando o admin salva slides
     return subscribeToSettings((settings) => {
-      const updated = settings.hero_slides;
-      if (updated && Array.isArray(updated) && updated.length > 0) {
-        setSlides(updated);
+      if (Array.isArray(settings.hero_slides) && settings.hero_slides.length > 0) {
+        setSlides(settings.hero_slides);
       }
     });
   }, []);
@@ -101,10 +114,12 @@ function HeroCarousel() {
         )}
         <h1 key={`title-${currentSlide}`} className="heroSlideIn" style={{ animationDelay: "0.08s" }}>{slide.title}</h1>
         <p key={`desc-${currentSlide}`} className="heroSlideIn" style={{ animationDelay: "0.16s" }}>{slide.description}</p>
-        <div key={`btns-${currentSlide}`} className="heroButtons heroSlideIn" style={{ animationDelay: "0.24s" }}>
-          <a href="#produtos">Ver produtos</a>
-          <a className="outline" href="#contato">Falar no WhatsApp</a>
-        </div>
+        {slide.showButtons !== false && (
+          <div key={`btns-${currentSlide}`} className="heroButtons heroSlideIn" style={{ animationDelay: "0.24s" }}>
+            <a href="#produtos">Ver produtos</a>
+            <a className="outline" href="#contato">Falar no WhatsApp</a>
+          </div>
+        )}
       </>
     );
 

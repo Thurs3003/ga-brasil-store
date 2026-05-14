@@ -23,7 +23,7 @@ export function getSetting(key, defaultValue = null) {
 }
 
 export async function saveSetting(key, value) {
-  const { error } = await supabase.rpc("save_setting", { p_key: key, p_value: value });
+  const { error } = await supabase.from("settings").upsert({ key, value });
   if (!error) {
     _cache[key] = value;
     _notify();

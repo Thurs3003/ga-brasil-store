@@ -37,7 +37,7 @@ const EMPTY_FORM = {
   image: "", gallery: [],
 };
 
-const EMPTY_SLIDE = { eyebrow: "", title: "", description: "", image: "", type: "split" };
+const EMPTY_SLIDE = { eyebrow: "", title: "", description: "", image: "", type: "split", showButtons: true };
 
 const SLIDE_TYPES = [
   { value: "split",     label: "🖼️ Texto + Imagem lateral" },
@@ -371,7 +371,7 @@ function AdminDashboard() {
     setEditingSlideIdx(idx);
     const slide = idx === -1
       ? { ...EMPTY_SLIDE }
-      : { ...EMPTY_SLIDE, ...heroSlides[idx], type: heroSlides[idx].type || "split" };
+      : { ...EMPTY_SLIDE, ...heroSlides[idx], type: heroSlides[idx].type || "split", showButtons: heroSlides[idx].showButtons !== false };
     setSlideForm(slide);
     setSlideImageFile(null);
     setSlideImagePreview(slide.image || "");
@@ -749,6 +749,17 @@ function AdminDashboard() {
                       onChange={slideField("description")}
                       placeholder="Texto descritivo do slide"
                     />
+                  </div>
+
+                  <div className="formGroup fullWidth">
+                    <label className="slideCheckboxLabel">
+                      <input
+                        type="checkbox"
+                        checked={slideForm.showButtons !== false}
+                        onChange={(e) => setSlideForm((s) => ({ ...s, showButtons: e.target.checked }))}
+                      />
+                      Exibir botões de ação (Ver produtos / Falar no WhatsApp)
+                    </label>
                   </div>
 
                   {slideForm.type !== "text-only" && (
