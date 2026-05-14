@@ -439,17 +439,30 @@ function AdminDashboard() {
     const { error } = await supabase.from("orders").update({ status }).eq("id", id);
     if (error) { showToast("Erro ao atualizar pedido", "error"); return; }
     setOrders((prev) => prev.map((o) => o.id === id ? { ...o, status } : o));
-    // Recarrega produtos quando o estoque é afetado pelo trigger do banco
-    const estoqueAfetado =
-      (status === "novo" && prevOrder?.status !== "novo") ||
-      status === "cancelado";
-    if (estoqueAfetado) {
+
+    const shouldDecrement = status === "novo" && prevOrder?.status !== "novo";
+    const shouldRestore = status === "cancelado" && ["novo", "em_separacao", "enviado"].includes(prevOrder?.status);
+
+    if (shouldDecrement || shouldRestore) {
+      const items = prevOrder?.items || [];
+      const ids = items.map((i) => i.id);
+      const { data: currentProducts } = await supabase.from("products").select("id, stock").in("id", ids);
+      if (currentProducts) {
+        const stockMap = Object.fromEntries(currentProducts.map((p) => [p.id, p.stock || 0]));
+        for (const item of items) {
+          const current = stockMap[item.id] ?? 0;
+          const next = shouldDecrement
+            ? Math.max(0, current - item.quantity)
+            : current + item.quantity;
+          await supabase.from("products").update({ stock: next }).eq("id", item.id);
+        }
+      }
       await loadProducts();
       showToast(
-        status === "novo"
+        shouldDecrement
           ? "✅ Pedido confirmado — estoque atualizado!"
           : "↩️ Pedido cancelado — estoque devolvido.",
-        status === "novo" ? "success" : "info"
+        shouldDecrement ? "success" : "info"
       );
     }
   }
@@ -1107,7 +1120,17 @@ function AdminDashboard() {
 
                 <div className="formGroup">
                   <label>Categoria</label>
-                  <input placeholder="Ex: Bases" value={newProduct.category} onChange={field("category")} />
+                  <input
+                    placeholder="Ex: Bases"
+                    value={newProduct.category}
+                    onChange={field("category")}
+                    list="categoryOptions"
+                  />
+                  <datalist id="categoryOptions">
+                    {productCategories.map((cat) => (
+                      <option key={cat} value={cat} />
+                    ))}
+                  </datalist>
                 </div>
 
                 <div className="formGroup">

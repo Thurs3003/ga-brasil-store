@@ -14,7 +14,6 @@ function ProtectedRoute({ children }) {
         .eq("id", userId)
         .single();
 
-      if (error) console.error("[ProtectedRoute] Erro ao buscar perfil:", error.message);
       setIsAdmin(data?.role === "admin");
       setLoading(false);
     }

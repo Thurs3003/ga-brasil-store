@@ -29,8 +29,8 @@ function CustomerRegister() {
       setError("As senhas não coincidem.");
       return;
     }
-    if (form.password.length < 6) {
-      setError("A senha deve ter pelo menos 6 caracteres.");
+    if (form.password.length < 8) {
+      setError("A senha deve ter pelo menos 8 caracteres.");
       return;
     }
 
@@ -114,7 +114,7 @@ function CustomerRegister() {
             <label>Senha</label>
             <input
               type="password"
-              placeholder="Mínimo 6 caracteres"
+              placeholder="Mínimo 8 caracteres"
               value={form.password}
               onChange={field("password")}
               required

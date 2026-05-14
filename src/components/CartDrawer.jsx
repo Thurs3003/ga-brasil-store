@@ -116,7 +116,28 @@ function CartDrawer({
   async function finishOrder() {
     if (cartItems.length === 0) return;
 
-    const orderItems = cartItems.map((item) => ({
+    // Busca preços reais do banco para evitar manipulação via localStorage
+    const ids = cartItems.map((item) => item.id);
+    const { data: freshProducts, error: priceError } = await supabase
+      .from("products")
+      .select("id, price, name, brand")
+      .in("id", ids);
+
+    if (priceError || !freshProducts) return;
+
+    const priceMap = Object.fromEntries(freshProducts.map((p) => [p.id, p.price]));
+
+    const validatedItems = cartItems.map((item) => ({
+      ...item,
+      price: priceMap[item.id] ?? item.price,
+    }));
+
+    const validatedTotal = validatedItems.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0,
+    );
+
+    const orderItems = validatedItems.map((item) => ({
       id: item.id,
       name: item.name,
       brand: item.brand,
@@ -126,15 +147,13 @@ function CartDrawer({
 
     const { error: orderError } = await supabase.from("orders").insert([{
       items: orderItems,
-      total,
+      total: validatedTotal,
       status: "aguardando",
       user_id: user?.id || null,
     }]);
-    if (orderError) {
-      console.error("[GA Brasil] Erro ao salvar pedido:", orderError.message);
-    }
+    if (orderError) return;
 
-    const productsMessage = cartItems
+    const productsMessage = validatedItems
       .map((item) => {
         const subtotal = item.price * item.quantity;
         return `• ${item.name}
@@ -152,7 +171,7 @@ Produtos:
 ${productsMessage}
 
 Total do pedido:
-R$ ${total.toFixed(2).replace(".", ",")}
+R$ ${validatedTotal.toFixed(2).replace(".", ",")}
 
 Aguardo as informações para pagamento e entrega.`;
 

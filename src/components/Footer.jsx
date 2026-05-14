@@ -1,13 +1,25 @@
 import { useState, useEffect } from "react";
-import { getSetting, subscribeToSettings, DEFAULT_WA_NUMBER } from "../lib/settings";
+import { supabase } from "../lib/supabaseClient";
+import { subscribeToSettings, DEFAULT_WA_NUMBER } from "../lib/settings";
 import { buildWAUrl } from "../lib/whatsapp";
 
 function Footer() {
-  const [waFooter, setWaFooter] = useState(() => getSetting("wa_footer", DEFAULT_WA_NUMBER));
+  const [waFooter, setWaFooter] = useState(DEFAULT_WA_NUMBER);
 
   useEffect(() => {
+    // Leitura direta do Supabase
+    supabase
+      .from("settings")
+      .select("value")
+      .eq("key", "wa_footer")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.value) setWaFooter(data.value);
+      });
+
+    // Atualização ao vivo quando admin salva
     return subscribeToSettings((settings) => {
-      setWaFooter(settings.wa_footer ?? DEFAULT_WA_NUMBER);
+      if (settings.wa_footer) setWaFooter(settings.wa_footer);
     });
   }, []);
 

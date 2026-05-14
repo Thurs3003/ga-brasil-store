@@ -36,7 +36,7 @@ function CustomerResetPassword() {
   async function handleReset(e) {
     e.preventDefault();
     setError("");
-    if (password.length < 6) { setError("A senha deve ter pelo menos 6 caracteres."); return; }
+    if (password.length < 8) { setError("A senha deve ter pelo menos 8 caracteres."); return; }
     if (password !== confirm) { setError("As senhas não coincidem."); return; }
     setLoading(true);
     const { error } = await supabase.auth.updateUser({ password });
@@ -97,7 +97,7 @@ function CustomerResetPassword() {
             <label>Nova senha</label>
             <input
               type="password"
-              placeholder="Mínimo 6 caracteres"
+              placeholder="Mínimo 8 caracteres"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
