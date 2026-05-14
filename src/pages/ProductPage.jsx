@@ -151,7 +151,7 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
   const oldPrice = product.old_price || product.oldPrice;
   const discount = oldPrice && oldPrice > 0 ? Math.round(((oldPrice - product.price) / oldPrice) * 100) : null;
 
-  const productUrl = `https://gabrasil.com.br/produto/${product.id}`;
+  const productUrl = `${import.meta.env.VITE_APP_URL}/produto/${product.id}`;
   const productDesc = product.description
     ? product.description.slice(0, 155)
     : `${product.brand} — ${product.name}. Preço especial para lojistas e revendedores. R$ ${Number(product.price).toFixed(2).replace(".", ",")}`;

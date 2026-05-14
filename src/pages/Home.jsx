@@ -84,16 +84,16 @@ function Home({
         <title>G.A Brasil | Distribuidora de Maquiagens e Cosméticos</title>
         <meta name="description" content="Distribuidora de maquiagens e acessórios para lojistas e revendedores. Batons, bases, paletas, pincéis e muito mais com preços especiais de atacado." />
         <meta name="keywords" content="maquiagem atacado, distribuidora maquiagem, cosméticos lojistas, revendedores maquiagem, batons, bases, paletas" />
-        <link rel="canonical" href="https://gabrasil.com.br/" />
+        <link rel="canonical" href={`${import.meta.env.VITE_APP_URL}/`} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://gabrasil.com.br/" />
+        <meta property="og:url" content={`${import.meta.env.VITE_APP_URL}/`} />
         <meta property="og:title" content="G.A Brasil | Distribuidora de Maquiagens e Cosméticos" />
         <meta property="og:description" content="Distribuidora de maquiagens e acessórios para lojistas e revendedores. Preços especiais de atacado." />
-        <meta property="og:image" content="https://gabrasil.com.br/preview.png" />
+        <meta property="og:image" content={`${import.meta.env.VITE_APP_URL}/preview.png`} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="G.A Brasil | Distribuidora de Maquiagens" />
         <meta name="twitter:description" content="Distribuidora de maquiagens e acessórios para lojistas e revendedores." />
-        <meta name="twitter:image" content="https://gabrasil.com.br/preview.png" />
+        <meta name="twitter:image" content={`${import.meta.env.VITE_APP_URL}/preview.png`} />
       </Helmet>
       <Header
         cartItems={cartItems}

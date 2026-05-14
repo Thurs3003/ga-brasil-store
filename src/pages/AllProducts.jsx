@@ -94,12 +94,12 @@ function AllProducts({
         <title>{pageTitle}</title>
         <meta name="description" content={pageDesc} />
         <meta name="keywords" content={`catálogo maquiagem, ${selectedCategory !== "Todos" ? selectedCategory + ", " : ""}distribuidora cosméticos, atacado beleza`} />
-        <link rel="canonical" href="https://gabrasil.com.br/produtos" />
+        <link rel="canonical" href={`${import.meta.env.VITE_APP_URL}/produtos`} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://gabrasil.com.br/produtos" />
+        <meta property="og:url" content={`${import.meta.env.VITE_APP_URL}/produtos`} />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDesc} />
-        <meta property="og:image" content="https://gabrasil.com.br/preview.png" />
+        <meta property="og:image" content={`${import.meta.env.VITE_APP_URL}/preview.png`} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={pageDesc} />
