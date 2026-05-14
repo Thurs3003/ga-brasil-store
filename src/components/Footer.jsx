@@ -2,6 +2,13 @@ function Footer() {
   return (
     <footer id="contato" className="footer">
       <div className="footerContent">
+        <div className="footerAbout">
+          <h3>Sobre nós</h3>
+          <p>
+            A G.A Brasil é uma distribuidora de maquiagens e cosméticos localizada em São Paulo, focada em atender lojistas, revendedoras e profissionais da beleza com qualidade e agilidade. Trabalhamos com marcas reconhecidas no mercado — como Max Love, Vivai, Fenzza, Lady Beauty e outras — oferecendo produtos selecionados, preços competitivos e atendimento personalizado via WhatsApp. Nossa missão é ser a parceira de confiança de quem vende beleza.
+          </p>
+        </div>
+
         <div className="footerBrand">
           <h2 className="footerLogo">G.A Brasil</h2>
 

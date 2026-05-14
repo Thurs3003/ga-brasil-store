@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Search, ShoppingBag, Menu, X } from "lucide-react";
-import logo from "../assets/ga-brasil.png";
+import logo from "../assets/ga_brasil_sem_fundo.png";
 
 function Header({
   cartItems,
@@ -12,6 +12,7 @@ function Header({
 }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const searchBoxRef = useRef(null);
 
   useEffect(() => {
@@ -24,13 +25,21 @@ function Header({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [setSearchTerm]);
 
+  useEffect(() => {
+    function handleScroll() {
+      setIsScrolled(window.scrollY > 60);
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const totalItems = cartItems.reduce(
     (total, item) => total + item.quantity,
     0,
   );
 
   return (
-    <header className="header">
+    <header className={`header ${isScrolled ? "headerScrolled" : ""}`}>
       <div className="headerTop">
         <div className="logo">
           <img src={logo} alt="Logo G.A Brasil" />
@@ -41,7 +50,7 @@ function Header({
               <span className="brasilGradient">Brasil</span>
             </div>
 
-            <small>Distribuidora de Maquiagens</small>
+            <small>Cosméticos</small>
           </div>
         </div>
 

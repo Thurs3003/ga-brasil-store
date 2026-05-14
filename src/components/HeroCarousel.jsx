@@ -111,7 +111,7 @@ function HeroCarousel() {
         >
           <div className="heroCarouselBadge">
             <small>até</small>
-            <strong>30%</strong>
+            <strong>15%</strong>
             <span>OFF</span>
           </div>
         </div>
