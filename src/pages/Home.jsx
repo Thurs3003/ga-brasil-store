@@ -3,6 +3,7 @@ import ProductCard from "../components/ProductCard.jsx";
 import ProductCardSkeleton from "../components/ProductCardSkeleton.jsx";
 import CartDrawer from "../components/CartDrawer";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import ProductModal from "../components/ProductModal";
 import Footer from "../components/Footer";
 import Promotions from "../components/Promotions";
@@ -11,6 +12,8 @@ import SocialProof from "../components/SocialProof";
 import Brands from "../components/Brands";
 import BestSellers from "../components/BestSellers";
 import { useScrollReveal } from "../hooks/useScrollReveal";
+import FAQ from "../components/FAQ";
+import { getRecentlyViewedIds } from "../lib/recentlyViewed";
 
 function Home({
   cartItems,
@@ -25,6 +28,7 @@ function Home({
   toastMessage,
   supabaseProducts,
   isLoadingProducts,
+  user,
 }) {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -34,6 +38,9 @@ function Home({
   const productsTitleRef = useScrollReveal();
 
   const productsToShow = supabaseProducts;
+
+  const recentIds = getRecentlyViewedIds();
+  const recentProducts = recentIds.map((id) => productsToShow.find((p) => p.id === id)).filter(Boolean);
 
   const categories = [
     "Todos",
@@ -141,10 +148,31 @@ function Home({
           </div>
         </section>
 
+        {recentProducts.length > 0 && (
+          <section className="favoritesSection">
+            <div className="sectionTitle">
+              <h2>Vistos recentemente</h2>
+              <Link to="/produtos">Ver catálogo</Link>
+            </div>
+            <div className="productGrid">
+              {recentProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  addToCart={addToCart}
+                  onOpenDetails={setSelectedProduct}
+                  favoriteIds={favoriteIds}
+                  toggleFavorite={toggleFavorite}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
         <section id="produtos" className="products">
-          <div ref={productsTitleRef} className="sectionTitle reveal">
+          <div className="sectionTitle">
             <h2>Produtos em destaque</h2>
-            <a href="#">Ver todos</a>
+            <Link to="/produtos">Ver todos</Link>
           </div>
 
           <div className="productGrid">
@@ -183,6 +211,7 @@ function Home({
         increaseQuantity={increaseQuantity}
         decreaseQuantity={decreaseQuantity}
         removeFromCart={removeFromCart}
+        user={user}
       />
       <ProductModal
         product={selectedProduct}
@@ -191,6 +220,7 @@ function Home({
       />
 
       {toastMessage && <div className="toast">✅ {toastMessage}</div>}
+      <FAQ />
       <Footer />
     </>
   );

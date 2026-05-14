@@ -1,4 +1,5 @@
 import { ShoppingCart } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
 function StarRating({ rating }) {
@@ -45,11 +46,9 @@ function ProductCard({
       style={revealDelay ? { '--reveal-delay': `${revealDelay}s` } : undefined}
     >
       <div className="productImage">
-        <img
-          src={product.image}
-          alt={product.name}
-          onClick={() => onOpenDetails(product)}
-        />
+        <Link to={`/produto/${product.id}`}>
+          <img src={product.image} alt={product.name} />
+        </Link>
 
         {product.featured && <div className="bestSellerBadge">🔥 Mais vendido</div>}
         {discount && <div className="discountBadge">-{discount}%</div>}
@@ -73,7 +72,7 @@ function ProductCard({
           <StarRating rating={product.rating} />
         </div>
 
-        <h3 onClick={() => onOpenDetails(product)}>{product.name}</h3>
+        <Link to={`/produto/${product.id}`} className="productNameLink"><h3>{product.name}</h3></Link>
 
         <div className="prices">
           <div className="priceRow">

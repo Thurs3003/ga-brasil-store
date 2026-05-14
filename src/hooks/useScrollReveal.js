@@ -2,15 +2,22 @@ import { useEffect, useRef } from 'react';
 
 export function useScrollReveal() {
   const ref = useRef(null);
+  const isRevealed = useRef(false);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
 
+    if (isRevealed.current) {
+      el.classList.add('revealed');
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           el.classList.add('revealed');
+          isRevealed.current = true;
           observer.disconnect();
         }
       },
@@ -19,7 +26,7 @@ export function useScrollReveal() {
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  });
 
   return ref;
 }

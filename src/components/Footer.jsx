@@ -1,4 +1,7 @@
+import { getFooterWA, buildWAUrl } from "../lib/whatsapp";
+
 function Footer() {
+  const waUrl = buildWAUrl(getFooterWA());
   return (
     <footer id="contato" className="footer">
       <div className="footerContent">
@@ -19,7 +22,7 @@ function Footer() {
 
           <div className="footerSocials">
             <a
-              href="https://wa.me/5511999999999"
+              href={waUrl}
               target="_blank"
               rel="noreferrer"
               aria-label="Whatsapp"
@@ -41,7 +44,7 @@ function Footer() {
         <div className="footerColumn">
           <h3>Contato</h3>
           <a
-            href="https://wa.me/5511999999999"
+            href={waUrl}
             target="_blank"
             rel="noreferrer"
           >
@@ -55,8 +58,8 @@ function Footer() {
 
         <div className="footerColumn">
           <h3>Atendimento</h3>
-          <span>Segunda à Sexta</span>
-          <span>08h às 18h</span>
+          <span>Segunda à Quinta — 08h às 18h</span>
+          <span>Sexta — 08h às 17h</span>
           <span>Pedidos via WhatsApp</span>
         </div>
 

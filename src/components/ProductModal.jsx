@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { getSupportWA, buildWAUrl } from "../lib/whatsapp";
+import { addRecentlyViewed } from "../lib/recentlyViewed";
 
 function StarRating({ rating }) {
   if (!rating) return null;
@@ -32,6 +35,7 @@ function ProductModal({ product, onClose, addToCart }) {
     if (product) {
       setSelectedImage(product.image || "");
       setIsDescExpanded(false);
+      addRecentlyViewed(product.id);
     }
   }, [product]);
 
@@ -52,10 +56,10 @@ function ProductModal({ product, onClose, addToCart }) {
     (img, i, arr) => img && arr.indexOf(img) === i
   );
 
-  const whatsappText = encodeURIComponent(
+  const whatsappUrl = buildWAUrl(
+    getSupportWA(),
     `Olá! Tenho interesse no produto: *${product.name}*. Poderia me passar mais informações?`
   );
-  const whatsappUrl = `https://wa.me/5511999999999?text=${whatsappText}`;
 
   const descLimit = 180;
   const isLongDesc = product.description && product.description.length > descLimit;
@@ -99,6 +103,7 @@ function ProductModal({ product, onClose, addToCart }) {
           <span className="detailsBrand">{product.brand}</span>
 
           <h2>{product.name}</h2>
+          <Link to={`/produto/${product.id}`} className="modalPageLink" onClick={onClose}>Ver página completa →</Link>
 
           <div className="modalRating">
             <StarRating rating={product.rating} />

@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Search, ShoppingBag, Menu, X } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/ga_brasil_sem_fundo.png";
+import { useUser } from "../hooks/useUser";
 
 function Header({
   cartItems,
@@ -10,6 +12,9 @@ function Header({
   searchResults,
   onOpenProduct,
 }) {
+  const { user, profile, signOut } = useUser();
+  const navigate = useNavigate();
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -105,12 +110,10 @@ function Header({
             ) : (
               <>
                 {searchResults.slice(0, 5).map((product) => (
-                  <button
+                  <Link
                     key={product.id}
-                    onClick={() => {
-                      onOpenProduct(product);
-                      setSearchTerm("");
-                    }}
+                    to={`/produto/${product.id}`}
+                    onClick={() => setSearchTerm("")}
                   >
                     <img src={product.image} alt={product.name} />
 
@@ -120,7 +123,7 @@ function Header({
                     </div>
 
                     <small>R$ {product.price.toFixed(2).replace(".", ",")}</small>
-                  </button>
+                  </Link>
                 ))}
 
                 {searchResults.length > 5 && (
@@ -170,9 +173,29 @@ function Header({
         </a>
       </aside>
 
-      <button className="cartButton" onClick={() => setIsCartOpen(true)}>
-        🛒 Carrinho ({totalItems})
-      </button>
+      <div className="headerActions">
+        {user ? (
+          <div className="userMenu">
+            <button className="userMenuBtn" onClick={() => setIsUserMenuOpen((o) => !o)}>
+              👤 {profile?.name?.split(" ")[0] || "Minha conta"}
+            </button>
+            {isUserMenuOpen && (
+              <div className="userMenuDropdown">
+                <Link to="/meus-pedidos" onClick={() => setIsUserMenuOpen(false)}>📋 Meus pedidos</Link>
+                <button onClick={async () => { await signOut(); setIsUserMenuOpen(false); navigate("/"); }}>
+                  Sair
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <Link to="/login" className="headerLoginBtn">Entrar</Link>
+        )}
+
+        <button className="cartButton" onClick={() => setIsCartOpen(true)}>
+          🛒 Carrinho ({totalItems})
+        </button>
+      </div>
     </header>
   );
 }

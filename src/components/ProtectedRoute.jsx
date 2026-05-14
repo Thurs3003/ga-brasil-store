@@ -4,29 +4,43 @@ import { supabase } from "../lib/supabaseClient";
 
 function ProtectedRoute({ children }) {
   const [loading, setLoading] = useState(true);
-  const [session, setSession] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    async function checkUser() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+    async function checkRole(userId) {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", userId)
+        .single();
 
-      setSession(session);
+      if (error) console.error("[ProtectedRoute] Erro ao buscar perfil:", error.message);
+      setIsAdmin(data?.role === "admin");
       setLoading(false);
     }
 
-    checkUser();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        checkRole(session.user.id);
+      } else {
+        setLoading(false);
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        checkRole(session.user.id);
+      } else {
+        setIsAdmin(false);
+        setLoading(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  if (loading) {
-    return <h2>Carregando...</h2>;
-  }
-
-  if (!session) {
-    return <Navigate to="/admin/login" />;
-  }
-
+  if (loading) return <div className="adminLoadingRow"><span className="adminSpinner large" /></div>;
+  if (!isAdmin) return <Navigate to="/admin/login" />;
   return children;
 }
 

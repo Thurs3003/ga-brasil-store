@@ -1,39 +1,47 @@
 import { useEffect, useState, useRef } from "react";
 
-const slides = [
+const HERO_LS_KEY = "ga_brasil_hero_slides";
+
+const DEFAULT_SLIDES = [
   {
     eyebrow: "Distribuidora de Maquiagens",
     title: "Produtos de beleza para quem compra e revende",
     description:
       "Encontre maquiagens, acessórios e kits promocionais com preços especiais para lojistas e revendedoras.",
-    button: "Ver produtos",
-    link: "#produtos",
     image:
       "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1200&q=80",
+    type: "split",
   },
   {
     eyebrow: "Semana da Beleza",
     title: "Kits promocionais com condições especiais",
     description:
       "Monte pedidos maiores com descontos em produtos selecionados e atendimento personalizado pelo WhatsApp.",
-    button: "Ver promoções",
-    link: "#promocoes",
     image:
       "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1200&q=80",
+    type: "split",
   },
   {
     eyebrow: "Atacado e Revenda",
     title: "Compre para revender com mais variedade",
     description:
       "Produtos selecionados para lojas, salões, profissionais da beleza e revendedoras.",
-    button: "Conhecer catálogo",
-    link: "#produtos",
     image:
       "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=1200&q=80",
+    type: "split",
   },
 ];
 
+function getSlides() {
+  try {
+    const stored = localStorage.getItem(HERO_LS_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch {}
+  return DEFAULT_SLIDES;
+}
+
 function HeroCarousel() {
+  const [slides, setSlides] = useState(getSlides);
   const [currentSlide, setCurrentSlide] = useState(0);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
@@ -75,35 +83,67 @@ function HeroCarousel() {
   }
 
   useEffect(() => {
-    const interval = setInterval(nextSlide, 5000);
+    function onStorage(e) {
+      if (e.key === HERO_LS_KEY) setSlides(getSlides());
+    }
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
 
+  useEffect(() => {
+    const interval = setInterval(nextSlide, 5000);
     return () => clearInterval(interval);
   }, []);
 
-  const slide = slides[currentSlide];
+  const safeIndex = Math.min(currentSlide, slides.length - 1);
+  const slide = slides[safeIndex] || slides[0];
+  const slideType = slide.type || "split";
 
-  return (
-    <section
-      id="inicio"
-      className="heroCarousel"
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-    >
-      <div className="heroCarouselContent">
-        <div className="heroCarouselText">
-          <span key={`eyebrow-${currentSlide}`} className="heroSlideIn" style={{ animationDelay: "0s" }}>{slide.eyebrow}</span>
-          <h1 key={`title-${currentSlide}`} className="heroSlideIn" style={{ animationDelay: "0.08s" }}>{slide.title}</h1>
-          <p key={`desc-${currentSlide}`} className="heroSlideIn" style={{ animationDelay: "0.16s" }}>{slide.description}</p>
+  function renderSlideContent() {
+    const textContent = (
+      <>
+        {slide.eyebrow && (
+          <span key={`eyebrow-${currentSlide}`} className="heroSlideIn" style={{ animationDelay: "0s" }}>
+            {slide.eyebrow}
+          </span>
+        )}
+        <h1 key={`title-${currentSlide}`} className="heroSlideIn" style={{ animationDelay: "0.08s" }}>{slide.title}</h1>
+        <p key={`desc-${currentSlide}`} className="heroSlideIn" style={{ animationDelay: "0.16s" }}>{slide.description}</p>
+        <div key={`btns-${currentSlide}`} className="heroButtons heroSlideIn" style={{ animationDelay: "0.24s" }}>
+          <a href="#produtos">Ver produtos</a>
+          <a className="outline" href="#contato">Falar no WhatsApp</a>
+        </div>
+      </>
+    );
 
-          <div key={`btns-${currentSlide}`} className="heroButtons heroSlideIn" style={{ animationDelay: "0.24s" }}>
-            <a href={slide.link}>{slide.button}</a>
-            <a className="outline" href="#contato">
-              Falar no WhatsApp
-            </a>
+    if (slideType === "text-only") {
+      return (
+        <div className="heroCarouselContent heroContentTextOnly">
+          <div className="heroCarouselText heroTextFull">
+            {textContent}
           </div>
         </div>
+      );
+    }
 
+    if (slideType === "fullbg") {
+      return (
+        <div
+          className="heroCarouselContent heroContentFullBg"
+          style={{ backgroundImage: `url(${slide.image})` }}
+        >
+          <div className="heroCarouselText heroTextOnBg">
+            {textContent}
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="heroCarouselContent">
+        <div className="heroCarouselText">
+          {textContent}
+        </div>
         <div
           key={`img-${currentSlide}`}
           className="heroCarouselImage heroImageReveal"
@@ -116,6 +156,18 @@ function HeroCarousel() {
           </div>
         </div>
       </div>
+    );
+  }
+
+  return (
+    <section
+      id="inicio"
+      className="heroCarousel"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      {renderSlideContent()}
 
       <button className="carouselArrow left" onClick={previousSlide}>
         ‹
