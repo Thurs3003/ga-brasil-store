@@ -3906,6 +3906,73 @@ section {
   border-top-color: var(--primary-blue);
 }
 
+/* Admin Login Page */
+.adminLogin {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #07165e 0%, #1a3cbb 60%, #6366f1 100%);
+  padding: 24px;
+}
+
+.adminLogin form {
+  background: white;
+  border-radius: 28px;
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.adminLogin h1 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 8px;
+}
+
+.adminLogin input {
+  padding: 12px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+  font-family: inherit;
+}
+.adminLogin input:focus { border-color: #6366f1; }
+
+.adminLogin button[type="submit"] {
+  background: linear-gradient(135deg, #07165e, #1a3cbb);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: opacity 0.15s, transform 0.15s;
+  font-family: inherit;
+}
+.adminLogin button[type="submit"]:hover { opacity: 0.9; transform: translateY(-1px); }
+.adminLogin button[type="submit"]:disabled { opacity: 0.6; transform: none; cursor: not-allowed; }
+
+.adminLoginError {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1.5px solid #fca5a5;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+}
+
 /* Toast */
 @keyframes toastIn {
   from { opacity: 0; transform: translateY(16px) scale(0.95); }

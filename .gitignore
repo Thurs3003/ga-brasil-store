@@ -9,11 +9,22 @@ lerna-debug.log*
 
 node_modules
 dist
+dist-ssr
+
+# Variáveis de ambiente — nunca subir para o repositório
 .env
 .env.local
+.env.production
+.env.development
+.env.staging
 .env.*.local
-dist-ssr
 *.local
+
+# Certificados e chaves
+*.pem
+*.key
+*.cert
+*.p12
 
 # Editor directories and files
 .vscode/*
