@@ -443,10 +443,22 @@ function AdminDashboard() {
   }
 
   async function updateOrderStatus(id, status) {
+    const prevOrder = orders.find((o) => o.id === id);
     const { error } = await supabase.from("orders").update({ status }).eq("id", id);
-    if (error) { showToast("Erro ao atualizar pedido", "error"); }
-    else {
-      setOrders((prev) => prev.map((o) => o.id === id ? { ...o, status } : o));
+    if (error) { showToast("Erro ao atualizar pedido", "error"); return; }
+    setOrders((prev) => prev.map((o) => o.id === id ? { ...o, status } : o));
+    // Recarrega produtos quando o estoque é afetado pelo trigger do banco
+    const estoqueAfetado =
+      (status === "novo" && prevOrder?.status !== "novo") ||
+      (status === "cancelado" && prevOrder?.status === "novo");
+    if (estoqueAfetado) {
+      await loadProducts();
+      showToast(
+        status === "novo"
+          ? "✅ Pedido confirmado — estoque atualizado!"
+          : "↩️ Pedido cancelado — estoque devolvido.",
+        status === "novo" ? "success" : "info"
+      );
     }
   }
 
