@@ -56,10 +56,17 @@ body {
 
 .headerScrolled {
   height: 72px;
+  box-shadow: 0 4px 24px rgba(7, 22, 94, 0.2);
+}
+
+.headerScrolled::before {
+  content: '';
+  position: absolute;
+  inset: 0;
   background: rgba(7, 22, 94, 0.55);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 4px 24px rgba(7, 22, 94, 0.2);
+  z-index: -1;
 }
 
 .logo {
