@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /meus-pedidos
 
-Sitemap: https://ga-brasil-store.vercel.app/sitemap.xml
+Sitemap: https://www.gabrasilcosmeticos.com.br/sitemap.xml
