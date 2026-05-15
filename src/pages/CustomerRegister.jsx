@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import logo from "../assets/ga_brasil_sem_fundo.png";
 
 function CustomerRegister() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [form, setForm] = useState({ name: "", email: "", phone: "", password: "", confirm: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -58,7 +59,7 @@ function CustomerRegister() {
       await supabase.from("profiles").upsert({ id: data.user.id, name: form.name, phone: form.phone });
     }
 
-    navigate("/meus-pedidos");
+    navigate(location.state?.from || "/");
   }
 
   return (

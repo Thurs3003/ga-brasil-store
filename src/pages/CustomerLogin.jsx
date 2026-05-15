@@ -157,7 +157,7 @@ function CustomerLogin() {
 
         <p className="authFooterText">
           Não tem conta?{" "}
-          <Link to="/cadastro">Criar conta grátis</Link>
+          <Link to="/cadastro" state={{ from: location.state?.from }}>Criar conta grátis</Link>
         </p>
 
         <Link to="/" className="authBackLink">← Voltar para a loja</Link>
