@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import logo from "../assets/ga_brasil_sem_fundo.png";
 
 function CustomerLogin() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -21,7 +22,7 @@ function CustomerLogin() {
       setLoading(false);
       return;
     }
-    navigate("/meus-pedidos");
+    navigate(location.state?.from || "/");
   }
 
   async function handleForgot(e) {

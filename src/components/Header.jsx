@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Search, ShoppingBag, Menu, X } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import logo from "../assets/ga_brasil_sem_fundo.png";
 import { useUser } from "../hooks/useUser";
 
@@ -13,6 +13,7 @@ function Header({
 }) {
   const { user, profile, signOut } = useUser();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -188,7 +189,7 @@ function Header({
             )}
           </div>
         ) : (
-          <Link to="/login" className="headerLoginBtn">Entrar</Link>
+          <Link to="/login" state={{ from: location.pathname }} className="headerLoginBtn">Entrar</Link>
         )}
 
         <button className="cartButton" onClick={() => setIsCartOpen(true)}>
