@@ -43,8 +43,13 @@ function Header({
     0,
   );
 
+  const glassStyle = isScrolled ? {
+    backdropFilter: "blur(40px) saturate(2)",
+    WebkitBackdropFilter: "blur(40px) saturate(2)",
+  } : {};
+
   return (
-    <header className={`header ${isScrolled ? "headerScrolled" : ""}`}>
+    <header className={`header ${isScrolled ? "headerScrolled" : ""}`} style={glassStyle}>
       <div className="headerTop">
         <div className="logo">
           <img src={logo} alt="Logo G.A Brasil" />
