@@ -48,14 +48,10 @@ body {
   right: 0;
   z-index: 20;
   gap: 16px;
-  backdrop-filter: blur(0px);
-  -webkit-backdrop-filter: blur(0px);
   transition:
     height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
     background 0.35s ease,
-    box-shadow 0.35s ease,
-    backdrop-filter 0.35s ease,
-    -webkit-backdrop-filter 0.35s ease;
+    box-shadow 0.35s ease;
 }
 
 .headerScrolled {
