@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Search, ShoppingBag, Menu, X } from "lucide-react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, useMatch } from "react-router-dom";
 import logo from "../assets/ga_brasil_sem_fundo.png";
 import { useUser } from "../hooks/useUser";
 
@@ -14,6 +14,7 @@ function Header({
   const { user, profile, signOut } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
+  const isHome = useMatch("/");
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -51,7 +52,11 @@ function Header({
   return (
     <header className={`header ${isScrolled ? "headerScrolled" : ""}`} style={glassStyle}>
       <div className="headerTop">
-        <div className="logo">
+        <Link
+          to="/"
+          className="logo"
+          onClick={() => { if (isHome) window.scrollTo({ top: 0, behavior: "smooth" }); }}
+        >
           <img src={logo} alt="Logo G.A Brasil" />
 
           <div className="brandBlock">
@@ -62,7 +67,7 @@ function Header({
 
             <small>Cosméticos</small>
           </div>
-        </div>
+        </Link>
 
         <div className="mobileActions">
           <button
@@ -176,6 +181,31 @@ function Header({
         <a href="/#contato" onClick={() => setIsMenuOpen(false)}>
           Contato
         </a>
+
+        <div className="mobileMenuDivider" />
+
+        {user ? (
+          <>
+            <Link to="/meus-pedidos" onClick={() => setIsMenuOpen(false)}>
+              📋 Meus pedidos
+            </Link>
+            <button
+              className="mobileMenuSignOut"
+              onClick={async () => { await signOut(); setIsMenuOpen(false); navigate("/"); }}
+            >
+              Sair da conta
+            </button>
+          </>
+        ) : (
+          <Link
+            to="/login"
+            state={{ from: location.pathname }}
+            className="mobileMenuLoginBtn"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            👤 Entrar / Criar conta
+          </Link>
+        )}
       </aside>
 
       <div className="headerActions">

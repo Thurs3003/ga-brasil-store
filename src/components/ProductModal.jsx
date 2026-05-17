@@ -30,11 +30,13 @@ function StarRating({ rating }) {
 function ProductModal({ product, onClose, addToCart }) {
   const [selectedImage, setSelectedImage] = useState("");
   const [isDescExpanded, setIsDescExpanded] = useState(false);
+  const [zoomedImage, setZoomedImage] = useState(null);
 
   useEffect(() => {
     if (product) {
       setSelectedImage(product.image || "");
       setIsDescExpanded(false);
+      setZoomedImage(null);
       addRecentlyViewed(product.id);
     }
   }, [product]);
@@ -42,11 +44,16 @@ function ProductModal({ product, onClose, addToCart }) {
   useEffect(() => {
     if (!product) return;
     function handleKey(e) {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        if (zoomedImage) { setZoomedImage(null); return; }
+        onClose();
+      }
+      if (e.key === "ArrowRight") navigateGallery(1);
+      if (e.key === "ArrowLeft") navigateGallery(-1);
     }
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
-  }, [product, onClose]);
+  }, [product, onClose, zoomedImage]);
 
   if (!product) return null;
 
@@ -55,6 +62,14 @@ function ProductModal({ product, onClose, addToCart }) {
   const allImages = [product.image, ...(product.gallery || [])].filter(
     (img, i, arr) => img && arr.indexOf(img) === i
   );
+
+  const currentIndex = allImages.indexOf(currentImage);
+
+  function navigateGallery(direction) {
+    if (allImages.length <= 1) return;
+    const nextIndex = (currentIndex + direction + allImages.length) % allImages.length;
+    setSelectedImage(allImages[nextIndex]);
+  }
 
   const whatsappUrl = buildWAUrl(
     getSupportWA(),
@@ -69,13 +84,32 @@ function ProductModal({ product, onClose, addToCart }) {
       : product.description;
 
   return (
+    <>
+    {zoomedImage && (
+      <div className="imageLightbox" onClick={() => setZoomedImage(null)}>
+        <button className="lightboxClose" onClick={() => setZoomedImage(null)}>✕</button>
+        {allImages.length > 1 && (
+          <button className="lightboxArrow left" onClick={(e) => { e.stopPropagation(); const i = (allImages.indexOf(zoomedImage) - 1 + allImages.length) % allImages.length; setZoomedImage(allImages[i]); }}>‹</button>
+        )}
+        <img src={zoomedImage} alt={product.name} onClick={(e) => e.stopPropagation()} />
+        {allImages.length > 1 && (
+          <button className="lightboxArrow right" onClick={(e) => { e.stopPropagation(); const i = (allImages.indexOf(zoomedImage) + 1) % allImages.length; setZoomedImage(allImages[i]); }}>›</button>
+        )}
+      </div>
+    )}
     <div className="productModalBackdrop" onClick={onClose}>
       <div className="productModal" onClick={(e) => e.stopPropagation()}>
         <button className="modalCloseButton" onClick={onClose}>✕</button>
 
         <div className="modalGallery">
-          <div className="modalImage">
+          <div className="modalImage" onClick={() => setZoomedImage(currentImage)}>
             <img src={currentImage} alt={product.name} />
+            {allImages.length > 1 && (
+              <>
+                <button className="galleryArrow left" onClick={(e) => { e.stopPropagation(); navigateGallery(-1); }}>‹</button>
+                <button className="galleryArrow right" onClick={(e) => { e.stopPropagation(); navigateGallery(1); }}>›</button>
+              </>
+            )}
           </div>
 
           {allImages.length > 1 && (
@@ -175,6 +209,7 @@ function ProductModal({ product, onClose, addToCart }) {
         </div>
       </div>
     </div>
+    </>
   );
 }
 

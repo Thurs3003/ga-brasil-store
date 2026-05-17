@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import Header from "../components/Header";
@@ -39,6 +39,8 @@ function AllProducts({
   isLoadingProducts,
   user,
 }) {
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todos");

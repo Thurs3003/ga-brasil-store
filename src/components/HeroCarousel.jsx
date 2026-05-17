@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { subscribeToSettings } from "../lib/settings";
 
@@ -37,6 +37,11 @@ function HeroCarousel() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
+  const slidesLengthRef = useRef(slides.length);
+
+  useEffect(() => {
+    slidesLengthRef.current = slides.length;
+  }, [slides]);
 
   useEffect(() => {
     // Leitura direta do Supabase — sem depender de cache compartilhado
@@ -59,20 +64,20 @@ function HeroCarousel() {
     });
   }, []);
 
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((current) =>
+      current === slidesLengthRef.current - 1 ? 0 : current + 1,
+    );
+  }, []);
+
+  const previousSlide = useCallback(() => {
+    setCurrentSlide((current) =>
+      current === 0 ? slidesLengthRef.current - 1 : current - 1,
+    );
+  }, []);
+
   function goToSlide(index) {
     setCurrentSlide(index);
-  }
-
-  function nextSlide() {
-    setCurrentSlide((current) =>
-      current === slides.length - 1 ? 0 : current + 1,
-    );
-  }
-
-  function previousSlide() {
-    setCurrentSlide((current) =>
-      current === 0 ? slides.length - 1 : current - 1,
-    );
   }
 
   function handleTouchStart(event) {
