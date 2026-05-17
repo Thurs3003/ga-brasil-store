@@ -116,6 +116,10 @@ function CartDrawer({
   async function finishOrder() {
     if (cartItems.length === 0) return;
 
+    // Abre a janela ANTES de qualquer await — mantém o contexto do gesto do usuário.
+    // Necessário para iOS Safari, que bloqueia window.open após operações assíncronas.
+    const waWindow = window.open("about:blank", "_blank");
+
     // Busca preços reais do banco para evitar manipulação via localStorage
     const ids = cartItems.map((item) => item.id);
     const { data: freshProducts, error: priceError } = await supabase
@@ -123,7 +127,10 @@ function CartDrawer({
       .select("id, price, name, brand")
       .in("id", ids);
 
-    if (priceError || !freshProducts) return;
+    if (priceError || !freshProducts) {
+      waWindow?.close();
+      return;
+    }
 
     const priceMap = Object.fromEntries(freshProducts.map((p) => [p.id, p.price]));
 
@@ -151,7 +158,11 @@ function CartDrawer({
       status: "aguardando",
       user_id: user?.id || null,
     }]);
-    if (orderError) return;
+
+    if (orderError) {
+      waWindow?.close();
+      return;
+    }
 
     const productsMessage = validatedItems
       .map((item) => {
@@ -175,7 +186,13 @@ R$ ${validatedTotal.toFixed(2).replace(".", ",")}
 
 Aguardo as informações para pagamento e entrega.`;
 
-    window.open(buildWAUrl(getOrdersWA(), message), "_blank");
+    const waUrl = buildWAUrl(getOrdersWA(), message);
+    if (waWindow) {
+      waWindow.location.href = waUrl;
+    } else {
+      // Fallback caso o popup tenha sido bloqueado mesmo assim
+      window.location.href = waUrl;
+    }
   }
 
   return (
