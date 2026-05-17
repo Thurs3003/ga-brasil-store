@@ -1532,8 +1532,6 @@ section {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 100%;
-  overflow: hidden;
 }
 
 .heroCarouselText h1 {
@@ -1749,7 +1747,6 @@ section {
   justify-content: center;
   background: linear-gradient(135deg, #f0ecff 0%, #e8f0ff 60%, #f8f5ff 100%) !important;
   border-radius: 36px;
-  min-height: 520px;
   padding: 56px 48px;
   box-shadow: 0 24px 70px rgba(11, 31, 143, 0.08);
 }
@@ -1782,7 +1779,6 @@ section {
   overflow: hidden;
   background-size: cover;
   background-position: center;
-  min-height: 520px;
   align-items: center;
   justify-content: flex-start;
   padding: 56px 64px;
@@ -2885,25 +2881,32 @@ section {
 }
 
 @media (min-width: 769px) {
+  /* Todos os tipos de slide têm a mesma altura — evita layout shift */
   .heroCarouselContent {
     display: grid;
     grid-template-columns: 1.15fr 0.85fr;
     gap: 34px;
     align-items: stretch;
+    height: 520px;
   }
 
   .heroCarouselContent.heroContentTextOnly,
   .heroCarouselContent.heroContentFullBg {
     display: flex !important;
     grid-template-columns: unset !important;
+    height: 520px;
+    min-height: unset;
   }
 
   .heroCarouselText {
     border-radius: 36px;
+    height: 100%;
+    overflow: hidden;
   }
 
   .heroCarouselImage {
-    min-height: 520px;
+    height: 100%;
+    min-height: unset;
     border-radius: 36px;
   }
 }
@@ -5314,11 +5317,15 @@ section {
   .reportGrid { grid-template-columns: repeat(2, 1fr); }
 
   .adminSlideCard {
-    grid-template-columns: 60px 1fr;
-    grid-template-rows: auto auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .adminSlideThumb {
+    width: 100%;
+    height: 130px;
   }
   .adminSlideActions {
-    grid-column: 1 / -1;
     justify-content: flex-end;
   }
 
