@@ -45,6 +45,7 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState("");
+  const [zoomedImage, setZoomedImage] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [reviewLoading, setReviewLoading] = useState(true);
   const [myReview, setMyReview] = useState({ rating: 0, comment: "" });
@@ -53,9 +54,38 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
   const [reviewSuccess, setReviewSuccess] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Calculado cedo para ficar disponível nos hooks abaixo
+  const allImages = product
+    ? [product.image, ...(product.gallery || [])].filter((img, i, arr) => img && arr.indexOf(img) === i)
+    : [];
+
+  function navigateGallery(direction) {
+    const current = selectedImage || product?.image || "";
+    const idx = allImages.indexOf(current);
+    const next = (idx + direction + allImages.length) % allImages.length;
+    setSelectedImage(allImages[next]);
+  }
+
+  function navigateLightbox(direction) {
+    const idx = allImages.indexOf(zoomedImage);
+    const next = (idx + direction + allImages.length) % allImages.length;
+    setZoomedImage(allImages[next]);
+  }
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [id]);
+
+  useEffect(() => {
+    function handleKey(e) {
+      if (!zoomedImage) return;
+      if (e.key === "Escape") { setZoomedImage(null); return; }
+      if (e.key === "ArrowRight") navigateLightbox(1);
+      if (e.key === "ArrowLeft")  navigateLightbox(-1);
+    }
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [zoomedImage]);
 
   useEffect(() => {
     async function load() {
@@ -127,10 +157,6 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
     ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
     : null;
 
-  const allImages = product
-    ? [product.image, ...(product.gallery || [])].filter((img, i, arr) => img && arr.indexOf(img) === i)
-    : [];
-
   const relatedProducts = supabaseProducts
     .filter((p) => p.id !== product?.id && p.category === product?.category)
     .slice(0, 4);
@@ -182,6 +208,18 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
 
   return (
     <>
+      {zoomedImage && (
+        <div className="imageLightbox" onClick={() => setZoomedImage(null)}>
+          <button className="lightboxClose" onClick={() => setZoomedImage(null)}>✕</button>
+          {allImages.length > 1 && (
+            <button className="lightboxArrow left" onClick={(e) => { e.stopPropagation(); navigateLightbox(-1); }}>‹</button>
+          )}
+          <img src={zoomedImage} alt={product.name} onClick={(e) => e.stopPropagation()} />
+          {allImages.length > 1 && (
+            <button className="lightboxArrow right" onClick={(e) => { e.stopPropagation(); navigateLightbox(1); }}>›</button>
+          )}
+        </div>
+      )}
       <Helmet>
         <title>{product.name} — {product.brand} | G.A Brasil</title>
         <meta name="description" content={productDesc} />
@@ -221,9 +259,15 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
           <div className="productPageGrid">
             {/* Gallery */}
             <div className="productPageGallery">
-              <div className="productPageMainImage">
+              <div className="productPageMainImage" onClick={() => setZoomedImage(selectedImage || product.image)}>
                 {discount && <div className="productPageDiscount">-{discount}%</div>}
                 <img src={selectedImage || product.image} alt={product.name} fetchpriority="high" />
+                {allImages.length > 1 && (
+                  <>
+                    <button className="galleryArrow left" onClick={(e) => { e.stopPropagation(); navigateGallery(-1); }}>‹</button>
+                    <button className="galleryArrow right" onClick={(e) => { e.stopPropagation(); navigateGallery(1); }}>›</button>
+                  </>
+                )}
               </div>
               {allImages.length > 1 && (
                 <div className="productPageThumbs">
