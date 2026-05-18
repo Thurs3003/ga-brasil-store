@@ -151,7 +151,7 @@ function Header({
       <nav>
         <a href="/#inicio">Início</a>
         <a href="/#produtos">Produtos</a>
-        <a href="/#promocoes">Promoções</a>
+        <Link to="/promocoes">Promoções</Link>
         <a href="/#contato">Contato</a>
       </nav>
 
@@ -175,9 +175,9 @@ function Header({
         <a href="/#produtos" onClick={() => setIsMenuOpen(false)}>
           Produtos
         </a>
-        <a href="/#promocoes" onClick={() => setIsMenuOpen(false)}>
+        <Link to="/promocoes" onClick={() => setIsMenuOpen(false)}>
           Promoções
-        </a>
+        </Link>
         <a href="/#contato" onClick={() => setIsMenuOpen(false)}>
           Contato
         </a>

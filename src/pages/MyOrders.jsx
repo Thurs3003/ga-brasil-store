@@ -13,12 +13,20 @@ const STATUS_INFO = {
   cancelado:     { label: "Cancelado",                color: "#ef4444", icon: "❌" },
 };
 
-function MyOrders() {
+function MyOrders({ repeatOrderToCart, setIsCartOpen }) {
   const { user, profile, loading: userLoading, signOut } = useUser();
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedId, setExpandedId] = useState(null);
+  const [repeatingId, setRepeatingId] = useState(null);
+
+  async function handleRepeat(order) {
+    if (!repeatOrderToCart) return;
+    setRepeatingId(order.id);
+    await repeatOrderToCart(order.items || []);
+    setRepeatingId(null);
+  }
 
   useEffect(() => {
     if (userLoading) return;
@@ -138,6 +146,16 @@ function MyOrders() {
                         <div className="myOrderNotes">
                           <strong>Observação:</strong> {order.notes}
                         </div>
+                      )}
+
+                      {repeatOrderToCart && (
+                        <button
+                          className="myOrderRepeatBtn"
+                          onClick={() => handleRepeat(order)}
+                          disabled={repeatingId === order.id}
+                        >
+                          {repeatingId === order.id ? "Adicionando..." : "🔁 Repetir pedido"}
+                        </button>
                       )}
                     </div>
                   )}

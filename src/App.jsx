@@ -15,6 +15,7 @@ const CustomerLogin = lazy(() => import("./pages/CustomerLogin"));
 const CustomerRegister = lazy(() => import("./pages/CustomerRegister"));
 const CustomerResetPassword = lazy(() => import("./pages/CustomerResetPassword"));
 const MyOrders = lazy(() => import("./pages/MyOrders"));
+const Promocoes = lazy(() => import("./pages/Promocoes"));
 
 function App() {
   const { user, profile } = useUser();
@@ -112,6 +113,31 @@ function App() {
     setCartItems(cartItems.filter((item) => item.id !== productId));
   }
 
+  async function repeatOrderToCart(items) {
+    const ids = items.map((i) => i.id);
+    const { data: products } = await supabase
+      .from("products")
+      .select("id, name, brand, price, old_price, is_new, image, stock, installment, rating, category")
+      .in("id", ids);
+    if (!products) return;
+    const productMap = Object.fromEntries(products.map((p) => [p.id, p]));
+    setCartItems((prev) => {
+      const merged = [...prev];
+      items.forEach((item) => {
+        const product = productMap[item.id];
+        if (!product) return;
+        const existingIdx = merged.findIndex((i) => i.id === item.id);
+        if (existingIdx >= 0) {
+          merged[existingIdx] = { ...merged[existingIdx], quantity: merged[existingIdx].quantity + item.quantity };
+        } else {
+          merged.push({ ...product, oldPrice: product.old_price, isNew: product.is_new, quantity: item.quantity });
+        }
+      });
+      return merged;
+    });
+    setIsCartOpen(true);
+  }
+
   function toggleFavorite(productId) {
     if (favoriteIds.includes(productId)) {
       setFavoriteIds(favoriteIds.filter((id) => id !== productId));
@@ -149,7 +175,8 @@ function App() {
         <Route path="/login" element={<CustomerLogin />} />
         <Route path="/cadastro" element={<CustomerRegister />} />
         <Route path="/reset-senha" element={<CustomerResetPassword />} />
-        <Route path="/meus-pedidos" element={<MyOrders />} />
+        <Route path="/meus-pedidos" element={<MyOrders repeatOrderToCart={repeatOrderToCart} setIsCartOpen={setIsCartOpen} />} />
+        <Route path="/promocoes" element={<Promocoes {...cartProps} toastMessage={toastMessage} />} />
 
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route
