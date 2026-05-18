@@ -116,7 +116,7 @@ function Home({
           favoriteIds={favoriteIds}
           toggleFavorite={toggleFavorite}
         />
-        <Promotions />
+        <Promotions products={productsToShow} />
 
         <Brands />
 

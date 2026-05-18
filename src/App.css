@@ -6331,6 +6331,49 @@ section {
   }
 }
 
+/* ── Admin: seção promoções ──────────────────────────── */
+.promoAdminStats {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  color: #475569;
+}
+.promoAdminStats strong { color: #1e293b; }
+.promoAdminNoPromo { color: #94a3b8; font-style: italic; }
+
+.promoToggleRow { display: flex; gap: 8px; margin-top: 4px; }
+
+.promoToggleBtn {
+  flex: 1;
+  padding: 9px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #94a3b8;
+  transition: all 0.15s;
+}
+.promoToggleBtn.active   { background: #dcfce7; border-color: #86efac; color: #15803d; }
+.promoToggleBtn.inactive { background: #fef9c3; border-color: #fde047; color: #854d0e; }
+
+/* ── Banner promoções: botão Ver ofertas ─────────────── */
+.promoVerBtn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 28px;
+  background: #f5c518;
+  color: #0b1f8f;
+  font-weight: 800;
+  font-size: 0.95rem;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: background 0.15s, transform 0.1s;
+}
+.promoVerBtn:hover { background: #ffd740; transform: translateY(-1px); }
+
 /* ── Página de Promoções ─────────────────────────────── */
 .promoPage { padding-top: 80px; min-height: 100vh; background: #f8fafc; }
 

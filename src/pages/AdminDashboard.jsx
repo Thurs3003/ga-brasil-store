@@ -177,6 +177,11 @@ function AdminDashboard() {
   const [waFooter, setWaFooter] = useState(DEFAULT_WA_NUMBER);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
+  // Promotions settings
+  const [isPromoOpen, setIsPromoOpen] = useState(false);
+  const [promoActive, setPromoActive] = useState(false);
+  const [promoTitle, setPromoTitle] = useState("Semana da Beleza");
+
   function showToast(message, type = "success") {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3500);
@@ -505,6 +510,18 @@ function AdminDashboard() {
     else { setProducts((prev) => prev.map((p) => p.id === product.id ? { ...p, is_new: !p.is_new } : p)); }
   }
 
+  async function savePromoSettings() {
+    const errors = await Promise.all([
+      saveSetting("promotions_active", promoActive),
+      saveSetting("promotions_title", promoTitle),
+    ]);
+    if (errors.some(Boolean)) {
+      showToast("Erro ao salvar promoções", "error");
+    } else {
+      showToast(promoActive ? "Banner de promoções ativado!" : "Banner de promoções desativado!");
+    }
+  }
+
   async function saveWhatsAppSettings() {
     const errors = await Promise.all([
       saveSetting("wa_orders", waOrders),
@@ -612,6 +629,8 @@ function AdminDashboard() {
         if (key === "wa_orders" && value) setWaOrders(value);
         if (key === "wa_support" && value) setWaSupport(value);
         if (key === "wa_footer" && value) setWaFooter(value);
+        if (key === "promotions_active") setPromoActive(!!value);
+        if (key === "promotions_title" && value) setPromoTitle(value);
       });
     });
   }, []);
@@ -815,6 +834,70 @@ function AdminDashboard() {
       </div>
 
       {/* Orders Section */}
+      {/* Promotions Settings */}
+      <div className="adminCarouselSection">
+        <button className="adminSectionHeader" onClick={() => setIsPromoOpen((o) => !o)}>
+          <span>🔥 Banner de Promoções</span>
+          <span className="adminSectionToggle">{isPromoOpen ? "▲ Fechar" : "▼ Abrir"}</span>
+        </button>
+        {isPromoOpen && (
+          <div className="adminCarouselBody">
+            <div className="promoAdminStats">
+              {(() => {
+                const promoProducts = products.filter((p) => p.old_price > 0);
+                const maxDiscount = promoProducts.reduce((max, p) => {
+                  const d = Math.round(((p.old_price - p.price) / p.old_price) * 100);
+                  return d > max ? d : max;
+                }, 0);
+                return promoProducts.length > 0 ? (
+                  <p>📊 <strong>{promoProducts.length}</strong> produto(s) com desconto ativo · até <strong>{maxDiscount}%</strong> OFF</p>
+                ) : (
+                  <p className="promoAdminNoPromo">Nenhum produto com desconto cadastrado. Adicione um preço base e desconto nos produtos.</p>
+                );
+              })()}
+            </div>
+
+            <div className="adminFormGrid" style={{ marginTop: 16 }}>
+              <div className="formGroup">
+                <label>Título do banner</label>
+                <input
+                  type="text"
+                  placeholder="Semana da Beleza"
+                  value={promoTitle}
+                  onChange={(e) => setPromoTitle(e.target.value)}
+                />
+                <small className="formHint">Aparece no banner da página inicial</small>
+              </div>
+
+              <div className="formGroup">
+                <label>Status do banner</label>
+                <div className="promoToggleRow">
+                  <button
+                    className={`promoToggleBtn ${promoActive ? "active" : ""}`}
+                    onClick={() => setPromoActive(true)}
+                  >
+                    ✅ Ativo
+                  </button>
+                  <button
+                    className={`promoToggleBtn ${!promoActive ? "inactive" : ""}`}
+                    onClick={() => setPromoActive(false)}
+                  >
+                    ⏸ Inativo
+                  </button>
+                </div>
+                <small className="formHint">
+                  {promoActive ? "Banner visível na página inicial" : "Banner oculto na página inicial"}
+                </small>
+              </div>
+            </div>
+
+            <div className="adminCarouselButtons">
+              <button className="adminSaveBtn" onClick={savePromoSettings}>Salvar configurações</button>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* WhatsApp Settings */}
       <div className="adminCarouselSection">
         <button className="adminSectionHeader" onClick={() => setIsSettingsOpen((o) => !o)}>
