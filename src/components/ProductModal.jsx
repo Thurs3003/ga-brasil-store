@@ -33,12 +33,10 @@ function ProductModal({ product, onClose, addToCart }) {
   const [zoomedImage, setZoomedImage] = useState(null);
 
   useEffect(() => {
-    if (product) {
-      setSelectedImage(product.image || "");
-      setIsDescExpanded(false);
-      setZoomedImage(null);
-      addRecentlyViewed(product.id);
-    }
+    setSelectedImage(product?.image || "");
+    setIsDescExpanded(false);
+    setZoomedImage(null);
+    if (product) addRecentlyViewed(product.id);
   }, [product]);
 
   useEffect(() => {
