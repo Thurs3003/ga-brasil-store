@@ -1336,22 +1336,22 @@ function AdminDashboard() {
                     style={dragSrcId === product.id ? { opacity: 0.4 } : {}}
                   >
                     <td
-                      className="dragHandle"
+                      className="dragHandle adminColDrag"
                       title={productSearch || productCategoryFilter ? "Limpe os filtros para reordenar" : "Arraste para reordenar"}
                       style={{ cursor: productSearch || productCategoryFilter ? "not-allowed" : "grab", color: "#94a3b8", textAlign: "center", fontSize: 18 }}
                     >
                       ⠿
                     </td>
-                    <td>
+                    <td className="adminColImage">
                       <img src={product.image} alt={product.name} className="adminThumb" />
                     </td>
-                    <td>
+                    <td className="adminColName">
                       <strong>{product.name}</strong>
                       <small>{product.brand}</small>
                     </td>
-                    <td>R$ {Number(product.price).toFixed(2).replace(".", ",")}</td>
-                    <td><span className="adminCategoryPill">{product.category}</span></td>
-                    <td>
+                    <td className="adminColPrice">R$ {Number(product.price).toFixed(2).replace(".", ",")}</td>
+                    <td className="adminColCategory"><span className="adminCategoryPill">{product.category}</span></td>
+                    <td className="adminColStock">
                       {stockEditId === product.id ? (
                         <div className="stockAdjustForm">
                           <input
@@ -1382,30 +1382,32 @@ function AdminDashboard() {
                         </div>
                       )}
                     </td>
-                    <td>
+                    <td className="adminColNew">
                       <button
                         className={`featuredToggle ${product.is_new ? "active" : ""}`}
                         onClick={() => toggleIsNew(product)}
                         title={product.is_new ? "Remover badge Novo" : "Marcar como Novo"}
+                        aria-label={product.is_new ? "Remover badge Novo" : "Marcar como Novo"}
                         style={product.is_new ? { background: "#eff6ff", borderColor: "#3b82f6", color: "#1d4ed8" } : {}}
                       >
                         {product.is_new ? "✨ Sim" : "— Não"}
                       </button>
                     </td>
-                    <td>
+                    <td className="adminColFeatured">
                       <button
                         className={`featuredToggle ${product.featured ? "active" : ""}`}
                         onClick={() => toggleFeatured(product)}
                         title={product.featured ? "Remover destaque" : "Marcar como destaque"}
+                        aria-label={product.featured ? "Remover destaque" : "Marcar como destaque"}
                       >
                         {product.featured ? "🔥 Sim" : "— Não"}
                       </button>
                     </td>
-                    <td>
+                    <td className="adminColActions">
                       <div className="adminActions">
-                        <button className="editButton" onClick={() => startEdit(product)}>✏️ Editar</button>
-                        <button className="duplicateButton" onClick={() => duplicateProduct(product)} title="Duplicar produto">⧉ Duplicar</button>
-                        <button className="deleteButton" onClick={() => deleteProduct(product.id, product.name)}>🗑 Excluir</button>
+                        <button className="editButton" aria-label={`Editar ${product.name}`} onClick={() => startEdit(product)}>✏️ Editar</button>
+                        <button className="duplicateButton" aria-label={`Duplicar ${product.name}`} onClick={() => duplicateProduct(product)}>⧉ Duplicar</button>
+                        <button className="deleteButton" aria-label={`Excluir ${product.name}`} onClick={() => deleteProduct(product.id, product.name)}>🗑 Excluir</button>
                       </div>
                     </td>
                   </tr>

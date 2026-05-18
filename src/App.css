@@ -6240,3 +6240,103 @@ section {
 }
 
 .confirmModalConfirm:hover { background: #c62828; }
+
+/* Admin table — mobile card view */
+@media (max-width: 768px) {
+  .adminTableWrapper { overflow-x: unset; }
+
+  .adminTable thead { display: none; }
+
+  .adminTable tbody tr {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "img name    actions"
+      "img price   actions"
+      "img stock   actions";
+    gap: 2px 12px;
+    padding: 14px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    border-radius: 0;
+    align-items: start;
+  }
+
+  .adminTable tbody tr:last-child { border-bottom: none; }
+  .adminTable tbody tr:hover td { background: transparent; }
+
+  .adminColDrag    { display: none; }
+  .adminColCategory { display: none; }
+  .adminColNew     { display: none; }
+  .adminColFeatured { display: none; }
+
+  .adminColImage {
+    grid-area: img;
+    padding: 0;
+    border: none;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 2px;
+  }
+
+  .adminColImage .adminThumb {
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+  }
+
+  .adminColName {
+    grid-area: name;
+    padding: 0;
+    border: none;
+  }
+
+  .adminColName strong { font-size: 14px; }
+  .adminColName small  { font-size: 12px; }
+
+  .adminColPrice {
+    grid-area: price;
+    padding: 0;
+    border: none;
+    font-size: 13px;
+    color: #475569;
+  }
+
+  .adminColStock {
+    grid-area: stock;
+    padding: 0;
+    border: none;
+  }
+
+  .adminColActions {
+    grid-area: actions;
+    padding: 0;
+    border: none;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 2px;
+  }
+
+  .adminColActions .adminActions {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .adminColActions .editButton,
+  .adminColActions .duplicateButton,
+  .adminColActions .deleteButton {
+    padding: 6px 10px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+}
+
+/* Focus visível para acessibilidade por teclado */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 2px solid #0b1f8f;
+  outline-offset: 2px;
+}
