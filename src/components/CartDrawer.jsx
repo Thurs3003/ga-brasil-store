@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { getOrdersWA, buildWAUrl } from "../lib/whatsapp";
 
@@ -72,6 +72,8 @@ function CartDrawer({
   const [freight, setFreight] = useState(null);
   const [freightLoading, setFreightLoading] = useState(false);
   const [freightError, setFreightError] = useState("");
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const cepCacheRef = useRef({});
   const total = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
@@ -80,33 +82,38 @@ function CartDrawer({
   async function calculateFreight() {
     const cleaned = cep.replace(/\D/g, "");
     if (cleaned.length !== 8) { setFreightError("CEP inválido. Digite 8 dígitos."); return; }
+
+    if (cepCacheRef.current[cleaned]) {
+      setFreight(cepCacheRef.current[cleaned]);
+      setFreightError("");
+      return;
+    }
+
     setFreightLoading(true);
     setFreightError("");
     setFreight(null);
     try {
-      // 1. Buscar cidade/estado do CEP
       const cepRes = await fetch(`https://viacep.com.br/ws/${cleaned}/json/`);
       const cepData = await cepRes.json();
       if (cepData.erro) { setFreightError("CEP não encontrado."); setFreightLoading(false); return; }
 
-      // 2. Buscar coordenadas do CEP via Nominatim (OpenStreetMap)
       const geoRes = await fetch(
         `https://nominatim.openstreetmap.org/search?postalcode=${cleaned}&country=Brazil&format=json&limit=1`,
         { headers: { "Accept-Language": "pt-BR", "User-Agent": "GABrasilStore/1.0" } }
       );
       const geoData = await geoRes.json();
 
+      let result;
       if (!geoData.length) {
-        // Fallback por estado quando o geocoding não retorna resultado
         const rate = FREIGHT_FALLBACK[cepData.uf] || { price: 50, days: "5-10 dias úteis" };
-        setFreight({ ...rate, city: cepData.localidade, state: cepData.uf, km: null });
-        setFreightLoading(false);
-        return;
+        result = { ...rate, city: cepData.localidade, state: cepData.uf, km: null };
+      } else {
+        const km = haversineKm(STORE_LAT, STORE_LNG, parseFloat(geoData[0].lat), parseFloat(geoData[0].lon));
+        result = { ...rateByDistance(km), city: cepData.localidade, state: cepData.uf, km };
       }
 
-      const km = haversineKm(STORE_LAT, STORE_LNG, parseFloat(geoData[0].lat), parseFloat(geoData[0].lon));
-      const rate = rateByDistance(km);
-      setFreight({ ...rate, city: cepData.localidade, state: cepData.uf, km });
+      cepCacheRef.current[cleaned] = result;
+      setFreight(result);
     } catch {
       setFreightError("Erro ao calcular frete. Tente novamente.");
     }
@@ -114,7 +121,8 @@ function CartDrawer({
   }
 
   async function finishOrder() {
-    if (cartItems.length === 0) return;
+    if (cartItems.length === 0 || isCheckingOut) return;
+    setIsCheckingOut(true);
 
     // Abre a janela ANTES de qualquer await — mantém o contexto do gesto do usuário.
     // Necessário para iOS Safari, que bloqueia window.open após operações assíncronas.
@@ -129,6 +137,7 @@ function CartDrawer({
 
     if (priceError || !freshProducts) {
       waWindow?.close();
+      setIsCheckingOut(false);
       return;
     }
 
@@ -161,6 +170,7 @@ function CartDrawer({
 
     if (orderError) {
       waWindow?.close();
+      setIsCheckingOut(false);
       return;
     }
 
@@ -190,9 +200,9 @@ Aguardo as informações para pagamento e entrega.`;
     if (waWindow) {
       waWindow.location.href = waUrl;
     } else {
-      // Fallback caso o popup tenha sido bloqueado mesmo assim
       window.location.href = waUrl;
     }
+    setIsCheckingOut(false);
   }
 
   return (
@@ -306,8 +316,12 @@ Aguardo as informações para pagamento e entrega.`;
                 </div>
               )}
 
-              <button className="checkoutButton" onClick={finishOrder}>
-                Finalizar pelo WhatsApp
+              <button
+                className="checkoutButton"
+                onClick={finishOrder}
+                disabled={isCheckingOut}
+              >
+                {isCheckingOut ? "Processando..." : "Finalizar pelo WhatsApp"}
               </button>
             </div>
           </>

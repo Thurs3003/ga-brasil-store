@@ -152,6 +152,15 @@ function AdminDashboard() {
 
   // Product table filter
   const [productSearch, setProductSearch] = useState("");
+
+  // Confirm modal
+  const [confirmModal, setConfirmModal] = useState(null);
+
+  function askConfirm(message, description = "") {
+    return new Promise((resolve) => {
+      setConfirmModal({ message, description, resolve });
+    });
+  }
   const [productCategoryFilter, setProductCategoryFilter] = useState("");
 
   // Drag to reorder products
@@ -315,8 +324,9 @@ function AdminDashboard() {
     setImagePreview(product.image || "");
   }
 
-  async function deleteProduct(id) {
-    if (!confirm("Deseja excluir este produto?")) return;
+  async function deleteProduct(id, name) {
+    const ok = await askConfirm(`Excluir "${name}"?`, "Esta ação não pode ser desfeita.");
+    if (!ok) return;
     const { error } = await supabase.from("products").delete().eq("id", id);
     if (error) { showToast("Erro ao excluir produto", "error"); }
     else { showToast("Produto excluído!"); loadProducts(); }
@@ -405,13 +415,16 @@ function AdminDashboard() {
   }
 
   async function deleteSlide(idx) {
-    if (!confirm("Excluir este slide?")) return;
+    const title = heroSlides[idx]?.title || "sem título";
+    const ok = await askConfirm(`Excluir slide "${title}"?`);
+    if (!ok) return;
     const ok = await saveHeroSlides(heroSlides.filter((_, i) => i !== idx));
     if (ok) showToast("Slide excluído!");
   }
 
   async function resetHeroSlides() {
-    if (!confirm("Restaurar os slides padrão? As alterações serão perdidas.")) return;
+    const ok = await askConfirm("Restaurar slides padrão?", "As alterações atuais serão perdidas.");
+    if (!ok) return;
     const ok = await saveHeroSlides(DEFAULT_HERO_SLIDES);
     if (ok) showToast("Slides restaurados!");
   }
@@ -464,7 +477,8 @@ function AdminDashboard() {
   }
 
   async function clearFinishedOrders() {
-    if (!confirm("Excluir todos os pedidos concluídos, cancelados e aguardando?")) return;
+    const ok = await askConfirm("Limpar pedidos finalizados?", "Pedidos concluídos, cancelados e aguardando serão excluídos.");
+    if (!ok) return;
     const { error } = await supabase.from("orders")
       .delete().in("status", ["concluido", "cancelado", "aguardando"]);
     if (error) { showToast("Erro ao limpar pedidos", "error"); }
@@ -472,8 +486,8 @@ function AdminDashboard() {
   }
 
   async function clearAllOrders() {
-    if (!confirm("⚠️ Excluir TODOS os pedidos? Esta ação não pode ser desfeita.")) return;
-    if (!confirm("Tem certeza? Todos os pedidos serão perdidos permanentemente.")) return;
+    const ok = await askConfirm("Excluir TODOS os pedidos?", "Esta ação não pode ser desfeita. Todos os pedidos serão perdidos permanentemente.");
+    if (!ok) return;
     const { error } = await supabase.from("orders").delete().neq("id", 0);
     if (error) { showToast("Erro ao limpar pedidos", "error"); }
     else { showToast("Todos os pedidos foram removidos!"); setOrders([]); }
@@ -1125,7 +1139,7 @@ function AdminDashboard() {
                 <div className="formGroup">
                   <label>Preço base (R$)</label>
                   <input
-                    type="number" step="0.01" placeholder="0,00"
+                    type="number" step="0.01" min="0" placeholder="0,00"
                     value={newProduct.price}
                     onChange={field("price")}
                     required
@@ -1160,7 +1174,7 @@ function AdminDashboard() {
 
                 <div className="formGroup">
                   <label>Estoque inicial</label>
-                  <input type="number" placeholder="0" value={newProduct.stock} onChange={field("stock")} />
+                  <input type="number" min="0" placeholder="0" value={newProduct.stock} onChange={field("stock")} />
                 </div>
 
                 <div className="formGroup">
@@ -1391,7 +1405,7 @@ function AdminDashboard() {
                       <div className="adminActions">
                         <button className="editButton" onClick={() => startEdit(product)}>✏️ Editar</button>
                         <button className="duplicateButton" onClick={() => duplicateProduct(product)} title="Duplicar produto">⧉ Duplicar</button>
-                        <button className="deleteButton" onClick={() => deleteProduct(product.id)}>🗑 Excluir</button>
+                        <button className="deleteButton" onClick={() => deleteProduct(product.id, product.name)}>🗑 Excluir</button>
                       </div>
                     </td>
                   </tr>
@@ -1401,6 +1415,31 @@ function AdminDashboard() {
           </div>
         )}
       </div>
+
+      {confirmModal && (
+        <div className="confirmModalBackdrop" onClick={() => { confirmModal.resolve(false); setConfirmModal(null); }}>
+          <div className="confirmModal" onClick={(e) => e.stopPropagation()}>
+            <p className="confirmModalMessage">{confirmModal.message}</p>
+            {confirmModal.description && (
+              <p className="confirmModalDesc">{confirmModal.description}</p>
+            )}
+            <div className="confirmModalActions">
+              <button
+                className="confirmModalCancel"
+                onClick={() => { confirmModal.resolve(false); setConfirmModal(null); }}
+              >
+                Cancelar
+              </button>
+              <button
+                className="confirmModalConfirm"
+                onClick={() => { confirmModal.resolve(true); setConfirmModal(null); }}
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
