@@ -66,7 +66,8 @@ function Home({
 
     const matchesSearch =
       product.name.toLowerCase().includes(search) ||
-      product.brand.toLowerCase().includes(search);
+      product.brand.toLowerCase().includes(search) ||
+      (product.category && product.category.toLowerCase().includes(search));
 
     const matchesCategory =
       selectedCategory === "Todos" || product.category === selectedCategory;

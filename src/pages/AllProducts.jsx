@@ -69,7 +69,8 @@ function AllProducts({
       const matchSearch =
         !s ||
         p.name.toLowerCase().includes(s) ||
-        p.brand.toLowerCase().includes(s);
+        p.brand.toLowerCase().includes(s) ||
+        (p.category && p.category.toLowerCase().includes(s));
       const matchCat =
         selectedCategory === "Todos" || p.category === selectedCategory;
       const matchMin = priceMin === "" || p.price >= parseFloat(priceMin);
