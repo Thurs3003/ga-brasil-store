@@ -416,15 +416,15 @@ function AdminDashboard() {
 
   async function deleteSlide(idx) {
     const title = heroSlides[idx]?.title || "sem título";
-    const ok = await askConfirm(`Excluir slide "${title}"?`);
-    if (!ok) return;
+    const confirmed = await askConfirm(`Excluir slide "${title}"?`);
+    if (!confirmed) return;
     const ok = await saveHeroSlides(heroSlides.filter((_, i) => i !== idx));
     if (ok) showToast("Slide excluído!");
   }
 
   async function resetHeroSlides() {
-    const ok = await askConfirm("Restaurar slides padrão?", "As alterações atuais serão perdidas.");
-    if (!ok) return;
+    const confirmed = await askConfirm("Restaurar slides padrão?", "As alterações atuais serão perdidas.");
+    if (!confirmed) return;
     const ok = await saveHeroSlides(DEFAULT_HERO_SLIDES);
     if (ok) showToast("Slides restaurados!");
   }
