@@ -66,6 +66,7 @@ function Promocoes({
 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const hasEndDate      = useState(() => !!getSetting("promotions_end"))[0];
   const countdownTarget = useState(() => getCountdownTarget())[0];
   const endLabel        = useState(() => getEndLabel())[0];
   const countdown = useCountdown(countdownTarget);
@@ -139,18 +140,20 @@ function Promocoes({
               Desconto exclusivo para lojistas e revendedores.<br />Aproveite enquanto durar!
             </p>
 
-            <div className="promoCountdown">
-              <span className="promoCountLabel">Encerra em</span>
-              <div className="promoCountUnits">
-                <CountdownUnit value={countdown.days}    label="dias" />
-                <span className="promoCountSep">:</span>
-                <CountdownUnit value={countdown.hours}   label="horas" />
-                <span className="promoCountSep">:</span>
-                <CountdownUnit value={countdown.minutes} label="min" />
-                <span className="promoCountSep">:</span>
-                <CountdownUnit value={countdown.seconds} label="seg" />
+            {hasEndDate && (
+              <div className="promoCountdown">
+                <span className="promoCountLabel">Encerra em</span>
+                <div className="promoCountUnits">
+                  <CountdownUnit value={countdown.days}    label="dias" />
+                  <span className="promoCountSep">:</span>
+                  <CountdownUnit value={countdown.hours}   label="horas" />
+                  <span className="promoCountSep">:</span>
+                  <CountdownUnit value={countdown.minutes} label="min" />
+                  <span className="promoCountSep">:</span>
+                  <CountdownUnit value={countdown.seconds} label="seg" />
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -169,11 +172,13 @@ function Promocoes({
                 <span>desconto máximo</span>
               </div>
             )}
-            <div className="promoStatCard">
-              <span className="promoStatIcon">⏰</span>
-              <strong>{endLabel}</strong>
-              <span>prazo final</span>
-            </div>
+            {hasEndDate && (
+              <div className="promoStatCard">
+                <span className="promoStatIcon">⏰</span>
+                <strong>{endLabel}</strong>
+                <span>prazo final</span>
+              </div>
+            )}
           </div>
         )}
 
