@@ -6381,7 +6381,7 @@ section {
 .promoHero {
   position: relative;
   background: linear-gradient(135deg, #0b1f8f 0%, #6d28d9 55%, #be185d 100%);
-  padding: 80px 6% 110px;
+  padding: 52px 6% 80px;
   color: white;
   text-align: center;
   overflow: hidden;
@@ -6417,29 +6417,29 @@ section {
   display: inline-block;
   background: var(--brand-yellow);
   color: #0b1f8f;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 900;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 7px 22px;
+  padding: 6px 18px;
   border-radius: 999px;
-  margin-bottom: 22px;
+  margin-bottom: 14px;
   box-shadow: 0 6px 20px rgba(255,214,0,0.45);
 }
 
 .promoHeroTitle {
-  font-size: 3.4rem;
+  font-size: 2.5rem;
   font-weight: 950;
-  margin: 0 0 16px;
-  line-height: 1.05;
+  margin: 0 0 10px;
+  line-height: 1.08;
   letter-spacing: -0.02em;
 }
 
 .promoHeroSubtitle {
-  font-size: 1.05rem;
+  font-size: 0.97rem;
   opacity: 0.85;
-  margin: 0 auto 40px;
-  line-height: 1.65;
+  margin: 0 auto 28px;
+  line-height: 1.6;
 }
 
 /* Countdown */
@@ -6472,14 +6472,14 @@ section {
   background: rgba(255,255,255,0.15);
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 14px;
-  padding: 12px 18px;
-  min-width: 64px;
+  border-radius: 12px;
+  padding: 8px 14px;
+  min-width: 54px;
 }
-.promoCountUnit strong { font-size: 2rem; font-weight: 900; line-height: 1; }
-.promoCountUnit span   { font-size: 0.6rem; opacity: 0.7; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.08em; }
+.promoCountUnit strong { font-size: 1.5rem; font-weight: 900; line-height: 1; }
+.promoCountUnit span   { font-size: 0.58rem; opacity: 0.7; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.08em; }
 
-.promoCountSep { font-size: 1.6rem; font-weight: 700; opacity: 0.5; margin-bottom: 14px; }
+.promoCountSep { font-size: 1.3rem; font-weight: 700; opacity: 0.5; margin-bottom: 10px; }
 
 /* Stat cards flutuantes */
 .promoStats {
@@ -6577,8 +6577,8 @@ section {
 .promoEmpty h2 { font-size: 1.3rem; color: #1e293b; margin: 0 0 8px; }
 
 @media (max-width: 768px) {
-  .promoHero { padding: 60px 5% 90px; clip-path: polygon(0 0, 100% 0, 100% 92%, 0 100%); }
-  .promoHeroTitle { font-size: 2.2rem; }
+  .promoHero { padding: 42px 5% 68px; clip-path: polygon(0 0, 100% 0, 100% 92%, 0 100%); }
+  .promoHeroTitle { font-size: 1.8rem; }
   .promoHeroSubtitle { font-size: 0.95rem; }
   .promoCountUnit { min-width: 50px; padding: 9px 12px; }
   .promoCountUnit strong { font-size: 1.5rem; }
