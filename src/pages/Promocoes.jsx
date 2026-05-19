@@ -6,6 +6,7 @@ import ProductCardSkeleton from "../components/ProductCardSkeleton";
 import CartDrawer from "../components/CartDrawer";
 import ProductModal from "../components/ProductModal";
 import Footer from "../components/Footer";
+import { getSetting } from "../lib/settings";
 
 function getWeekEnd() {
   const now = new Date();
@@ -14,6 +15,22 @@ function getWeekEnd() {
   end.setDate(now.getDate() + daysUntilSunday);
   end.setHours(23, 59, 59, 0);
   return end;
+}
+
+function getCountdownTarget() {
+  const endSetting = getSetting("promotions_end");
+  if (endSetting) {
+    const [y, m, d] = endSetting.split("-").map(Number);
+    return new Date(y, m - 1, d, 23, 59, 59, 0).getTime();
+  }
+  return getWeekEnd().getTime();
+}
+
+function getEndLabel() {
+  const endSetting = getSetting("promotions_end");
+  if (!endSetting) return "domingo";
+  const [y, m, d] = endSetting.split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString("pt-BR", { day: "2-digit", month: "long" });
 }
 
 function useCountdown(target) {
@@ -49,8 +66,9 @@ function Promocoes({
 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const weekEnd = useState(() => getWeekEnd().getTime())[0];
-  const countdown = useCountdown(weekEnd);
+  const countdownTarget = useState(() => getCountdownTarget())[0];
+  const endLabel        = useState(() => getEndLabel())[0];
+  const countdown = useCountdown(countdownTarget);
 
   const promoProducts = (supabaseProducts || []).filter(
     (p) => (p.old_price || p.oldPrice) && (p.old_price || p.oldPrice) > p.price
@@ -153,7 +171,7 @@ function Promocoes({
             )}
             <div className="promoStatCard">
               <span className="promoStatIcon">⏰</span>
-              <strong>Domingo</strong>
+              <strong>{endLabel}</strong>
               <span>prazo final</span>
             </div>
           </div>

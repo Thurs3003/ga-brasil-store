@@ -3,14 +3,35 @@ import { Link } from "react-router-dom";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import { getSetting, subscribeToSettings } from "../lib/settings";
 
+function parseDateLocal(str) {
+  if (!str) return null;
+  const [y, m, d] = str.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function checkActive(settings) {
+  if (!settings.promotions_active) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const start = parseDateLocal(settings.promotions_start);
+  const end   = parseDateLocal(settings.promotions_end);
+  if (start && today < start) return false;
+  if (end   && today > end)   return false;
+  return true;
+}
+
 function Promotions({ products = [] }) {
   const ref = useScrollReveal();
-  const [isActive, setIsActive] = useState(() => !!getSetting("promotions_active"));
-  const [title, setTitle]       = useState(() => getSetting("promotions_title") || "Semana da Beleza");
+  const [isActive, setIsActive] = useState(() => checkActive({
+    promotions_active: getSetting("promotions_active"),
+    promotions_start:  getSetting("promotions_start"),
+    promotions_end:    getSetting("promotions_end"),
+  }));
+  const [title, setTitle] = useState(() => getSetting("promotions_title") || "Semana da Beleza");
 
   useEffect(() => {
     return subscribeToSettings((settings) => {
-      setIsActive(!!settings.promotions_active);
+      setIsActive(checkActive(settings));
       if (settings.promotions_title) setTitle(settings.promotions_title);
     });
   }, []);

@@ -6359,6 +6359,18 @@ section {
 .promoToggleBtn.active   { background: #dcfce7; border-color: #86efac; color: #15803d; }
 .promoToggleBtn.inactive { background: #fef9c3; border-color: #fde047; color: #854d0e; }
 
+.promoScheduleStatus { margin-top: 14px; }
+.promoScheduleTag {
+  display: inline-block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 8px;
+}
+.promoScheduleTag.running   { background: #dcfce7; color: #15803d; }
+.promoScheduleTag.scheduled { background: #dbeafe; color: #1d4ed8; }
+.promoScheduleTag.expired   { background: #fee2e2; color: #b91c1c; }
+
 /* ── Banner promoções: botão Ver ofertas ─────────────── */
 .promoVerBtn {
   display: inline-block;

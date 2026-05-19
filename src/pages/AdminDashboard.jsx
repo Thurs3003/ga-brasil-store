@@ -181,6 +181,8 @@ function AdminDashboard() {
   const [isPromoOpen, setIsPromoOpen] = useState(false);
   const [promoActive, setPromoActive] = useState(false);
   const [promoTitle, setPromoTitle] = useState("Semana da Beleza");
+  const [promoStart, setPromoStart] = useState("");
+  const [promoEnd, setPromoEnd]     = useState("");
 
   function showToast(message, type = "success") {
     setToast({ message, type });
@@ -514,6 +516,8 @@ function AdminDashboard() {
     const errors = await Promise.all([
       saveSetting("promotions_active", promoActive),
       saveSetting("promotions_title", promoTitle),
+      saveSetting("promotions_start", promoStart || null),
+      saveSetting("promotions_end",   promoEnd   || null),
     ]);
     if (errors.some(Boolean)) {
       showToast("Erro ao salvar promoções", "error");
@@ -631,6 +635,8 @@ function AdminDashboard() {
         if (key === "wa_footer" && value) setWaFooter(value);
         if (key === "promotions_active") setPromoActive(!!value);
         if (key === "promotions_title" && value) setPromoTitle(value);
+        if (key === "promotions_start") setPromoStart(value || "");
+        if (key === "promotions_end")   setPromoEnd(value || "");
       });
     });
   }, []);
@@ -890,6 +896,44 @@ function AdminDashboard() {
                 </small>
               </div>
             </div>
+
+            <div className="adminFormGrid" style={{ marginTop: 16 }}>
+              <div className="formGroup">
+                <label>Início da promoção</label>
+                <input
+                  type="date"
+                  value={promoStart}
+                  onChange={(e) => setPromoStart(e.target.value)}
+                />
+                <small className="formHint">Deixe vazio para exibir imediatamente ao ativar</small>
+              </div>
+              <div className="formGroup">
+                <label>Fim da promoção</label>
+                <input
+                  type="date"
+                  value={promoEnd}
+                  onChange={(e) => setPromoEnd(e.target.value)}
+                />
+                <small className="formHint">Controla o countdown e oculta o banner automaticamente</small>
+              </div>
+            </div>
+
+            {promoActive && (promoStart || promoEnd) && (
+              <div className="promoScheduleStatus">
+                {(() => {
+                  const fmt = (d) => new Date(d + "T00:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
+                  const now = new Date();
+                  now.setHours(0,0,0,0);
+                  const start = promoStart ? new Date(promoStart + "T00:00:00") : null;
+                  const end   = promoEnd   ? new Date(promoEnd   + "T00:00:00") : null;
+                  if (start && now < start) return <span className="promoScheduleTag scheduled">🗓 Agendada — começa em {fmt(promoStart)}</span>;
+                  if (end   && now > end)   return <span className="promoScheduleTag expired">⛔ Expirada em {fmt(promoEnd)}</span>;
+                  if (start && end)         return <span className="promoScheduleTag running">✅ Rodando de {fmt(promoStart)} até {fmt(promoEnd)}</span>;
+                  if (end)                  return <span className="promoScheduleTag running">✅ Ativa até {fmt(promoEnd)}</span>;
+                  if (start)                return <span className="promoScheduleTag running">✅ Ativa desde {fmt(promoStart)}</span>;
+                })()}
+              </div>
+            )}
 
             <div className="adminCarouselButtons">
               <button className="adminSaveBtn" onClick={savePromoSettings}>Salvar configurações</button>
