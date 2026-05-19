@@ -9,6 +9,11 @@ function Promotions({ products = [] }) {
   const [title, setTitle]       = useState(() => getSetting("promotions_title") || "Semana da Beleza");
 
   useEffect(() => {
+    // Sync imediatamente — loadSettings pode ter completado antes deste mount
+    setIsActive(!!getSetting("promotions_active"));
+    const savedTitle = getSetting("promotions_title");
+    if (savedTitle) setTitle(savedTitle);
+
     return subscribeToSettings((settings) => {
       setIsActive(!!settings.promotions_active);
       if (settings.promotions_title) setTitle(settings.promotions_title);

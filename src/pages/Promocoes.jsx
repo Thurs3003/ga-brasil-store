@@ -69,6 +69,13 @@ function Promocoes({
     (p) => (p.old_price || p.oldPrice) && (p.old_price || p.oldPrice) > p.price
   );
 
+  const maxDiscount = promoProducts.reduce((max, p) => {
+    const op = p.old_price || p.oldPrice;
+    if (!op) return max;
+    const d = Math.round(((op - p.price) / op) * 100);
+    return d > max ? d : max;
+  }, 0);
+
   const filtered = promoProducts.filter((p) => {
     const s = searchTerm.toLowerCase();
     return (
@@ -79,7 +86,7 @@ function Promocoes({
     );
   });
 
-  const searchResults = supabaseProducts.filter((p) => {
+  const searchResults = (supabaseProducts || []).filter((p) => {
     const s = searchTerm.toLowerCase();
     return (
       p.name.toLowerCase().includes(s) ||
@@ -121,25 +128,37 @@ function Promocoes({
 
       <main className="promoPage">
         <div className="promoHero">
-          <div className="promoHeroContent">
-            <span className="promoEyebrow">🔥 Ofertas especiais</span>
-            <h1>Promoções da Semana</h1>
-            <p>Produtos com desconto para lojistas e revendedores. Aproveite enquanto dura!</p>
+          <div className="promoHeroBadge">
+            {maxDiscount > 0 ? `ATÉ ${maxDiscount}% OFF` : "OFERTAS ESPECIAIS"}
+          </div>
 
-            <div className="promoCountdown">
-              <span className="promoCountLabel">Termina em:</span>
-              <div className="promoCountUnits">
-                <CountdownUnit value={countdown.days}    label="dias" />
-                <span className="promoCountSep">:</span>
-                <CountdownUnit value={countdown.hours}   label="horas" />
-                <span className="promoCountSep">:</span>
-                <CountdownUnit value={countdown.minutes} label="min" />
-                <span className="promoCountSep">:</span>
-                <CountdownUnit value={countdown.seconds} label="seg" />
-              </div>
+          <h1 className="promoHeroTitle">Promoções da Semana 🔥</h1>
+          <p className="promoHeroSubtitle">
+            Produtos com desconto exclusivo para lojistas e revendedores.<br />
+            Aproveite enquanto dura!
+          </p>
+
+          <div className="promoCountdown">
+            <span className="promoCountLabel">Termina em:</span>
+            <div className="promoCountUnits">
+              <CountdownUnit value={countdown.days}    label="dias" />
+              <span className="promoCountSep">:</span>
+              <CountdownUnit value={countdown.hours}   label="horas" />
+              <span className="promoCountSep">:</span>
+              <CountdownUnit value={countdown.minutes} label="min" />
+              <span className="promoCountSep">:</span>
+              <CountdownUnit value={countdown.seconds} label="seg" />
             </div>
           </div>
         </div>
+
+        {!isLoadingProducts && promoProducts.length > 0 && (
+          <div className="promoStatsBar">
+            <span>🏷️ <strong>{promoProducts.length}</strong> produto{promoProducts.length !== 1 ? "s" : ""} em oferta</span>
+            {maxDiscount > 0 && <span>🔥 Até <strong>{maxDiscount}% OFF</strong></span>}
+            <span>⏰ Termina no domingo</span>
+          </div>
+        )}
 
         <div className="promoBody">
           {!isLoadingProducts && promoProducts.length === 0 ? (
@@ -150,12 +169,13 @@ function Promocoes({
             </div>
           ) : (
             <>
-              <div className="promoInfo">
-                <strong>{filtered.length} produto{filtered.length !== 1 ? "s" : ""} em promoção</strong>
-                {searchTerm && <span> para "{searchTerm}"</span>}
-              </div>
+              {searchTerm && (
+                <p className="promoInfo">
+                  <strong>{filtered.length}</strong> resultado{filtered.length !== 1 ? "s" : ""} para &ldquo;{searchTerm}&rdquo;
+                </p>
+              )}
 
-              <div className="productsGrid">
+              <div className="productGrid">
                 {isLoadingProducts
                   ? Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)
                   : filtered.map((product, i) => (

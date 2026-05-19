@@ -6378,27 +6378,46 @@ section {
 .promoPage { padding-top: 80px; min-height: 100vh; background: #f8fafc; }
 
 .promoHero {
-  background: linear-gradient(135deg, #0b1f8f 0%, #1a3acf 60%, #b5432a 100%);
-  padding: 60px 6% 56px;
+  background:
+    linear-gradient(135deg, rgba(11,31,143,0.95) 0%, rgba(26,58,207,0.90) 55%, rgba(181,67,42,0.80) 100%),
+    url("https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1400&q=80");
+  background-size: cover;
+  background-position: center;
+  padding: 72px 6% 64px;
   color: white;
   text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
-.promoHeroContent { max-width: 620px; margin: 0 auto; }
-
-.promoEyebrow {
+.promoHeroBadge {
   display: inline-block;
-  background: rgba(255,255,255,0.15);
-  padding: 6px 16px;
-  border-radius: 999px;
+  background: var(--brand-yellow);
+  color: var(--primary-blue);
   font-size: 0.85rem;
-  font-weight: 600;
-  margin-bottom: 16px;
-  letter-spacing: 0.03em;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 20px;
+  border-radius: 999px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(255,214,0,0.35);
 }
 
-.promoHero h1 { font-size: 2.4rem; font-weight: 900; margin: 0 0 12px; }
-.promoHero p  { font-size: 1rem; opacity: 0.85; margin: 0 0 32px; }
+.promoHeroTitle {
+  font-size: 2.8rem;
+  font-weight: 900;
+  margin: 0 0 14px;
+  line-height: 1.1;
+}
+
+.promoHeroSubtitle {
+  font-size: 1.05rem;
+  opacity: 0.88;
+  margin: 0 auto 36px;
+  max-width: 520px;
+  line-height: 1.6;
+}
 
 .promoCountdown {
   display: flex;
@@ -6408,7 +6427,7 @@ section {
   flex-wrap: wrap;
 }
 
-.promoCountLabel { font-size: 0.9rem; opacity: 0.8; font-weight: 500; }
+.promoCountLabel { font-size: 0.9rem; opacity: 0.8; font-weight: 600; }
 
 .promoCountUnits {
   display: flex;
@@ -6420,16 +6439,32 @@ section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: rgba(255,255,255,0.15);
-  border-radius: 10px;
-  padding: 8px 14px;
-  min-width: 56px;
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 12px;
+  padding: 10px 16px;
+  min-width: 60px;
 }
 
-.promoCountUnit strong { font-size: 1.6rem; font-weight: 900; line-height: 1; }
-.promoCountUnit span   { font-size: 0.65rem; opacity: 0.75; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+.promoCountUnit strong { font-size: 1.8rem; font-weight: 900; line-height: 1; }
+.promoCountUnit span   { font-size: 0.62rem; opacity: 0.75; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.06em; }
 
-.promoCountSep { font-size: 1.4rem; font-weight: 700; opacity: 0.6; margin-bottom: 12px; }
+.promoCountSep { font-size: 1.5rem; font-weight: 700; opacity: 0.55; margin-bottom: 14px; }
+
+/* Barra de stats */
+.promoStatsBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  padding: 16px 6%;
+  background: #1e293b;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  flex-wrap: wrap;
+}
+.promoStatsBar strong { color: var(--brand-yellow); }
 
 .promoBody { padding: 36px 6% 60px; max-width: 1400px; margin: 0 auto; }
 
@@ -6445,10 +6480,12 @@ section {
 .promoEmpty h2 { font-size: 1.3rem; color: #1e293b; margin: 0 0 8px; }
 
 @media (max-width: 768px) {
-  .promoHero { padding: 48px 5% 44px; }
-  .promoHero h1 { font-size: 1.7rem; }
-  .promoCountUnit { min-width: 46px; padding: 6px 10px; }
-  .promoCountUnit strong { font-size: 1.3rem; }
+  .promoHero { padding: 52px 5% 48px; }
+  .promoHeroTitle { font-size: 1.9rem; }
+  .promoHeroSubtitle { font-size: 0.95rem; }
+  .promoCountUnit { min-width: 48px; padding: 7px 11px; }
+  .promoCountUnit strong { font-size: 1.4rem; }
+  .promoStatsBar { gap: 18px; font-size: 0.82rem; }
   .promoBody { padding: 24px 4% 48px; }
 }
 
