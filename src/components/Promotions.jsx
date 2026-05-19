@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useScrollReveal } from "../hooks/useScrollReveal";
 import { getSetting, subscribeToSettings } from "../lib/settings";
 
 function parseDateLocal(str) {
@@ -21,7 +20,6 @@ function checkActive(settings) {
 }
 
 function Promotions({ products = [] }) {
-  const ref = useScrollReveal();
   const [isActive, setIsActive] = useState(() => checkActive({
     promotions_active: getSetting("promotions_active"),
     promotions_start:  getSetting("promotions_start"),
@@ -47,7 +45,7 @@ function Promotions({ products = [] }) {
   }, 0);
 
   return (
-    <section ref={ref} id="promocoes" className="promotions reveal">
+    <section id="promocoes" className="promotions promotionsFadeIn">
       <div className="promotionBanner">
         <div className="promotionText">
           <span>🔥 {title}</span>

@@ -1333,6 +1333,12 @@ section {
   scroll-margin-top: 120px;
 }
 
+@keyframes promotionFadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+.promotionsFadeIn { animation: promotionFadeIn 0.4s ease both; }
+
 .promotionBanner {
   min-height: 340px;
   border-radius: 34px;
