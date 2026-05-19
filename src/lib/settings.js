@@ -33,6 +33,8 @@ export async function saveSetting(key, value) {
 
 export function subscribeToSettings(fn) {
   _listeners.add(fn);
+  // Dispara imediatamente se o cache já foi populado (evita race com loadSettings)
+  if (Object.keys(_cache).length > 0) fn({ ..._cache });
   return () => _listeners.delete(fn);
 }
 

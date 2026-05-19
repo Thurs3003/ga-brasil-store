@@ -18,21 +18,17 @@ function getWeekEnd() {
 
 function useCountdown(target) {
   const [timeLeft, setTimeLeft] = useState(() => Math.max(0, target - Date.now()));
-
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTimeLeft(Math.max(0, target - Date.now()));
-    }, 1000);
+    const interval = setInterval(() => setTimeLeft(Math.max(0, target - Date.now())), 1000);
     return () => clearInterval(interval);
   }, [target]);
-
   const totalSeconds = Math.floor(timeLeft / 1000);
-  const days    = Math.floor(totalSeconds / 86400);
-  const hours   = Math.floor((totalSeconds % 86400) / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  return { days, hours, minutes, seconds };
+  return {
+    days:    Math.floor(totalSeconds / 86400),
+    hours:   Math.floor((totalSeconds % 86400) / 3600),
+    minutes: Math.floor((totalSeconds % 3600) / 60),
+    seconds: totalSeconds % 60,
+  };
 }
 
 function CountdownUnit({ value, label }) {
@@ -45,18 +41,9 @@ function CountdownUnit({ value, label }) {
 }
 
 function Promocoes({
-  cartItems,
-  addToCart,
-  isCartOpen,
-  setIsCartOpen,
-  increaseQuantity,
-  decreaseQuantity,
-  removeFromCart,
-  favoriteIds,
-  toggleFavorite,
-  supabaseProducts,
-  isLoadingProducts,
-  user,
+  cartItems, addToCart, isCartOpen, setIsCartOpen,
+  increaseQuantity, decreaseQuantity, removeFromCart,
+  favoriteIds, toggleFavorite, supabaseProducts, isLoadingProducts, user,
 }) {
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
@@ -78,21 +65,12 @@ function Promocoes({
 
   const filtered = promoProducts.filter((p) => {
     const s = searchTerm.toLowerCase();
-    return (
-      !s ||
-      p.name.toLowerCase().includes(s) ||
-      p.brand.toLowerCase().includes(s) ||
-      (p.category && p.category.toLowerCase().includes(s))
-    );
+    return !s || p.name.toLowerCase().includes(s) || p.brand.toLowerCase().includes(s) || (p.category && p.category.toLowerCase().includes(s));
   });
 
   const searchResults = (supabaseProducts || []).filter((p) => {
     const s = searchTerm.toLowerCase();
-    return (
-      p.name.toLowerCase().includes(s) ||
-      p.brand.toLowerCase().includes(s) ||
-      (p.category && p.category.toLowerCase().includes(s))
-    );
+    return p.name.toLowerCase().includes(s) || p.brand.toLowerCase().includes(s) || (p.category && p.category.toLowerCase().includes(s));
   });
 
   return (
@@ -127,39 +105,61 @@ function Promocoes({
       />
 
       <main className="promoPage">
+        {/* ── Hero ── */}
         <div className="promoHero">
-          <div className="promoHeroBadge">
-            {maxDiscount > 0 ? `ATÉ ${maxDiscount}% OFF` : "OFERTAS ESPECIAIS"}
+          <div className="promoHeroBg" aria-hidden="true">
+            <span className="promoHeroBgText">SALE</span>
           </div>
 
-          <h1 className="promoHeroTitle">Promoções da Semana 🔥</h1>
-          <p className="promoHeroSubtitle">
-            Produtos com desconto exclusivo para lojistas e revendedores.<br />
-            Aproveite enquanto dura!
-          </p>
+          <div className="promoHeroContent">
+            <div className="promoHeroBadge">
+              🔥 {maxDiscount > 0 ? `ATÉ ${maxDiscount}% OFF` : "OFERTAS ESPECIAIS"}
+            </div>
 
-          <div className="promoCountdown">
-            <span className="promoCountLabel">Termina em:</span>
-            <div className="promoCountUnits">
-              <CountdownUnit value={countdown.days}    label="dias" />
-              <span className="promoCountSep">:</span>
-              <CountdownUnit value={countdown.hours}   label="horas" />
-              <span className="promoCountSep">:</span>
-              <CountdownUnit value={countdown.minutes} label="min" />
-              <span className="promoCountSep">:</span>
-              <CountdownUnit value={countdown.seconds} label="seg" />
+            <h1 className="promoHeroTitle">Promoções<br />da Semana</h1>
+            <p className="promoHeroSubtitle">
+              Desconto exclusivo para lojistas e revendedores.<br />Aproveite enquanto durar!
+            </p>
+
+            <div className="promoCountdown">
+              <span className="promoCountLabel">Encerra em</span>
+              <div className="promoCountUnits">
+                <CountdownUnit value={countdown.days}    label="dias" />
+                <span className="promoCountSep">:</span>
+                <CountdownUnit value={countdown.hours}   label="horas" />
+                <span className="promoCountSep">:</span>
+                <CountdownUnit value={countdown.minutes} label="min" />
+                <span className="promoCountSep">:</span>
+                <CountdownUnit value={countdown.seconds} label="seg" />
+              </div>
             </div>
           </div>
         </div>
 
+        {/* ── Stat cards flutuantes ── */}
         {!isLoadingProducts && promoProducts.length > 0 && (
-          <div className="promoStatsBar">
-            <span>🏷️ <strong>{promoProducts.length}</strong> produto{promoProducts.length !== 1 ? "s" : ""} em oferta</span>
-            {maxDiscount > 0 && <span>🔥 Até <strong>{maxDiscount}% OFF</strong></span>}
-            <span>⏰ Termina no domingo</span>
+          <div className="promoStats">
+            <div className="promoStatCard">
+              <span className="promoStatIcon">🏷️</span>
+              <strong>{promoProducts.length}</strong>
+              <span>produto{promoProducts.length !== 1 ? "s" : ""} em oferta</span>
+            </div>
+            {maxDiscount > 0 && (
+              <div className="promoStatCard promoStatHighlight">
+                <span className="promoStatIcon">🔥</span>
+                <strong>{maxDiscount}%</strong>
+                <span>desconto máximo</span>
+              </div>
+            )}
+            <div className="promoStatCard">
+              <span className="promoStatIcon">⏰</span>
+              <strong>Domingo</strong>
+              <span>prazo final</span>
+            </div>
           </div>
         )}
 
+        {/* ── Grade de produtos ── */}
         <div className="promoBody">
           {!isLoadingProducts && promoProducts.length === 0 ? (
             <div className="promoEmpty">
@@ -169,10 +169,25 @@ function Promocoes({
             </div>
           ) : (
             <>
-              {searchTerm && (
-                <p className="promoInfo">
-                  <strong>{filtered.length}</strong> resultado{filtered.length !== 1 ? "s" : ""} para &ldquo;{searchTerm}&rdquo;
-                </p>
+              <div className="promoBodyHeader">
+                <h2 className="promoBodyTitle">
+                  Produtos em promoção
+                  {!isLoadingProducts && <span className="promoBodyCount">{filtered.length}</span>}
+                </h2>
+
+                <div className="promoSearch">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                  <input
+                    type="search"
+                    placeholder="Buscar produto..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {searchTerm && filtered.length === 0 && (
+                <p className="promoInfo">Nenhum resultado para &ldquo;{searchTerm}&rdquo;</p>
               )}
 
               <div className="productGrid">
