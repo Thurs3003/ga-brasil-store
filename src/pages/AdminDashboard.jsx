@@ -1,9 +1,18 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
-import { saveSetting, DEFAULT_WA_NUMBER } from "../lib/settings";
+import { saveSetting, getSetting, DEFAULT_WA_NUMBER } from "../lib/settings";
 import jsPDF from "jspdf";
 import * as XLSX from "xlsx";
+
+const MAKEUP_EMOJIS = [
+  "💄", "👄", "💋", "💅", "👁️", "✏️",
+  "🖌️", "🎨", "🧴", "🫧", "🧪", "🪭",
+  "✨", "🌟", "💫", "⭐", "🌸", "🌷",
+  "🌺", "🌻", "🌿", "🍃", "🌈", "🎀",
+  "💎", "👑", "🦋", "🪄", "🌙", "☀️",
+  "🫶", "❤️", "🔮", "🎁", "📦", "🏷️",
+];
 
 const DEFAULT_HERO_SLIDES = [
   {
@@ -185,6 +194,13 @@ function AdminDashboard() {
   const [promoTitle, setPromoTitle] = useState("Semana da Beleza");
   const [promoStart, setPromoStart] = useState("");
   const [promoEnd, setPromoEnd]     = useState("");
+
+  // Category icons
+  const [isCatIconsOpen, setIsCatIconsOpen] = useState(false);
+  const [categoryIcons, setCategoryIcons] = useState(() => getSetting("category_icons", {}));
+  const [openIconPickerFor, setOpenIconPickerFor] = useState(null);
+  const [pickerPos, setPickerPos] = useState({ top: 0, left: 0 });
+  const iconPickerRef = useRef(null);
 
   // Catalog export
   const [isExportingPDF, setIsExportingPDF] = useState(false);
@@ -533,6 +549,34 @@ function AdminDashboard() {
     }
   }
 
+  useEffect(() => {
+    if (!openIconPickerFor) return;
+    function handleClick(e) {
+      if (iconPickerRef.current && !iconPickerRef.current.contains(e.target)) {
+        setOpenIconPickerFor(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [openIconPickerFor]);
+
+  function openIconPicker(e, catName) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const panelWidth = 292;
+    const left = Math.min(rect.left, window.innerWidth - panelWidth - 16);
+    setPickerPos({ top: rect.bottom + 8, left });
+    setOpenIconPickerFor((prev) => (prev === catName ? null : catName));
+  }
+
+  async function saveCategoryIcons() {
+    const clean = Object.fromEntries(
+      Object.entries(categoryIcons).filter(([, v]) => v && v.trim())
+    );
+    const error = await saveSetting("category_icons", clean);
+    if (error) showToast("Erro ao salvar ícones", "error");
+    else { setCategoryIcons(clean); showToast("Ícones de categorias salvos!"); }
+  }
+
   async function saveWhatsAppSettings() {
     const errors = await Promise.all([
       saveSetting("wa_orders", waOrders),
@@ -828,6 +872,7 @@ function AdminDashboard() {
         if (key === "promotions_title" && value) setPromoTitle(value);
         if (key === "promotions_start") setPromoStart(value || "");
         if (key === "promotions_end")   setPromoEnd(value || "");
+        if (key === "category_icons" && value && typeof value === "object") setCategoryIcons(value);
       });
     });
   }, []);
@@ -1185,6 +1230,74 @@ function AdminDashboard() {
             <div className="adminCarouselButtons">
               <button className="adminSaveBtn" onClick={saveWhatsAppSettings}>Salvar números</button>
             </div>
+          </div>
+        )}
+      </div>
+
+      {/* Category Icons */}
+      <div className="adminCarouselSection">
+        <button className="adminSectionHeader" onClick={() => setIsCatIconsOpen((o) => !o)}>
+          <span>🏷️ Ícones de categorias</span>
+          <span className="adminSectionToggle">{isCatIconsOpen ? "▲ Fechar" : "▼ Abrir"}</span>
+        </button>
+        {isCatIconsOpen && (
+          <div className="adminCarouselBody">
+            <p className="adminCatIconsHint">
+              Clique no ícone de cada categoria para abrir o seletor. Após escolher todos os ícones, clique em <strong>Salvar ícones</strong>.
+            </p>
+            <div className="adminCatIconsGrid">
+              {productCategories.map((cat) => (
+                <div key={cat} className="adminCatIconRow">
+                  <span className="adminCatIconName">{cat}</span>
+                  <button
+                    className={`adminCatIconTrigger${openIconPickerFor === cat ? " active" : ""}`}
+                    onClick={(e) => openIconPicker(e, cat)}
+                  >
+                    <span className="adminCatIconEmoji">{categoryIcons[cat] || "🏷️"}</span>
+                    <span>{categoryIcons[cat] ? "Trocar" : "Escolher"}</span>
+                  </button>
+                </div>
+              ))}
+              {productCategories.length === 0 && (
+                <p style={{ color: "#9ca3af", fontSize: 14 }}>Nenhuma categoria encontrada. Cadastre produtos com categorias primeiro.</p>
+              )}
+            </div>
+            <div className="adminCarouselButtons">
+              <button className="adminSaveBtn" onClick={saveCategoryIcons}>Salvar ícones</button>
+            </div>
+
+            {openIconPickerFor && (
+              <div
+                ref={iconPickerRef}
+                className="adminIconPickerPanel"
+                style={{ top: pickerPos.top, left: pickerPos.left }}
+              >
+                <p className="adminIconPickerTitle">Escolha um emoji para <strong>{openIconPickerFor}</strong></p>
+                <div className="adminIconPickerGrid">
+                  {MAKEUP_EMOJIS.map((emoji) => (
+                    <button
+                      key={emoji}
+                      className={`adminIconPickerBtn${categoryIcons[openIconPickerFor] === emoji ? " selected" : ""}`}
+                      onClick={() => {
+                        setCategoryIcons((prev) => ({ ...prev, [openIconPickerFor]: emoji }));
+                        setOpenIconPickerFor(null);
+                      }}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  className="adminIconPickerReset"
+                  onClick={() => {
+                    setCategoryIcons((prev) => { const n = { ...prev }; delete n[openIconPickerFor]; return n; });
+                    setOpenIconPickerFor(null);
+                  }}
+                >
+                  Remover (usar padrão 🏷️)
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { getSetting, subscribeToSettings } from "../lib/settings";
 import { Helmet } from "react-helmet-async";
 import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
@@ -16,13 +17,7 @@ const SORT_OPTIONS = [
   { value: "newest",     label: "Mais recentes" },
 ];
 
-const CATEGORY_ICONS = {
-  Todos: "✨",
-  Batons: "💄",
-  Bases: "✨",
-  Paletas: "🎨",
-  "Pincéis": "🖌️",
-};
+const DEFAULT_CAT_EMOJI = "🏷️";
 
 function AllProducts({
   cartItems,
@@ -41,6 +36,9 @@ function AllProducts({
   profile,
 }) {
   useEffect(() => { window.scrollTo(0, 0); }, []);
+
+  const [catIconsMap, setCatIconsMap] = useState(() => getSetting("category_icons", {}));
+  useEffect(() => subscribeToSettings((s) => setCatIconsMap(s.category_icons || {})), []);
 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -151,7 +149,7 @@ function AllProducts({
                 onClick={() => setCatDropdownOpen((v) => !v)}
                 aria-expanded={catDropdownOpen}
               >
-                <span className="catDropdownIcon">{CATEGORY_ICONS[selectedCategory] ?? "🏷️"}</span>
+                <span className="catDropdownIcon">{catIconsMap[selectedCategory] || DEFAULT_CAT_EMOJI}</span>
                 <span className="catDropdownText">
                   <span className="catDropdownLabel">Categoria</span>
                   <span className="catDropdownValue">{selectedCategory}</span>
@@ -170,7 +168,7 @@ function AllProducts({
                       className={`catDropdownItem${selectedCategory === cat ? " active" : ""}`}
                       onClick={() => { setSelectedCategory(cat); setCatDropdownOpen(false); }}
                     >
-                      <span className="catIcon">{CATEGORY_ICONS[cat] ?? "🏷️"}</span>
+                      <span className="catIcon">{catIconsMap[cat] || DEFAULT_CAT_EMOJI}</span>
                       <span>{cat}</span>
                       <span className="catCount">
                         {cat === "Todos" ? supabaseProducts.length : (countByCategory[cat] ?? 0)}

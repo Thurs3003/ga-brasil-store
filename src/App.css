@@ -3574,6 +3574,161 @@ section {
   border-top: 1.5px solid #f1f5f9;
 }
 
+.adminCatIconsHint {
+  font-size: 13px;
+  color: #64748b;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 16px 0 20px;
+  line-height: 1.6;
+}
+
+.adminCatIconsHint kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 5px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  font-size: 11px;
+  font-family: monospace;
+  font-weight: 700;
+  color: #1f2937;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+.adminCatIconsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.adminCatIconRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.adminCatIconName {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.adminCatIconTrigger {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #e2e8f0;
+  background: white;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  min-width: 110px;
+}
+
+.adminCatIconTrigger:hover {
+  border-color: var(--primary-blue);
+  color: var(--primary-blue);
+}
+
+.adminCatIconTrigger.active {
+  border-color: var(--primary-blue);
+  background: #eef2ff;
+  color: var(--primary-blue);
+}
+
+/* Icon picker floating panel */
+.adminIconPickerPanel {
+  position: fixed;
+  z-index: 9999;
+  background: white;
+  border-radius: 14px;
+  border: 1.5px solid #e2e8f0;
+  box-shadow: 0 16px 40px rgba(11, 31, 143, 0.14), 0 4px 12px rgba(0,0,0,0.06);
+  padding: 12px;
+  width: 292px;
+}
+
+.adminIconPickerGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.adminIconPickerTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  margin: 0 0 10px;
+}
+
+.adminIconPickerBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1.5px solid transparent;
+  background: #f8fafc;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, transform 0.1s;
+}
+
+.adminIconPickerBtn:hover {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+  transform: scale(1.15);
+}
+
+.adminIconPickerBtn.selected {
+  background: #eef2ff;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 2px rgba(11,31,143,0.15);
+  transform: scale(1.1);
+}
+
+.adminCatIconEmoji {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.adminIconPickerReset {
+  width: 100%;
+  padding: 7px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.adminIconPickerReset:hover {
+  background: #fee2e2;
+  color: #ef4444;
+  border-color: #fca5a5;
+}
+
 .adminCarouselSlides {
   display: flex;
   flex-direction: column;
@@ -4501,8 +4656,15 @@ section {
 }
 
 .catDropdownIcon {
-  font-size: 18px;
+  font-size: 20px;
   line-height: 1;
+  flex-shrink: 0;
+}
+
+.catIcon {
+  font-size: 16px;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
 .catDropdownText {
