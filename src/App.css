@@ -5344,9 +5344,14 @@ section {
 
 .freightDisclaimer {
   display: block;
-  font-size: 10px;
-  color: #94a3b8;
-  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary-blue);
+  background: #eef2ff;
+  border: 1.5px solid var(--primary-blue);
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin-top: 10px;
 }
 
 .cartTotalFreight { color: #6366f1; }

@@ -315,7 +315,7 @@ Aguardo as informações para pagamento e entrega.`;
                   </div>
                 )}
 
-                <small className="freightDisclaimer">* Valores estimados. Frete confirmado pelo WhatsApp.</small>
+                <p className="freightDisclaimer">ℹ️ Valores estimados. Frete confirmado pelo WhatsApp.</p>
               </div>
 
               <div className="cartTotal">
