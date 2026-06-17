@@ -2,8 +2,6 @@
 
 E-commerce desenvolvido para a G.A Brasil, distribuidora de maquiagens e cosméticos. Plataforma completa com catálogo de produtos, carrinho de compras, sistema de favoritos, fluxo de pedido via WhatsApp e painel administrativo protegido para gestão da loja.
 
-> ⚠️ Repositório privado — código proprietário da G.A Brasil. Uso e distribuição restritos.
-
 ---
 
 ## 🛍️ Sobre o projeto
@@ -40,7 +38,7 @@ VITE_SUPABASE_URL=sua_url_do_supabase
 VITE_SUPABASE_ANON_KEY=sua_chave_anonima
 ```
 
-> Nunca commitar o arquivo `.env` — ele já deve estar no `.gitignore`.
+> Nunca commitar o arquivo `.env` — ele já deve estar no `.gitignore`. Como este repositório é público, isso é essencial para não expor credenciais do projeto.
 
 ## 🚀 Como rodar localmente
 
