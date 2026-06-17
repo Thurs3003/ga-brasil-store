@@ -529,6 +529,51 @@ html {
   box-shadow: 0 16px 28px rgba(37, 211, 102, 0.35);
 }
 
+.cartLoginNotice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #eef2ff;
+  border: 1.5px solid var(--primary-blue);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+
+.cartLoginNoticeIcon {
+  font-size: 18px;
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+.cartLoginNoticeText {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary-blue);
+  margin: 0 0 6px 0;
+}
+
+.cartLoginNoticeLinks {
+  font-size: 13px;
+  color: #374151;
+  margin: 0;
+}
+
+.cartLoginNoticeBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-blue);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.cartLoginNoticeBtn:hover {
+  color: var(--primary-blue-dark);
+}
+
 .detailsBrand {
   width: fit-content;
   color: var(--primary-blue);

@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { getOrdersWA, buildWAUrl } from "../lib/whatsapp";
 
@@ -68,6 +69,8 @@ function CartDrawer({
   removeFromCart,
   user,
 }) {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [cep, setCep] = useState("");
   const [freight, setFreight] = useState(null);
   const [freightLoading, setFreightLoading] = useState(false);
@@ -120,8 +123,19 @@ function CartDrawer({
     setFreightLoading(false);
   }
 
+  function goToLogin() {
+    setIsCartOpen(false);
+    navigate("/login", { state: { from: location.pathname } });
+  }
+
   async function finishOrder() {
     if (cartItems.length === 0 || isCheckingOut) return;
+
+    if (!user) {
+      goToLogin();
+      return;
+    }
+
     setIsCheckingOut(true);
 
     // Abre a janela ANTES de qualquer await — mantém o contexto do gesto do usuário.
@@ -313,6 +327,32 @@ Aguardo as informações para pagamento e entrega.`;
                 <div className="cartTotal cartTotalFreight">
                   <span>Frete estimado</span>
                   <strong>R$ {freight.price.toFixed(2).replace(".", ",")}</strong>
+                </div>
+              )}
+
+              {!user && (
+                <div className="cartLoginNotice">
+                  <span className="cartLoginNoticeIcon">🔒</span>
+                  <div>
+                    <p className="cartLoginNoticeText">
+                      Para finalizar sua compra, você precisa ter uma conta.
+                    </p>
+                    <p className="cartLoginNoticeLinks">
+                      <button
+                        className="cartLoginNoticeBtn"
+                        onClick={goToLogin}
+                      >
+                        Entrar
+                      </button>
+                      {" ou "}
+                      <button
+                        className="cartLoginNoticeBtn"
+                        onClick={() => { setIsCartOpen(false); navigate("/cadastro"); }}
+                      >
+                        Criar conta
+                      </button>
+                    </p>
+                  </div>
                 </div>
               )}
 
