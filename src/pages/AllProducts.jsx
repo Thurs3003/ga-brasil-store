@@ -38,6 +38,7 @@ function AllProducts({
   supabaseProducts,
   isLoadingProducts,
   user,
+  profile,
 }) {
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
@@ -222,6 +223,7 @@ function AllProducts({
         decreaseQuantity={decreaseQuantity}
         removeFromCart={removeFromCart}
         user={user}
+        profile={profile}
       />
 
       <ProductModal

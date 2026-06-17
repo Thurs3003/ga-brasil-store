@@ -3905,6 +3905,56 @@ section {
 }
 .orderDiscardBtn:hover { background: #fef2f2; border-color: #dc2626; }
 
+.orderCustomerInfo {
+  background: #f8faff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+
+.orderCustomerLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary-blue);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 10px;
+}
+
+.orderCustomerGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.orderCustomerRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.orderCustomerKey {
+  font-weight: 700;
+  color: #64748b;
+  min-width: 68px;
+  flex-shrink: 0;
+}
+
+.orderCustomerVal {
+  color: #1a1a1a;
+}
+
+.orderCustomerLink {
+  color: var(--primary-blue);
+  text-decoration: none;
+}
+
+.orderCustomerLink:hover {
+  text-decoration: underline;
+}
+
 .orderItems {
   display: flex;
   flex-direction: column;

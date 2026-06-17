@@ -1370,6 +1370,42 @@ function AdminDashboard() {
                             </div>
                           </div>
                         )}
+                        {(order.customer_name || order.customer_email || order.customer_phone || order.cep) && (
+                          <div className="orderCustomerInfo">
+                            <p className="orderCustomerLabel">👤 Dados do cliente</p>
+                            <div className="orderCustomerGrid">
+                              {order.customer_name && (
+                                <div className="orderCustomerRow">
+                                  <span className="orderCustomerKey">Nome</span>
+                                  <span className="orderCustomerVal">{order.customer_name}</span>
+                                </div>
+                              )}
+                              {order.customer_email && (
+                                <div className="orderCustomerRow">
+                                  <span className="orderCustomerKey">E-mail</span>
+                                  <a className="orderCustomerVal orderCustomerLink" href={`mailto:${order.customer_email}`}>{order.customer_email}</a>
+                                </div>
+                              )}
+                              {order.customer_phone && (
+                                <div className="orderCustomerRow">
+                                  <span className="orderCustomerKey">Telefone</span>
+                                  <a className="orderCustomerVal orderCustomerLink" href={`tel:${order.customer_phone}`}>{order.customer_phone}</a>
+                                </div>
+                              )}
+                              {order.cep && (
+                                <div className="orderCustomerRow">
+                                  <span className="orderCustomerKey">CEP</span>
+                                  <span className="orderCustomerVal">
+                                    {order.cep.length === 8
+                                      ? `${order.cep.slice(0, 5)}-${order.cep.slice(5)}`
+                                      : order.cep}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
                         <div className="orderItems">
                           {(order.items || []).map((item, i) => (
                             <div key={i} className="orderItemRow">

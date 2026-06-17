@@ -30,6 +30,7 @@ function Home({
   supabaseProducts,
   isLoadingProducts,
   user,
+  profile,
 }) {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -228,6 +229,7 @@ function Home({
         decreaseQuantity={decreaseQuantity}
         removeFromCart={removeFromCart}
         user={user}
+        profile={profile}
       />
       <ProductModal
         product={selectedProduct}

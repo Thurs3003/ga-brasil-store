@@ -37,7 +37,7 @@ function ReviewStars({ rating }) {
   );
 }
 
-function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increaseQuantity, decreaseQuantity, removeFromCart, favoriteIds, toggleFavorite, supabaseProducts, isLoadingProducts, user: userProp }) {
+function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increaseQuantity, decreaseQuantity, removeFromCart, favoriteIds, toggleFavorite, supabaseProducts, isLoadingProducts, user: userProp, profile: profileProp }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, profile } = useUser();
@@ -431,6 +431,7 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
         decreaseQuantity={decreaseQuantity}
         removeFromCart={removeFromCart}
         user={userProp}
+        profile={profileProp}
       />
       <Footer />
     </>

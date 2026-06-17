@@ -60,7 +60,7 @@ function CountdownUnit({ value, label }) {
 function Promocoes({
   cartItems, addToCart, isCartOpen, setIsCartOpen,
   increaseQuantity, decreaseQuantity, removeFromCart,
-  favoriteIds, toggleFavorite, supabaseProducts, isLoadingProducts, user,
+  favoriteIds, toggleFavorite, supabaseProducts, isLoadingProducts, user, profile,
 }) {
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
@@ -115,6 +115,7 @@ function Promocoes({
         decreaseQuantity={decreaseQuantity}
         removeFromCart={removeFromCart}
         user={user}
+        profile={profile}
       />
 
       <ProductModal

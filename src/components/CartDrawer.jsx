@@ -68,6 +68,7 @@ function CartDrawer({
   decreaseQuantity,
   removeFromCart,
   user,
+  profile,
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -180,6 +181,10 @@ function CartDrawer({
       total: validatedTotal,
       status: "aguardando",
       user_id: user?.id || null,
+      cep: cep.replace(/\D/g, "") || null,
+      customer_name: profile?.name || user?.user_metadata?.name || null,
+      customer_email: user?.email || null,
+      customer_phone: profile?.phone || null,
     }]);
 
     if (orderError) {
