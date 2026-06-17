@@ -2817,6 +2817,8 @@ section {
   -ms-overflow-style: none;
   padding: 8px 2px 16px;
   margin: -8px -2px -16px;
+  background: linear-gradient(180deg, #ead5ff, #f2e8ff);
+  border-radius: 32px;
 }
 
 .carouselTrack::-webkit-scrollbar {
@@ -2864,11 +2866,11 @@ section {
 }
 
 .carouselArrowPrev {
-  left: -26px;
+  left: 10px;
 }
 
 .carouselArrowNext {
-  right: -26px;
+  right: 10px;
 }
 
 @media (max-width: 1200px) {
@@ -2881,8 +2883,6 @@ section {
   .carouselItem {
     flex: 0 0 calc((100% - 22px) / 2);
   }
-  .carouselArrowPrev { left: -18px; }
-  .carouselArrowNext { right: -18px; }
 }
 
 @media (max-width: 560px) {
@@ -2894,8 +2894,6 @@ section {
     height: 38px;
     font-size: 22px;
   }
-  .carouselArrowPrev { left: -10px; }
-  .carouselArrowNext { right: -10px; }
 }
 
 .searchBox {
