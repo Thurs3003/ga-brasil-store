@@ -12,6 +12,7 @@ import HeroCarousel from "../components/HeroCarousel";
 import SocialProof from "../components/SocialProof";
 import Brands from "../components/Brands";
 import BestSellers from "../components/BestSellers";
+import FeaturedCarousel from "../components/FeaturedCarousel";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import FAQ from "../components/FAQ";
 import { getRecentlyViewedIds } from "../lib/recentlyViewed";
@@ -186,39 +187,14 @@ function Home({
           </section>
         )}
 
-        <section id="produtos" className="products">
-          <div className="sectionTitle">
-            <h2>Produtos em destaque</h2>
-            <Link to="/produtos">Ver todos</Link>
-          </div>
-
-          <div className="productGrid">
-            {isLoadingProducts ? (
-              Array.from({ length: 8 }).map((_, i) => (
-                <ProductCardSkeleton key={i} />
-              ))
-            ) : (
-              <>
-                {filteredProducts.length === 0 && (
-                  <div className="emptySearch">
-                    <h3>Nenhum produto encontrado</h3>
-                    <p>Tente buscar por outro nome ou marca.</p>
-                  </div>
-                )}
-                {filteredProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    addToCart={addToCart}
-                    onOpenDetails={setSelectedProduct}
-                    favoriteIds={favoriteIds}
-                    toggleFavorite={toggleFavorite}
-                  />
-                ))}
-              </>
-            )}
-          </div>
-        </section>
+        <FeaturedCarousel
+          products={productsToShow}
+          addToCart={addToCart}
+          setSelectedProduct={setSelectedProduct}
+          favoriteIds={favoriteIds}
+          toggleFavorite={toggleFavorite}
+          isLoading={isLoadingProducts}
+        />
       </main>
 
       <CartDrawer
