@@ -2,6 +2,8 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { saveSetting, DEFAULT_WA_NUMBER } from "../lib/settings";
+import jsPDF from "jspdf";
+import * as XLSX from "xlsx";
 
 const DEFAULT_HERO_SLIDES = [
   {
@@ -183,6 +185,11 @@ function AdminDashboard() {
   const [promoTitle, setPromoTitle] = useState("Semana da Beleza");
   const [promoStart, setPromoStart] = useState("");
   const [promoEnd, setPromoEnd]     = useState("");
+
+  // Catalog export
+  const [isExportingPDF, setIsExportingPDF] = useState(false);
+  const [isExportingExcel, setIsExportingExcel] = useState(false);
+  const [includeImagesInPDF, setIncludeImagesInPDF] = useState(false);
 
   function showToast(message, type = "success") {
     setToast({ message, type });
@@ -601,6 +608,190 @@ function AdminDashboard() {
     a.download = `pedidos-ga-brasil-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  function loadImageAsBase64(url) {
+    return new Promise((resolve) => {
+      const timer = setTimeout(() => resolve(null), 6000);
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        clearTimeout(timer);
+        try {
+          const canvas = document.createElement("canvas");
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          canvas.getContext("2d").drawImage(img, 0, 0);
+          resolve(canvas.toDataURL("image/jpeg", 0.75));
+        } catch {
+          resolve(null);
+        }
+      };
+      img.onerror = () => { clearTimeout(timer); resolve(null); };
+      img.src = url;
+    });
+  }
+
+  async function exportCatalogPDF() {
+    if (isExportingPDF || products.length === 0) return;
+    setIsExportingPDF(true);
+    try {
+      const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+      const pageW = 210;
+      const pageH = 297;
+      const margin = 14;
+      const cW = pageW - margin * 2;
+      const now = new Date().toLocaleDateString("pt-BR");
+
+      // Header azul
+      doc.setFillColor(11, 31, 143);
+      doc.rect(0, 0, pageW, 22, "F");
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(15);
+      doc.setFont("helvetica", "bold");
+      doc.text("G.A Brasil — Catálogo de Produtos", margin, 14);
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "normal");
+      doc.text(
+        `Gerado em ${now}   •   ${products.length} produtos`,
+        pageW - margin, 14, { align: "right" }
+      );
+
+      let y = 28;
+      const imgSize = 28;
+      const textXnoImg  = margin + 8;
+      const textXwithImg = margin + imgSize + 14;
+
+      for (let i = 0; i < products.length; i++) {
+        const p = products[i];
+        const textX = includeImagesInPDF ? textXwithImg : textXnoImg;
+        const textW = cW - (textX - margin);
+
+        const nameLines = doc.splitTextToSize(p.name || "", textW);
+        const rawDesc   = (p.description || "").replace(/\n/g, " ");
+        const descLines = doc.splitTextToSize(rawDesc, textW).slice(0, 3);
+
+        const minH   = includeImagesInPDF ? imgSize + 8 : 0;
+        const textH  =
+          nameLines.length * 5 +
+          5 +
+          5 +
+          (descLines.length > 0 ? descLines.length * 4 + 2 : 0);
+        const blockH = Math.max(minH, textH) + 8;
+
+        if (y + blockH > pageH - margin) {
+          doc.addPage();
+          y = 14;
+        }
+
+        // Card
+        doc.setFillColor(248, 250, 255);
+        doc.roundedRect(margin, y, cW, blockH, 2.5, 2.5, "F");
+        doc.setDrawColor(226, 232, 240);
+        doc.roundedRect(margin, y, cW, blockH, 2.5, 2.5, "S");
+
+        // Número badge
+        doc.setFillColor(11, 31, 143);
+        doc.circle(margin + 4.5, y + 5.5, 3.5, "F");
+        doc.setFontSize(7);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(255, 255, 255);
+        doc.text(String(i + 1), margin + 4.5, y + 6.8, { align: "center" });
+
+        // Imagem
+        if (includeImagesInPDF && p.image) {
+          const b64 = await loadImageAsBase64(p.image);
+          if (b64) {
+            doc.addImage(b64, "JPEG", margin + 8, y + 4, imgSize, imgSize);
+          }
+        }
+
+        let ty = y + 6;
+
+        // Nome
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(20, 20, 20);
+        doc.text(nameLines, textX, ty);
+        ty += nameLines.length * 5;
+
+        // Marca · Categoria
+        const brandCat = [p.brand, p.category].filter(Boolean).join(" · ");
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(120, 120, 120);
+        if (brandCat) { doc.text(brandCat, textX, ty); }
+        ty += 5;
+
+        // Preço
+        const priceStr = `R$ ${Number(p.price || 0).toFixed(2).replace(".", ",")}`;
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(11, 31, 143);
+        doc.text(priceStr, textX, ty);
+
+        // Estoque (mesma linha)
+        const priceW = doc.getTextWidth(priceStr);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor(130, 130, 130);
+        doc.text(`  Estoque: ${p.stock ?? 0}`, textX + priceW + 1, ty);
+        ty += 5;
+
+        // Descrição
+        if (descLines.length > 0) {
+          doc.setFontSize(7.5);
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(80, 80, 80);
+          doc.text(descLines, textX, ty);
+        }
+
+        y += blockH + 3;
+      }
+
+      const ts = new Date().toISOString().slice(0, 10);
+      doc.save(`catalogo-ga-brasil-${ts}.pdf`);
+      showToast("Catálogo PDF exportado com sucesso!", "success");
+    } catch {
+      showToast("Erro ao gerar o PDF. Tente novamente.", "error");
+    }
+    setIsExportingPDF(false);
+  }
+
+  function exportCatalogExcel() {
+    if (isExportingExcel || products.length === 0) return;
+    setIsExportingExcel(true);
+    try {
+      const header = ["Nome", "Marca", "Preço (R$)", "Categoria", "Estoque", "Descrição"];
+      const rows = products.map((p) => [
+        p.name || "",
+        p.brand || "",
+        Number(p.price || 0).toFixed(2).replace(".", ","),
+        p.category || "",
+        p.stock ?? 0,
+        p.description || "",
+      ]);
+
+      const ws = XLSX.utils.aoa_to_sheet([header, ...rows]);
+      ws["!cols"] = [
+        { wch: 36 },
+        { wch: 22 },
+        { wch: 14 },
+        { wch: 22 },
+        { wch: 12 },
+        { wch: 55 },
+      ];
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Catálogo G.A Brasil");
+
+      const ts = new Date().toISOString().slice(0, 10);
+      XLSX.writeFile(wb, `catalogo-ga-brasil-${ts}.xlsx`);
+      showToast("Planilha Excel exportada com sucesso!", "success");
+    } catch {
+      showToast("Erro ao gerar a planilha. Tente novamente.", "error");
+    }
+    setIsExportingExcel(false);
   }
 
   useEffect(() => {
@@ -1393,6 +1584,55 @@ function AdminDashboard() {
         </div>
 
         <LivePreview product={newProduct} imagePreview={imagePreview} />
+      </div>
+
+      {/* ── Exportar Catálogo ── */}
+      <div className="adminCatalogExport">
+        <div className="adminCatalogExportHeader">
+          <div>
+            <h2>📋 Exportar Catálogo</h2>
+            <p>{products.length} produto{products.length !== 1 ? "s" : ""} disponíve{products.length !== 1 ? "is" : "l"} para exportação</p>
+          </div>
+        </div>
+
+        <div className="adminCatalogExportBody">
+          <label className="catalogExportToggle">
+            <input
+              type="checkbox"
+              checked={includeImagesInPDF}
+              onChange={(e) => setIncludeImagesInPDF(e.target.checked)}
+            />
+            <span>Incluir imagens no PDF</span>
+          </label>
+
+          {includeImagesInPDF && products.length > 15 && (
+            <span className="catalogExportSlowWarning">
+              ⚠️ Com muitos produtos, a geração com imagens pode levar alguns segundos
+            </span>
+          )}
+
+          <div className="catalogExportButtons">
+            <button
+              className="catalogExportBtn pdf"
+              onClick={exportCatalogPDF}
+              disabled={isExportingPDF || isLoading || products.length === 0}
+            >
+              {isExportingPDF
+                ? <><span className="adminSpinner" /> Gerando PDF...</>
+                : "📄 Exportar PDF"}
+            </button>
+
+            <button
+              className="catalogExportBtn excel"
+              onClick={exportCatalogExcel}
+              disabled={isExportingExcel || isLoading || products.length === 0}
+            >
+              {isExportingExcel
+                ? <><span className="adminSpinner" /> Gerando Excel...</>
+                : "📊 Exportar Excel (.xlsx)"}
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="adminTableCard">
