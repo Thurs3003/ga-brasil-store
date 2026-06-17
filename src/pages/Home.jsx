@@ -35,9 +35,7 @@ function Home({
 }) {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Todos");
 
-  const categoriesRef = useScrollReveal();
   const productsTitleRef = useScrollReveal();
 
   const productsToShow = supabaseProducts;
@@ -45,36 +43,13 @@ function Home({
   const recentIds = getRecentlyViewedIds();
   const recentProducts = recentIds.map((id) => productsToShow.find((p) => p.id === id)).filter(Boolean);
 
-  const categories = [
-    "Todos",
-    ...Array.from(new Set(productsToShow.map((p) => p.category).filter(Boolean))),
-  ];
-
-  const categoryIcons = {
-    Todos: "✨",
-    Batons: "💄",
-    Bases: "✨",
-    Paletas: "🎨",
-    "Pincéis": "🖌️",
-  };
-
-  const countByCategory = productsToShow.reduce((acc, p) => {
-    acc[p.category] = (acc[p.category] || 0) + 1;
-    return acc;
-  }, {});
-
   const filteredProducts = productsToShow.filter((product) => {
     const search = searchTerm.toLowerCase();
-
-    const matchesSearch =
+    return (
       product.name.toLowerCase().includes(search) ||
       product.brand.toLowerCase().includes(search) ||
-      (product.category && product.category.toLowerCase().includes(search));
-
-    const matchesCategory =
-      selectedCategory === "Todos" || product.category === selectedCategory;
-
-    return matchesSearch && matchesCategory;
+      (product.category && product.category.toLowerCase().includes(search))
+    );
   });
 
   const favoriteProducts = productsToShow.filter((product) =>
@@ -143,28 +118,6 @@ function Home({
             </div>
           </section>
         )}
-
-        <section ref={categoriesRef} id="categorias" className="categories reveal">
-          <div className="sectionTitle">
-            <h2>Categorias</h2>
-          </div>
-
-          <div className="categoryGrid">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                className={selectedCategory === cat ? "activeCategory" : ""}
-                onClick={() => setSelectedCategory(cat)}
-              >
-                <span className="catIcon">{categoryIcons[cat] ?? "🏷️"}</span>
-                <span>{cat}</span>
-                <span className="catCount">
-                  {cat === "Todos" ? productsToShow.length : (countByCategory[cat] ?? 0)}
-                </span>
-              </button>
-            ))}
-          </div>
-        </section>
 
         {recentProducts.length > 0 && (
           <section className="favoritesSection">

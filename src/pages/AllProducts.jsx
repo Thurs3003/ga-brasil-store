@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import Header from "../components/Header";
@@ -48,6 +48,19 @@ function AllProducts({
   const [sortBy, setSortBy] = useState("default");
   const [priceMin, setPriceMin] = useState("");
   const [priceMax, setPriceMax] = useState("");
+  const [catDropdownOpen, setCatDropdownOpen] = useState(false);
+  const catDropdownRef = useRef(null);
+
+  useEffect(() => {
+    if (!catDropdownOpen) return;
+    function handleClickOutside(e) {
+      if (catDropdownRef.current && !catDropdownRef.current.contains(e.target)) {
+        setCatDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [catDropdownOpen]);
 
   const categories = [
     "Todos",
@@ -132,20 +145,40 @@ function AllProducts({
           </div>
 
           <div className="catalogControls">
-            <div className="catalogCategories">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  className={selectedCategory === cat ? "activeCategory" : ""}
-                  onClick={() => setSelectedCategory(cat)}
-                >
-                  <span className="catIcon">{CATEGORY_ICONS[cat] ?? "🏷️"}</span>
-                  <span>{cat}</span>
-                  <span className="catCount">
-                    {cat === "Todos" ? supabaseProducts.length : (countByCategory[cat] ?? 0)}
-                  </span>
-                </button>
-              ))}
+            <div className="catalogCategoryDropdown" ref={catDropdownRef}>
+              <button
+                className={`catDropdownTrigger${selectedCategory !== "Todos" ? " hasFilter" : ""}`}
+                onClick={() => setCatDropdownOpen((v) => !v)}
+                aria-expanded={catDropdownOpen}
+              >
+                <span className="catDropdownIcon">{CATEGORY_ICONS[selectedCategory] ?? "🏷️"}</span>
+                <span className="catDropdownText">
+                  <span className="catDropdownLabel">Categoria</span>
+                  <span className="catDropdownValue">{selectedCategory}</span>
+                </span>
+                <span className="catDropdownCount">
+                  {selectedCategory === "Todos" ? supabaseProducts.length : (countByCategory[selectedCategory] ?? 0)}
+                </span>
+                <span className={`catDropdownChevron${catDropdownOpen ? " open" : ""}`}>▾</span>
+              </button>
+
+              {catDropdownOpen && (
+                <div className="catDropdownMenu">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat}
+                      className={`catDropdownItem${selectedCategory === cat ? " active" : ""}`}
+                      onClick={() => { setSelectedCategory(cat); setCatDropdownOpen(false); }}
+                    >
+                      <span className="catIcon">{CATEGORY_ICONS[cat] ?? "🏷️"}</span>
+                      <span>{cat}</span>
+                      <span className="catCount">
+                        {cat === "Todos" ? supabaseProducts.length : (countByCategory[cat] ?? 0)}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="catalogRightControls">

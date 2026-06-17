@@ -4464,48 +4464,164 @@ section {
 
 .catalogControls {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 32px;
   flex-wrap: wrap;
 }
 
-.catalogCategories {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+/* ── Category dropdown ── */
+.catalogCategoryDropdown {
+  position: relative;
 }
 
-.catalogCategories button {
+.catDropdownTrigger {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
+  gap: 10px;
+  padding: 10px 16px;
   border-radius: 999px;
   border: 1.5px solid #e2e8f0;
   background: white;
+  cursor: pointer;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  min-width: 210px;
+  box-shadow: 0 2px 8px rgba(11, 31, 143, 0.06);
+}
+
+.catDropdownTrigger:hover {
+  border-color: var(--primary-blue);
+  box-shadow: 0 4px 14px rgba(11, 31, 143, 0.1);
+}
+
+.catDropdownTrigger.hasFilter {
+  background: var(--primary-blue);
+  border-color: var(--primary-blue);
+}
+
+.catDropdownIcon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.catDropdownText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.catDropdownLabel {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #9ca3af;
+  line-height: 1;
+}
+
+.catDropdownTrigger.hasFilter .catDropdownLabel {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.catDropdownValue {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1.4;
+}
+
+.catDropdownTrigger.hasFilter .catDropdownValue {
+  color: white;
+}
+
+.catDropdownCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: rgba(11, 31, 143, 0.08);
+  color: var(--primary-blue);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.catDropdownTrigger.hasFilter .catDropdownCount {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.catDropdownChevron {
+  font-size: 16px;
+  color: #9ca3af;
+  transition: transform 0.2s;
+  line-height: 1;
+}
+
+.catDropdownChevron.open {
+  transform: rotate(180deg);
+}
+
+.catDropdownTrigger.hasFilter .catDropdownChevron {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.catDropdownMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 200;
+  background: white;
+  border-radius: 16px;
+  border: 1.5px solid #e2e8f0;
+  box-shadow:
+    0 16px 40px rgba(11, 31, 143, 0.12),
+    0 4px 12px rgba(0, 0, 0, 0.06);
+  padding: 8px;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.catDropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
   font-size: 14px;
   font-weight: 600;
   color: #374151;
   cursor: pointer;
-  transition: 0.18s;
+  transition: background 0.15s, color 0.15s;
+  text-align: left;
+  width: 100%;
 }
 
-.catalogCategories button:hover {
-  border-color: var(--primary-blue);
+.catDropdownItem:hover {
+  background: #f0f4ff;
   color: var(--primary-blue);
 }
 
-.catalogCategories button.activeCategory {
+.catDropdownItem.active {
   background: var(--primary-blue);
-  border-color: var(--primary-blue);
   color: white;
 }
 
-.catalogCategories button.activeCategory .catCount {
-  background: rgba(255,255,255,0.25);
+.catDropdownItem.active .catCount {
+  background: rgba(255, 255, 255, 0.25);
   color: white;
+}
+
+.catDropdownItem .catCount {
+  margin-left: auto;
 }
 
 .catalogRightControls {
@@ -4586,9 +4702,11 @@ section {
   .catalogBackLink { position: static; display: block; margin-bottom: 12px; text-align: left; }
   .catalogInlineHeader { text-align: left; }
   .catalogBody { padding: 24px 16px 48px; }
-  .catalogControls { flex-direction: column; }
+  .catalogControls { flex-direction: column; align-items: stretch; }
   .catalogSort { width: 100%; }
   .catalogSort select { width: 100%; }
+  .catDropdownTrigger { width: 100%; min-width: unset; }
+  .catDropdownMenu { min-width: unset; width: 100%; }
 }
 
 /* ========================
