@@ -60,6 +60,8 @@ const FREIGHT_FALLBACK = {
   TO: { price: 38, days: "5-7 dias úteis" },
 };
 
+const ORDER_MINIMUM = 200;
+
 function CartDrawer({
   cartItems,
   isCartOpen,
@@ -82,6 +84,7 @@ function CartDrawer({
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
+  const remaining = Math.max(0, ORDER_MINIMUM - total);
 
   async function calculateFreight() {
     const cleaned = cep.replace(/\D/g, "");
@@ -335,6 +338,15 @@ Aguardo as informações para pagamento e entrega.`;
                 </div>
               )}
 
+              {remaining > 0 && (
+                <div className="cartMinimumNotice">
+                  <span>🛍️</span>
+                  <p>
+                    Falta <strong>R$ {remaining.toFixed(2).replace(".", ",")}</strong> para o pedido mínimo de R$ {ORDER_MINIMUM.toFixed(2).replace(".", ",")}.
+                  </p>
+                </div>
+              )}
+
               {!user && (
                 <div className="cartLoginNotice">
                   <span className="cartLoginNoticeIcon">🔒</span>
@@ -364,7 +376,7 @@ Aguardo as informações para pagamento e entrega.`;
               <button
                 className="checkoutButton"
                 onClick={finishOrder}
-                disabled={isCheckingOut}
+                disabled={isCheckingOut || remaining > 0}
               >
                 {isCheckingOut ? "Processando..." : "Finalizar pelo WhatsApp"}
               </button>

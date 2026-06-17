@@ -529,6 +529,40 @@ html {
   box-shadow: 0 16px 28px rgba(37, 211, 102, 0.35);
 }
 
+.checkoutButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.cartMinimumNotice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fffbeb;
+  border: 1.5px solid #fbbf24;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: #92400e;
+}
+
+.cartMinimumNotice span {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.cartMinimumNotice p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.cartMinimumNotice strong {
+  color: #b45309;
+}
+
 .cartLoginNotice {
   display: flex;
   align-items: flex-start;
