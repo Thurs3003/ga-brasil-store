@@ -19,7 +19,12 @@ function FeaturedCarousel({
   const [canNext, setCanNext] = useState(false);
   const titleRef = useScrollReveal();
 
-  const featured = products.filter((p) => p.featured).slice(0, FEATURED_LIMIT);
+  const pinned = products.filter((p) => p.featured);
+  const pinnedIds = new Set(pinned.map((p) => p.id));
+  const byRating = products
+    .filter((p) => !pinnedIds.has(p.id) && p.rating > 0)
+    .sort((a, b) => b.rating - a.rating || b.id - a.id);
+  const featured = [...pinned, ...byRating].slice(0, FEATURED_LIMIT);
 
   useEffect(() => {
     checkScrollState();
