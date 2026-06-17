@@ -43,7 +43,8 @@ function FeaturedCarousel({
     const item = el.querySelector(".carouselItem");
     const gap = 22;
     const itemW = item ? item.offsetWidth + gap : el.clientWidth;
-    el.scrollBy({ left: dir * itemW * 4, behavior: "smooth" });
+    const visibleCount = Math.max(1, Math.round(el.clientWidth / itemW));
+    el.scrollBy({ left: dir * itemW * visibleCount, behavior: "smooth" });
   }
 
   return (
