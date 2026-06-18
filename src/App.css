@@ -2811,8 +2811,9 @@ section {
   display: flex;
   gap: 22px;
   overflow-x: auto;
-  overflow-y: visible;
+  overflow-y: clip; /* visible seria promovido a auto pelo browser (overflow-x != visible), tornando o track um scroll container vertical e bloqueando o scroll da página */
   scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain; /* evita que scroll horizontal dispare efeitos de bounce/overscroll da página */
   scrollbar-width: none;
   -ms-overflow-style: none;
   padding: 8px 2px 16px;
