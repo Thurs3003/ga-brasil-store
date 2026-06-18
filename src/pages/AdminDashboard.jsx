@@ -201,6 +201,7 @@ function AdminDashboard() {
   const [openIconPickerFor, setOpenIconPickerFor] = useState(null);
   const [pickerPos, setPickerPos] = useState({ top: 0, left: 0 });
   const iconPickerRef = useRef(null);
+  const formRef = useRef(null);
 
   // Catalog export
   const [isExportingPDF, setIsExportingPDF] = useState(false);
@@ -352,6 +353,9 @@ function AdminDashboard() {
       gallery: product.gallery || [],
     });
     setImagePreview(product.image || "");
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 0);
   }
 
   async function deleteProduct(id, name) {
@@ -1567,7 +1571,7 @@ function AdminDashboard() {
       </div>
 
       <div className="adminBody">
-        <div className="adminFormSection">
+        <div className="adminFormSection" ref={formRef}>
           <div className="adminFormCard">
             <h2>{editingProductId ? "✏️ Editando produto" : "➕ Novo produto"}</h2>
 
