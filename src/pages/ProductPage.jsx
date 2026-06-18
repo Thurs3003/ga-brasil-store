@@ -371,10 +371,10 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
               <div className="productPageActions">
                 <button
                   className="detailsAddButton"
-                  disabled={product.variants?.options?.length > 0 && !selectedVariant}
+                  disabled={product.stock === 0 || (product.variants?.options?.length > 0 && !selectedVariant)}
                   onClick={() => addToCart({ ...product, selectedVariant: selectedVariant || undefined })}
                 >
-                  🛒 Adicionar ao carrinho
+                  {product.stock === 0 ? "Sem estoque" : "🛒 Adicionar ao carrinho"}
                 </button>
                 <a className="whatsappButton" href={whatsappUrl} target="_blank" rel="noreferrer">
                   <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">

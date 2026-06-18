@@ -231,14 +231,18 @@ function ProductModal({ product, onClose, addToCart }) {
           <div className="modalActions">
             <button
               className="detailsAddButton"
-              disabled={product.variants?.options?.length > 0 && !selectedVariant}
-              title={product.variants?.options?.length > 0 && !selectedVariant ? `Selecione ${product.variants.label.toLowerCase()} antes de adicionar` : undefined}
+              disabled={product.stock === 0 || (product.variants?.options?.length > 0 && !selectedVariant)}
+              title={
+                product.stock === 0 ? "Produto sem estoque" :
+                product.variants?.options?.length > 0 && !selectedVariant ? `Selecione ${product.variants.label.toLowerCase()} antes de adicionar` :
+                undefined
+              }
               onClick={() => {
                 addToCart({ ...product, selectedVariant: selectedVariant || undefined });
                 onClose();
               }}
             >
-              🛒 Adicionar ao carrinho
+              {product.stock === 0 ? "Sem estoque" : "🛒 Adicionar ao carrinho"}
             </button>
 
             <a

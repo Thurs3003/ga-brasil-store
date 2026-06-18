@@ -74,6 +74,12 @@ function App() {
       : String(product.id);
     const existing = cartItems.find((item) => item.cartKey === cartKey);
     if (existing) {
+      if (product.stock != null && existing.quantity >= product.stock) {
+        setToastMessage(`Limite atingido — apenas ${product.stock} em estoque`);
+        setTimeout(() => setToastMessage(""), 2500);
+        setIsCartOpen(true);
+        return;
+      }
       setCartItems(cartItems.map((item) =>
         item.cartKey === cartKey ? { ...item, quantity: item.quantity + 1 } : item,
       ));
@@ -87,9 +93,11 @@ function App() {
   }
 
   function increaseQuantity(cartKey) {
-    setCartItems(cartItems.map((item) =>
-      item.cartKey === cartKey ? { ...item, quantity: item.quantity + 1 } : item,
-    ));
+    setCartItems(cartItems.map((item) => {
+      if (item.cartKey !== cartKey) return item;
+      if (item.stock != null && item.quantity >= item.stock) return item;
+      return { ...item, quantity: item.quantity + 1 };
+    }));
   }
 
   function decreaseQuantity(cartKey) {

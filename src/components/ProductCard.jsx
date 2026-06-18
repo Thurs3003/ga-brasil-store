@@ -97,7 +97,11 @@ function ProductCard({
           </div>
         </div>
 
-        {product.variants?.options?.length > 0 ? (
+        {product.stock === 0 ? (
+          <button className="cardAddButton" disabled>
+            Sem estoque
+          </button>
+        ) : product.variants?.options?.length > 0 ? (
           <button className="cardAddButton cardAddButtonVariant" onClick={() => onOpenDetails(product)}>
             <ShoppingCart size={15} strokeWidth={2.2} />
             Escolher opção

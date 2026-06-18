@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { getOrdersWA, buildWAUrl } from "../lib/whatsapp";
@@ -79,7 +79,18 @@ function CartDrawer({
   const [freightLoading, setFreightLoading] = useState(false);
   const [freightError, setFreightError] = useState("");
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [stockMap, setStockMap] = useState({});
+  const [checkoutError, setCheckoutError] = useState("");
   const cepCacheRef = useRef({});
+
+  useEffect(() => {
+    if (!isCartOpen || cartItems.length === 0) { setStockMap({}); return; }
+    const ids = [...new Set(cartItems.map((item) => item.id))];
+    supabase.from("products").select("id, stock").in("id", ids).then(({ data }) => {
+      if (data) setStockMap(Object.fromEntries(data.map((p) => [p.id, p.stock])));
+    });
+  }, [isCartOpen, cartItems.length]);
+
   const total = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
@@ -150,7 +161,7 @@ function CartDrawer({
     const ids = cartItems.map((item) => item.id);
     const { data: freshProducts, error: priceError } = await supabase
       .from("products")
-      .select("id, price, name, brand")
+      .select("id, price, name, brand, stock")
       .in("id", ids);
 
     if (priceError || !freshProducts) {
@@ -160,6 +171,22 @@ function CartDrawer({
     }
 
     const priceMap = Object.fromEntries(freshProducts.map((p) => [p.id, p.price]));
+
+    const outOfStockNames = cartItems
+      .filter((item) => {
+        const fresh = freshProducts.find((p) => p.id === item.id);
+        return fresh && fresh.stock === 0;
+      })
+      .map((item) => item.name);
+
+    if (outOfStockNames.length > 0) {
+      waWindow?.close();
+      setCheckoutError(`Sem estoque: ${outOfStockNames.join(", ")}. Remova do carrinho para continuar.`);
+      setIsCheckingOut(false);
+      return;
+    }
+
+    setCheckoutError("");
 
     const validatedItems = cartItems.map((item) => ({
       ...item,
@@ -265,18 +292,29 @@ Aguardo as informações para pagamento e entrega.`;
                     {item.selectedVariant && (
                       <span className="cartItemVariant">{item.selectedVariant}</span>
                     )}
+                    {stockMap[item.id] === 0 && (
+                      <span className="cartItemOutOfStock">Indisponível — remova do carrinho</span>
+                    )}
 
                     <p>R$ {item.price.toFixed(2).replace(".", ",")}</p>
 
                     <div className="quantityControls">
-                      <button onClick={() => decreaseQuantity(item.cartKey)}>
-                        -
-                      </button>
+                      <button onClick={() => decreaseQuantity(item.cartKey)}>-</button>
                       <span>{item.quantity}</span>
-                      <button onClick={() => increaseQuantity(item.cartKey)}>
-                        +
-                      </button>
+                      <button
+                        onClick={() => increaseQuantity(item.cartKey)}
+                        disabled={
+                          (stockMap[item.id] != null && item.quantity >= stockMap[item.id]) ||
+                          (stockMap[item.id] == null && item.stock != null && item.quantity >= item.stock)
+                        }
+                      >+</button>
                     </div>
+                    {(() => {
+                      const limit = stockMap[item.id] ?? item.stock;
+                      return limit != null && item.quantity >= limit && limit > 0
+                        ? <span className="cartStockLimit">Máx. {limit} em estoque</span>
+                        : null;
+                    })()}
                   </div>
 
                   <button
@@ -378,10 +416,14 @@ Aguardo as informações para pagamento e entrega.`;
                 </div>
               )}
 
+              {checkoutError && (
+                <p className="cartCheckoutError">{checkoutError}</p>
+              )}
+
               <button
                 className="checkoutButton"
                 onClick={finishOrder}
-                disabled={isCheckingOut || remaining > 0}
+                disabled={isCheckingOut || remaining > 0 || cartItems.some((item) => stockMap[item.id] === 0)}
               >
                 {isCheckingOut ? "Processando..." : "Finalizar pelo WhatsApp"}
               </button>
