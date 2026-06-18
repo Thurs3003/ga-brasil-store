@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { getOrdersWA, buildWAUrl } from "../lib/whatsapp";
+import { ORDER_MINIMUM } from "../lib/orderConfig";
 
 // CEP de origem da loja: 01027-001 — São Paulo, SP
 const STORE_LAT = -23.5414;
@@ -60,7 +61,6 @@ const FREIGHT_FALLBACK = {
   TO: { price: 38, days: "5-7 dias úteis" },
 };
 
-const ORDER_MINIMUM = 200;
 
 function CartDrawer({
   cartItems,

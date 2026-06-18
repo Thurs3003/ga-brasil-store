@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { ORDER_MINIMUM } from "../lib/orderConfig";
 
 const FAQS = [
   {
     q: "Qual o pedido mínimo para compras no atacado?",
-    a: "Trabalhamos sem pedido mínimo fixo. Você pode comprar a partir de 1 unidade, mas quanto maior o volume, melhores as condições de frete e preço. Entre em contato pelo WhatsApp para saber mais sobre descontos por volume.",
+    a: `O pedido mínimo para compra é de R$ ${ORDER_MINIMUM.toFixed(2).replace(".", ",")}. Acima desse valor, você pode comprar a quantidade que precisar — e quanto maior o volume, melhores as condições de frete e preço. Entre em contato pelo WhatsApp para saber mais sobre descontos por volume.`,
   },
   {
     q: "Quais formas de pagamento são aceitas?",
