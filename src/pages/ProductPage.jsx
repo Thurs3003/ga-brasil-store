@@ -7,6 +7,8 @@ import { addRecentlyViewed } from "../lib/recentlyViewed";
 import { useUser } from "../hooks/useUser";
 import Header from "../components/Header";
 import CartDrawer from "../components/CartDrawer";
+import ProductCard from "../components/ProductCard";
+import ProductModal from "../components/ProductModal";
 import Footer from "../components/Footer";
 
 function StarPicker({ value, onChange }) {
@@ -53,6 +55,9 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
   const [submitting, setSubmitting] = useState(false);
   const [reviewError, setReviewError] = useState("");
   const [reviewSuccess, setReviewSuccess] = useState(false);
+  const [reviewFormOpen, setReviewFormOpen] = useState(false);
+  const [descExpanded, setDescExpanded] = useState(false);
+  const [relatedModalProduct, setRelatedModalProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   // Calculado cedo para ficar disponível nos hooks abaixo
@@ -313,7 +318,16 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
               </div>
 
               {product.description && (
-                <p className="productPageDesc">{product.description}</p>
+                <div className="productPageDescWrap">
+                  <p className={`productPageDesc ${descExpanded ? "" : "clamped"}`}>
+                    {product.description}
+                  </p>
+                  {product.description.length > 280 && (
+                    <button className="productDescToggle" onClick={() => setDescExpanded(!descExpanded)}>
+                      {descExpanded ? "Ver menos ↑" : "Ver mais ↓"}
+                    </button>
+                  )}
+                </div>
               )}
 
               {product.variants?.options?.length > 0 && (() => {
@@ -363,9 +377,18 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
               })()}
 
               <div className="productPageBenefits">
-                <span>📦 Em estoque: {product.stock} unidades</span>
-                <span>🚚 Frete calculado no carrinho</span>
-                <span>💬 Atendimento pelo WhatsApp</span>
+                <div className="benefitItem">
+                  <span className="benefitIcon">📦</span>
+                  <span>Em estoque: {product.stock} unidades</span>
+                </div>
+                <div className="benefitItem">
+                  <span className="benefitIcon">🚚</span>
+                  <span>Frete calculado no carrinho</span>
+                </div>
+                <div className="benefitItem">
+                  <span className="benefitIcon">💬</span>
+                  <span>Atendimento pelo WhatsApp</span>
+                </div>
               </div>
 
               <div className="productPageActions">
@@ -391,67 +414,86 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
           <div className="productPageReviews">
             <h2>Avaliações dos clientes</h2>
 
-            {avgRating ? (
-              <div className="reviewsSummary">
-                <div className="reviewsAvgBig">
-                  <strong>{avgRating}</strong>
-                  <ReviewStars rating={Math.round(avgRating)} />
-                  <span>{reviews.length} avaliação{reviews.length !== 1 ? "ões" : ""}</span>
-                </div>
-              </div>
-            ) : (
-              !reviewLoading && <p className="reviewsEmpty">Nenhuma avaliação ainda. Seja o primeiro!</p>
-            )}
-
-            {user ? (
-              <form className="reviewForm" onSubmit={submitReview}>
-                <h3>{reviewSuccess ? "✅ Avaliação enviada!" : "Deixar avaliação"}</h3>
-                {!reviewSuccess && (
-                  <>
-                    <div className="reviewFormRow">
-                      <label>Sua nota</label>
-                      <StarPicker value={myReview.rating} onChange={(v) => setMyReview((r) => ({ ...r, rating: v }))} />
-                    </div>
-                    <div className="reviewFormRow">
-                      <label>Comentário (opcional)</label>
-                      <textarea
-                        rows={3}
-                        placeholder="Conte sua experiência com este produto..."
-                        value={myReview.comment}
-                        onChange={(e) => setMyReview((r) => ({ ...r, comment: e.target.value }))}
-                      />
-                    </div>
-                    {reviewError && <p className="reviewError">{reviewError}</p>}
-                    <button type="submit" className="reviewSubmitBtn" disabled={submitting}>
-                      {submitting ? "Enviando..." : "Enviar avaliação"}
-                    </button>
-                  </>
-                )}
-              </form>
-            ) : (
-              <div className="reviewLoginPrompt">
-                <p>Para avaliar este produto, <Link to="/login">faça login</Link> ou <Link to="/cadastro">crie uma conta</Link>.</p>
-              </div>
-            )}
-
+            {/* Lista de avaliações (primeiro, se existir) */}
             {reviews.length > 0 && (
-              <div className="reviewsList">
-                {reviews.map((r) => (
-                  <div key={r.id} className="reviewCard">
-                    <div className="reviewCardTop">
-                      <div className="reviewCardLeft">
-                        <div className="reviewAvatar">{(r.profiles?.name || r.name || "?")[0].toUpperCase()}</div>
-                        <div>
-                          <strong>{r.profiles?.name || r.name || "Anônimo"}</strong>
-                          <small>{new Date(r.created_at).toLocaleDateString("pt-BR")}</small>
-                        </div>
-                      </div>
-                      <ReviewStars rating={r.rating} />
-                    </div>
-                    {r.comment && <p className="reviewComment">{r.comment}</p>}
+              <>
+                <div className="reviewsSummary">
+                  <div className="reviewsAvgBig">
+                    <strong>{avgRating}</strong>
+                    <ReviewStars rating={Math.round(Number(avgRating))} />
+                    <span>{reviews.length} avaliação{reviews.length !== 1 ? "ões" : ""}</span>
                   </div>
-                ))}
-              </div>
+                </div>
+                <div className="reviewsList">
+                  {reviews.map((r) => (
+                    <div key={r.id} className="reviewCard">
+                      <div className="reviewCardTop">
+                        <div className="reviewCardLeft">
+                          <div className="reviewAvatar">{(r.profiles?.name || r.name || "?")[0].toUpperCase()}</div>
+                          <div>
+                            <strong>{r.profiles?.name || r.name || "Anônimo"}</strong>
+                            <small>{new Date(r.created_at).toLocaleDateString("pt-BR")}</small>
+                          </div>
+                        </div>
+                        <ReviewStars rating={r.rating} />
+                      </div>
+                      {r.comment && <p className="reviewComment">{r.comment}</p>}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* Estado sem avaliações */}
+            {!reviewLoading && reviews.length === 0 && (
+              <p className="reviewsEmpty">Nenhuma avaliação ainda.</p>
+            )}
+
+            {/* Formulário / toggle */}
+            {user ? (
+              reviewSuccess ? (
+                <div className="reviewForm" style={{ marginTop: reviews.length > 0 ? "32px" : 0 }}>
+                  <h3>✅ Avaliação enviada!</h3>
+                </div>
+              ) : reviewFormOpen ? (
+                <form className="reviewForm" style={{ marginTop: reviews.length > 0 ? "32px" : 0 }} onSubmit={submitReview}>
+                  <div className="reviewFormHeader">
+                    <h3>Deixar avaliação</h3>
+                    <button type="button" className="reviewFormClose" onClick={() => setReviewFormOpen(false)}>✕</button>
+                  </div>
+                  <div className="reviewFormRow">
+                    <label>Sua nota</label>
+                    <StarPicker value={myReview.rating} onChange={(v) => setMyReview((r) => ({ ...r, rating: v }))} />
+                  </div>
+                  <div className="reviewFormRow">
+                    <label>Comentário (opcional)</label>
+                    <textarea
+                      rows={3}
+                      placeholder="Conte sua experiência com este produto..."
+                      value={myReview.comment}
+                      onChange={(e) => setMyReview((r) => ({ ...r, comment: e.target.value }))}
+                    />
+                  </div>
+                  {reviewError && <p className="reviewError">{reviewError}</p>}
+                  <button type="submit" className="reviewSubmitBtn" disabled={submitting}>
+                    {submitting ? "Enviando..." : "Enviar avaliação"}
+                  </button>
+                </form>
+              ) : (
+                <button
+                  className="reviewToggleBtn"
+                  style={{ marginTop: reviews.length > 0 ? "32px" : 0 }}
+                  onClick={() => setReviewFormOpen(true)}
+                >
+                  {reviews.length === 0 ? "+ Avaliar produto" : "✏️ Deixar avaliação"}
+                </button>
+              )
+            ) : (
+              !reviewLoading && (
+                <div className="reviewLoginPrompt">
+                  <p>Para avaliar este produto, <Link to="/login">faça login</Link> ou <Link to="/cadastro">crie uma conta</Link>.</p>
+                </div>
+              )
             )}
           </div>
 
@@ -461,14 +503,14 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
               <h2>Produtos relacionados</h2>
               <div className="productPageRelatedGrid">
                 {relatedProducts.map((p) => (
-                  <Link key={p.id} to={`/produto/${p.id}`} className="relatedCard">
-                    <img src={p.image} alt={p.name} loading="lazy" decoding="async" />
-                    <div className="relatedCardInfo">
-                      <span>{p.brand}</span>
-                      <strong>{p.name}</strong>
-                      <p>R$ {Number(p.price).toFixed(2).replace(".", ",")}</p>
-                    </div>
-                  </Link>
+                  <ProductCard
+                    key={p.id}
+                    product={p}
+                    addToCart={addToCart}
+                    onOpenDetails={setRelatedModalProduct}
+                    favoriteIds={favoriteIds}
+                    toggleFavorite={toggleFavorite}
+                  />
                 ))}
               </div>
             </div>
@@ -476,6 +518,11 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
         </div>
       </main>
 
+      <ProductModal
+        product={relatedModalProduct}
+        onClose={() => setRelatedModalProduct(null)}
+        addToCart={addToCart}
+      />
       <CartDrawer
         cartItems={cartItems}
         isCartOpen={isCartOpen}
