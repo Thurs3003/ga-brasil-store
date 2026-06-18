@@ -31,11 +31,13 @@ function ProductModal({ product, onClose, addToCart }) {
   const [selectedImage, setSelectedImage] = useState("");
   const [isDescExpanded, setIsDescExpanded] = useState(false);
   const [zoomedImage, setZoomedImage] = useState(null);
+  const [selectedVariant, setSelectedVariant] = useState("");
 
   useEffect(() => {
     setSelectedImage(product?.image || "");
     setIsDescExpanded(false);
     setZoomedImage(null);
+    setSelectedVariant("");
     if (product) addRecentlyViewed(product.id);
   }, [product]);
 
@@ -174,6 +176,52 @@ function ProductModal({ product, onClose, addToCart }) {
             <em>{product.installment}</em>
           </div>
 
+          {product.variants?.options?.length > 0 && (() => {
+            const opts = product.variants.options.map((o) =>
+              typeof o === "string" ? { name: o, image_url: null } : o
+            );
+            const hasImages = opts.some((o) => o.image_url);
+            return (
+              <div className="variantSelector">
+                <div className="variantOptions">
+                  {opts.map((opt) =>
+                    hasImages ? (
+                      <button
+                        key={opt.name}
+                        type="button"
+                        className={`variantSwatch ${selectedVariant === opt.name ? "selected" : ""}`}
+                        onClick={() => { setSelectedVariant(opt.name); setSelectedImage(opt.image_url || ""); }}
+                        title={opt.name}
+                      >
+                        {opt.image_url
+                          ? <img src={opt.image_url} alt={opt.name} className="variantSwatchImg" />
+                          : <span className="variantSwatchPlaceholder">{opt.name[0]}</span>
+                        }
+                      </button>
+                    ) : (
+                      <button
+                        key={opt.name}
+                        type="button"
+                        className={`variantOption ${selectedVariant === opt.name ? "selected" : ""}`}
+                        onClick={() => { setSelectedVariant(opt.name); setSelectedImage(""); }}
+                      >
+                        {opt.name}
+                      </button>
+                    )
+                  )}
+                </div>
+                {selectedVariant && (
+                  <p className="variantSelectedLabel">
+                    {product.variants.label}: <strong>{selectedVariant}</strong>
+                  </p>
+                )}
+                {!selectedVariant && (
+                  <p className="variantSelectorHint">Selecione {product.variants.label.toLowerCase()}</p>
+                )}
+              </div>
+            );
+          })()}
+
           <div className="detailsBenefits">
             <span>✅ Em estoque: {product.stock} unidades</span>
             <span>📦 Ideal para revenda</span>
@@ -183,8 +231,10 @@ function ProductModal({ product, onClose, addToCart }) {
           <div className="modalActions">
             <button
               className="detailsAddButton"
+              disabled={product.variants?.options?.length > 0 && !selectedVariant}
+              title={product.variants?.options?.length > 0 && !selectedVariant ? `Selecione ${product.variants.label.toLowerCase()} antes de adicionar` : undefined}
               onClick={() => {
-                addToCart(product);
+                addToCart({ ...product, selectedVariant: selectedVariant || undefined });
                 onClose();
               }}
             >

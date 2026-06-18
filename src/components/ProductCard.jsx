@@ -97,10 +97,17 @@ function ProductCard({
           </div>
         </div>
 
-        <button className="cardAddButton" onClick={() => addToCart(product)}>
-          <ShoppingCart size={15} strokeWidth={2.2} />
-          Adicionar ao carrinho
-        </button>
+        {product.variants?.options?.length > 0 ? (
+          <button className="cardAddButton cardAddButtonVariant" onClick={() => onOpenDetails(product)}>
+            <ShoppingCart size={15} strokeWidth={2.2} />
+            Escolher opção
+          </button>
+        ) : (
+          <button className="cardAddButton" onClick={() => addToCart(product)}>
+            <ShoppingCart size={15} strokeWidth={2.2} />
+            Adicionar ao carrinho
+          </button>
+        )}
       </div>
     </div>
   );

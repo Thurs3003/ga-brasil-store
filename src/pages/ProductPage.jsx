@@ -46,6 +46,7 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState("");
   const [zoomedImage, setZoomedImage] = useState(null);
+  const [selectedVariant, setSelectedVariant] = useState("");
   const [reviews, setReviews] = useState([]);
   const [reviewLoading, setReviewLoading] = useState(true);
   const [myReview, setMyReview] = useState({ rating: 0, comment: "" });
@@ -94,12 +95,14 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
       if (found) {
         setProduct(found);
         setSelectedImage(found.image || "");
+        setSelectedVariant("");
         addRecentlyViewed(found.id);
       } else if (!isLoadingProducts) {
         const { data } = await supabase.from("products").select("*").eq("id", id).single();
         if (data) {
           setProduct({ ...data, oldPrice: data.old_price, isNew: data.is_new });
           setSelectedImage(data.image || "");
+          setSelectedVariant("");
           addRecentlyViewed(data.id);
         } else {
           navigate("/produtos");
@@ -313,6 +316,52 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
                 <p className="productPageDesc">{product.description}</p>
               )}
 
+              {product.variants?.options?.length > 0 && (() => {
+                const opts = product.variants.options.map((o) =>
+                  typeof o === "string" ? { name: o, image_url: null } : o
+                );
+                const hasImages = opts.some((o) => o.image_url);
+                return (
+                  <div className="variantSelector">
+                    <div className="variantOptions">
+                      {opts.map((opt) =>
+                        hasImages ? (
+                          <button
+                            key={opt.name}
+                            type="button"
+                            className={`variantSwatch ${selectedVariant === opt.name ? "selected" : ""}`}
+                            onClick={() => { setSelectedVariant(opt.name); setSelectedImage(opt.image_url || ""); }}
+                            title={opt.name}
+                          >
+                            {opt.image_url
+                              ? <img src={opt.image_url} alt={opt.name} className="variantSwatchImg" />
+                              : <span className="variantSwatchPlaceholder">{opt.name[0]}</span>
+                            }
+                          </button>
+                        ) : (
+                          <button
+                            key={opt.name}
+                            type="button"
+                            className={`variantOption ${selectedVariant === opt.name ? "selected" : ""}`}
+                            onClick={() => { setSelectedVariant(opt.name); setSelectedImage(""); }}
+                          >
+                            {opt.name}
+                          </button>
+                        )
+                      )}
+                    </div>
+                    {selectedVariant && (
+                      <p className="variantSelectedLabel">
+                        {product.variants.label}: <strong>{selectedVariant}</strong>
+                      </p>
+                    )}
+                    {!selectedVariant && (
+                      <p className="variantSelectorHint">Selecione {product.variants.label.toLowerCase()}</p>
+                    )}
+                  </div>
+                );
+              })()}
+
               <div className="productPageBenefits">
                 <span>📦 Em estoque: {product.stock} unidades</span>
                 <span>🚚 Frete calculado no carrinho</span>
@@ -320,7 +369,11 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
               </div>
 
               <div className="productPageActions">
-                <button className="detailsAddButton" onClick={() => addToCart(product)}>
+                <button
+                  className="detailsAddButton"
+                  disabled={product.variants?.options?.length > 0 && !selectedVariant}
+                  onClick={() => addToCart({ ...product, selectedVariant: selectedVariant || undefined })}
+                >
                   🛒 Adicionar ao carrinho
                 </button>
                 <a className="whatsappButton" href={whatsappUrl} target="_blank" rel="noreferrer">

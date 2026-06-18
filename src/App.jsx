@@ -24,7 +24,9 @@ function App() {
 
   const [cartItems, setCartItems] = useState(() => {
     const savedCart = localStorage.getItem("@ga-brasil:cart");
-    return savedCart ? JSON.parse(savedCart) : [];
+    const items = savedCart ? JSON.parse(savedCart) : [];
+    // Compat: itens sem cartKey (salvos antes das variantes) recebem cartKey = id
+    return items.map((item) => ({ ...item, cartKey: item.cartKey ?? String(item.id) }));
   });
 
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -67,50 +69,39 @@ function App() {
   }, [favoriteIds]);
 
   function addToCart(product) {
-    const existingProduct = cartItems.find((item) => item.id === product.id);
-
-    if (existingProduct) {
-      setCartItems(
-        cartItems.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
-        ),
-      );
+    const cartKey = product.selectedVariant
+      ? `${product.id}__${product.selectedVariant}`
+      : String(product.id);
+    const existing = cartItems.find((item) => item.cartKey === cartKey);
+    if (existing) {
+      setCartItems(cartItems.map((item) =>
+        item.cartKey === cartKey ? { ...item, quantity: item.quantity + 1 } : item,
+      ));
     } else {
-      setCartItems([...cartItems, { ...product, quantity: 1 }]);
+      setCartItems([...cartItems, { ...product, cartKey, quantity: 1 }]);
     }
-
     setIsCartOpen(true);
-    setToastMessage(`${product.name} adicionado ao carrinho`);
-
-    setTimeout(() => {
-      setToastMessage("");
-    }, 2500);
+    const variantSuffix = product.selectedVariant ? ` (${product.selectedVariant})` : "";
+    setToastMessage(`${product.name}${variantSuffix} adicionado ao carrinho`);
+    setTimeout(() => setToastMessage(""), 2500);
   }
 
-  function increaseQuantity(productId) {
-    setCartItems(
-      cartItems.map((item) =>
-        item.id === productId ? { ...item, quantity: item.quantity + 1 } : item,
-      ),
-    );
+  function increaseQuantity(cartKey) {
+    setCartItems(cartItems.map((item) =>
+      item.cartKey === cartKey ? { ...item, quantity: item.quantity + 1 } : item,
+    ));
   }
 
-  function decreaseQuantity(productId) {
+  function decreaseQuantity(cartKey) {
     setCartItems(
       cartItems
-        .map((item) =>
-          item.id === productId
-            ? { ...item, quantity: item.quantity - 1 }
-            : item,
-        )
+        .map((item) => item.cartKey === cartKey ? { ...item, quantity: item.quantity - 1 } : item)
         .filter((item) => item.quantity > 0),
     );
   }
 
-  function removeFromCart(productId) {
-    setCartItems(cartItems.filter((item) => item.id !== productId));
+  function removeFromCart(cartKey) {
+    setCartItems(cartItems.filter((item) => item.cartKey !== cartKey));
   }
 
   async function repeatOrderToCart(items) {
@@ -126,11 +117,13 @@ function App() {
       items.forEach((item) => {
         const product = productMap[item.id];
         if (!product) return;
-        const existingIdx = merged.findIndex((i) => i.id === item.id);
+        const selectedVariant = item.selectedVariant ?? undefined;
+        const cartKey = selectedVariant ? `${product.id}__${selectedVariant}` : String(product.id);
+        const existingIdx = merged.findIndex((i) => i.cartKey === cartKey);
         if (existingIdx >= 0) {
           merged[existingIdx] = { ...merged[existingIdx], quantity: merged[existingIdx].quantity + item.quantity };
         } else {
-          merged.push({ ...product, oldPrice: product.old_price, isNew: product.is_new, quantity: item.quantity });
+          merged.push({ ...product, oldPrice: product.old_price, isNew: product.is_new, selectedVariant, cartKey, quantity: item.quantity });
         }
       });
       return merged;

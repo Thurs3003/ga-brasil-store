@@ -177,6 +177,7 @@ function CartDrawer({
       brand: item.brand,
       price: item.price,
       quantity: item.quantity,
+      ...(item.selectedVariant ? { selectedVariant: item.selectedVariant } : {}),
     }));
 
     const { error: orderError } = await supabase.from("orders").insert([{
@@ -199,7 +200,8 @@ function CartDrawer({
     const productsMessage = validatedItems
       .map((item) => {
         const subtotal = item.price * item.quantity;
-        return `• ${item.name}
+        const variantLine = item.selectedVariant ? `\nVariante: ${item.selectedVariant}` : "";
+        return `• ${item.name}${variantLine}
 Marca: ${item.brand}
 Quantidade: ${item.quantity}
 Subtotal: R$ ${subtotal.toFixed(2).replace(".", ",")}`;
@@ -254,21 +256,24 @@ Aguardo as informações para pagamento e entrega.`;
           <>
             <div className="cartItems">
               {cartItems.map((item) => (
-                <div className="cartItem" key={item.id}>
+                <div className="cartItem" key={item.cartKey}>
                   <img src={item.image} alt={item.name} />
 
                   <div className="cartItemInfo">
                     <strong>{item.name}</strong>
                     <small>{item.brand}</small>
+                    {item.selectedVariant && (
+                      <span className="cartItemVariant">{item.selectedVariant}</span>
+                    )}
 
                     <p>R$ {item.price.toFixed(2).replace(".", ",")}</p>
 
                     <div className="quantityControls">
-                      <button onClick={() => decreaseQuantity(item.id)}>
+                      <button onClick={() => decreaseQuantity(item.cartKey)}>
                         -
                       </button>
                       <span>{item.quantity}</span>
-                      <button onClick={() => increaseQuantity(item.id)}>
+                      <button onClick={() => increaseQuantity(item.cartKey)}>
                         +
                       </button>
                     </div>
@@ -276,7 +281,7 @@ Aguardo as informações para pagamento e entrega.`;
 
                   <button
                     className="removeItem"
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() => removeFromCart(item.cartKey)}
                   >
                     Remover
                   </button>

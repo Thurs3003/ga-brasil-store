@@ -46,6 +46,7 @@ const EMPTY_FORM = {
   price: "", discount: "", installment: "", stock: "",
   tag: "", featured: false,
   image: "", gallery: [],
+  variantLabel: "", variantOptions: [],
 };
 
 const EMPTY_SLIDE = { eyebrow: "", title: "", description: "", image: "", type: "split", showButtons: true };
@@ -142,6 +143,7 @@ function AdminDashboard() {
   const [imageFile, setImageFile] = useState(null);
   const [galleryFiles, setGalleryFiles] = useState([]);
   const [imagePreview, setImagePreview] = useState("");
+  const [variantInput, setVariantInput] = useState("");
 
   // Stock quick adjust
   const [stockEditId, setStockEditId] = useState(null);
@@ -267,6 +269,22 @@ function AdminDashboard() {
     return data.publicUrl;
   }
 
+  async function uploadVariantImages(options) {
+    const result = [];
+    for (const opt of options) {
+      if (opt._file) {
+        const fileName = `variants/${Date.now()}-${opt._file.name}`;
+        const { error } = await supabase.storage.from("product-images").upload(fileName, opt._file);
+        if (error) { showToast("Erro ao enviar imagem de variante", "error"); return null; }
+        const { data } = supabase.storage.from("product-images").getPublicUrl(fileName);
+        result.push({ name: opt.name, image_url: data.publicUrl });
+      } else {
+        result.push({ name: opt.name, image_url: opt.image_url || null });
+      }
+    }
+    return result;
+  }
+
   async function uploadGallery() {
     if (galleryFiles.length === 0) return newProduct.gallery || [];
     const urls = [];
@@ -287,6 +305,13 @@ function AdminDashboard() {
     const galleryUrls = await uploadGallery();
     if (!imageUrl || !galleryUrls) { setIsSaving(false); return; }
 
+    let variantPayload = null;
+    if (newProduct.variantLabel && newProduct.variantOptions.length > 0) {
+      const uploadedOptions = await uploadVariantImages(newProduct.variantOptions);
+      if (!uploadedOptions) { setIsSaving(false); return; }
+      variantPayload = { label: newProduct.variantLabel, options: uploadedOptions };
+    }
+
     const basePrice = parseFloat(newProduct.price) || 0;
     const discountPct = parseFloat(newProduct.discount) || 0;
     const sellingPrice = discountPct > 0
@@ -306,6 +331,7 @@ function AdminDashboard() {
       featured: newProduct.featured || false,
       image: imageUrl,
       gallery: galleryUrls,
+      variants: variantPayload,
     };
 
     if (editingProductId) {
@@ -329,6 +355,7 @@ function AdminDashboard() {
     setImageFile(null);
     setGalleryFiles([]);
     setImagePreview("");
+    setVariantInput("");
   }
 
   function startEdit(product) {
@@ -351,8 +378,15 @@ function AdminDashboard() {
       featured: product.featured || false,
       image: product.image || "",
       gallery: product.gallery || [],
+      variantLabel: product.variants?.label || "",
+      variantOptions: (product.variants?.options || []).map((opt) =>
+        typeof opt === "string"
+          ? { name: opt, image_url: null, _file: null, _preview: null }
+          : { name: opt.name, image_url: opt.image_url || null, _file: null, _preview: null }
+      ),
     });
     setImagePreview(product.image || "");
+    setVariantInput("");
     setTimeout(() => {
       formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 0);
@@ -1719,6 +1753,99 @@ function AdminDashboard() {
                     onChange={(e) => setGalleryFiles(Array.from(e.target.files))}
                   />
                 </div>
+              </div>
+
+              <div className="formGroup fullWidth adminVariantsSection">
+                <label className="adminVariantsSectionTitle">Variantes do produto <small>(opcional)</small></label>
+                <p className="adminVariantsHint">Use para produtos com opções como fragrância, tamanho ou cor. Deixe em branco se não aplicável.</p>
+
+                <div className="adminVariantsGrid">
+                  <div className="formGroup">
+                    <label>Nome da variante</label>
+                    <input
+                      placeholder="Ex: Fragrância, Tamanho, Cor"
+                      value={newProduct.variantLabel}
+                      onChange={field("variantLabel")}
+                    />
+                  </div>
+
+                  <div className="formGroup">
+                    <label>Adicionar opção</label>
+                    <div className="variantInputRow">
+                      <input
+                        placeholder="Ex: Lavanda"
+                        value={variantInput}
+                        onChange={(e) => setVariantInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            const val = variantInput.trim();
+                            if (val && !newProduct.variantOptions.some((o) => o.name === val)) {
+                              setNewProduct((p) => ({ ...p, variantOptions: [...p.variantOptions, { name: val, image_url: null, _file: null, _preview: null }] }));
+                            }
+                            setVariantInput("");
+                          }
+                        }}
+                      />
+                      <button
+                        type="button"
+                        className="adminSaveBtn"
+                        style={{ padding: "0 14px", flexShrink: 0 }}
+                        onClick={() => {
+                          const val = variantInput.trim();
+                          if (val && !newProduct.variantOptions.some((o) => o.name === val)) {
+                            setNewProduct((p) => ({ ...p, variantOptions: [...p.variantOptions, { name: val, image_url: null, _file: null, _preview: null }] }));
+                          }
+                          setVariantInput("");
+                        }}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {newProduct.variantOptions.length > 0 && (
+                  <div className="variantTagsList">
+                    {newProduct.variantOptions.map((opt) => (
+                      <span key={opt.name} className="variantTag variantTagWithImage">
+                        <label className="variantOptionImgBtn" title="Clique para adicionar foto">
+                          {(opt._preview || opt.image_url)
+                            ? <img src={opt._preview || opt.image_url} alt={opt.name} className="variantOptionThumb" />
+                            : <span className="variantOptionImgPlaceholder">📷</span>
+                          }
+                          <input
+                            type="file"
+                            accept="image/*"
+                            style={{ display: "none" }}
+                            onChange={(e) => {
+                              const file = e.target.files[0];
+                              if (!file) return;
+                              const preview = URL.createObjectURL(file);
+                              setNewProduct((p) => ({
+                                ...p,
+                                variantOptions: p.variantOptions.map((o) =>
+                                  o.name === opt.name ? { ...o, _file: file, _preview: preview } : o
+                                ),
+                              }));
+                            }}
+                          />
+                        </label>
+                        <span className="variantTagName">{opt.name}</span>
+                        <button
+                          type="button"
+                          className="variantTagRemove"
+                          onClick={() => setNewProduct((p) => ({
+                            ...p,
+                            variantOptions: p.variantOptions.filter((o) => o.name !== opt.name),
+                          }))}
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="adminFormActions">
