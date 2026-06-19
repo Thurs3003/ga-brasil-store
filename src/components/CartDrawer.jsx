@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { getOrdersWA, buildWAUrl } from "../lib/whatsapp";
 import { ORDER_MINIMUM } from "../lib/orderConfig";
@@ -265,19 +265,26 @@ Aguardo as informações para pagamento e entrega.`;
 
       <aside className={`cartDrawer ${isCartOpen ? "open" : ""}`}>
         <div className="cartHeader">
-          <div>
+          <div className="cartHeaderInfo">
             <h2>Meu carrinho</h2>
-            <p>{cartItems.length} produto(s)</p>
+            <span className="cartCountBadge">
+              {cartItems.reduce((s, i) => s + i.quantity, 0)} {cartItems.reduce((s, i) => s + i.quantity, 0) === 1 ? "item" : "itens"}
+            </span>
           </div>
-
           <button onClick={() => setIsCartOpen(false)}>✕</button>
         </div>
 
         {cartItems.length === 0 ? (
           <div className="emptyCart">
-            <span>🛒</span>
+            <svg className="emptyCartIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" width="72" height="72">
+              <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
             <h3>Seu carrinho está vazio</h3>
             <p>Adicione produtos para montar seu pedido.</p>
+            <Link to="/produtos" className="emptyCartBtn" onClick={() => setIsCartOpen(false)}>
+              Ver produtos
+            </Link>
           </div>
         ) : (
           <>
@@ -320,7 +327,11 @@ Aguardo as informações para pagamento e entrega.`;
                   <button
                     className="removeItem"
                     onClick={() => removeFromCart(item.cartKey)}
+                    title="Remover item"
                   >
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
                     Remover
                   </button>
                 </div>
@@ -369,17 +380,27 @@ Aguardo as informações para pagamento e entrega.`;
                 <p className="freightDisclaimer">ℹ️ Valores estimados. Frete confirmado pelo WhatsApp.</p>
               </div>
 
-              <div className="cartTotal">
-                <span>Subtotal</span>
-                <strong>R$ {total.toFixed(2).replace(".", ",")}</strong>
-              </div>
-
-              {freight && freight.price > 0 && (
-                <div className="cartTotal cartTotalFreight">
-                  <span>Frete estimado</span>
-                  <strong>R$ {freight.price.toFixed(2).replace(".", ",")}</strong>
+              <div className="cartSummary">
+                <div className="cartSummaryRow">
+                  <span>Subtotal ({cartItems.reduce((s, i) => s + i.quantity, 0)} itens)</span>
+                  <span>R$ {total.toFixed(2).replace(".", ",")}</span>
                 </div>
-              )}
+                <div className="cartSummaryRow">
+                  <span>Frete</span>
+                  <span>
+                    {freight
+                      ? freight.price === 0
+                        ? "Grátis 🎉"
+                        : `R$ ${freight.price.toFixed(2).replace(".", ",")}`
+                      : "A calcular"}
+                  </span>
+                </div>
+                <div className="cartSummaryDivider" />
+                <div className="cartSummaryTotal">
+                  <span>Total estimado</span>
+                  <strong>R$ {(total + (freight?.price || 0)).toFixed(2).replace(".", ",")}</strong>
+                </div>
+              </div>
 
               {remaining > 0 && (
                 <div className="cartMinimumNotice">
@@ -425,8 +446,17 @@ Aguardo as informações para pagamento e entrega.`;
                 onClick={finishOrder}
                 disabled={isCheckingOut || remaining > 0 || cartItems.some((item) => stockMap[item.id] === 0)}
               >
-                {isCheckingOut ? "Processando..." : "Finalizar pelo WhatsApp"}
+                {isCheckingOut ? "Processando..." : (
+                  <>
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.132.558 4.13 1.532 5.862L.057 23.552a.75.75 0 0 0 .921.921l5.69-1.475A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.686-.523-5.205-1.432l-.372-.218-3.853.999 1.02-3.735-.24-.386A9.96 9.96 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
+                    </svg>
+                    Finalizar pelo WhatsApp
+                  </>
+                )}
               </button>
+              {!isCheckingOut && <p className="checkoutHint">Você será redirecionado para o WhatsApp</p>}
             </div>
           </>
         )}
