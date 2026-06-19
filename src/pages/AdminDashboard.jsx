@@ -876,13 +876,6 @@ function AdminDashboard() {
     setIsExportingExcel(false);
   }
 
-  useEffect(() => {
-    if (parseFloat(newProduct.discount) > 0) {
-      setNewProduct((p) => ({ ...p, tag: "Promoção" }));
-    } else if (newProduct.tag === "Promoção") {
-      setNewProduct((p) => ({ ...p, tag: "" }));
-    }
-  }, [newProduct.discount]);
 
   useEffect(() => {
     const channel = supabase

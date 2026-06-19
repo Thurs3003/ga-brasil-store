@@ -72,7 +72,7 @@ function Promocoes({
   const countdown = useCountdown(countdownTarget);
 
   const promoProducts = (supabaseProducts || []).filter(
-    (p) => (p.old_price || p.oldPrice) && (p.old_price || p.oldPrice) > p.price
+    (p) => p.tag === "Promoção"
   );
 
   const maxDiscount = promoProducts.reduce((max, p) => {

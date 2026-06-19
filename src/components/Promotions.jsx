@@ -36,7 +36,7 @@ function Promotions({ products = [] }) {
 
   if (!isActive) return null;
 
-  const promoProducts = products.filter((p) => (p.old_price || p.oldPrice) > 0);
+  const promoProducts = products.filter((p) => p.tag === "Promoção");
   const maxDiscount = promoProducts.reduce((max, p) => {
     const op = p.old_price || p.oldPrice;
     if (!op) return max;
