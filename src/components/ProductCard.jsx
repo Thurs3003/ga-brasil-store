@@ -50,7 +50,7 @@ function ProductCard({
           <img src={product.image} alt={product.name} loading="lazy" decoding="async" />
         </Link>
 
-        {product.featured && <div className="bestSellerBadge">🔥 Mais vendido</div>}
+        {(product.featured || product.tag === "Mais vendido") && <div className="bestSellerBadge">🔥 Mais vendido</div>}
         {discount && <div className="discountBadge">-{discount}%</div>}
         {product.category && <div className="categoryBadge">{product.category}</div>}
 

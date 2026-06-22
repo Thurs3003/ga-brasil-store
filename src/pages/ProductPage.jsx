@@ -296,7 +296,7 @@ function ProductPage({ cartItems, addToCart, isCartOpen, setIsCartOpen, increase
             <div className="productPageInfo">
               <div className="productPageBadges">
                 {product.isNew && <span className="badgeNew">Novo</span>}
-                {product.featured && <span className="badgeFeatured">🔥 Mais vendido</span>}
+                {(product.featured || product.tag === "Mais vendido") && <span className="badgeFeatured">🔥 Mais vendido</span>}
                 {product.category && <span className="badgeCategory">{product.category}</span>}
                 {product.tag && <span className="badgeTag">{product.tag}</span>}
               </div>
