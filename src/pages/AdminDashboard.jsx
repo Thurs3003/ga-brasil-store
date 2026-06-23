@@ -739,96 +739,103 @@ function AdminDashboard() {
         pageW - margin, 14, { align: "right" }
       );
 
-      let y = 28;
-      const imgSize = 28;
-      const textXnoImg  = margin + 8;
-      const textXwithImg = margin + imgSize + 14;
+      // Grid 3 colunas
+      const ncols   = 3;
+      const colGap  = 4;
+      const rowGap  = 4;
+      const colW    = (cW - (ncols - 1) * colGap) / ncols; // ~58mm
+      const cardPad = 4;
+      const imgSize = includeImagesInPDF ? 32 : 0;
+      const imgBlockH = imgSize > 0 ? imgSize + 3 : 0;
+      const cardH   = cardPad + imgBlockH + 4.5 + 3.5 + 4.5 + 7 + cardPad; // fixo por linha
+
+      let col  = 0;
+      let rowY = 28;
 
       for (let i = 0; i < products.length; i++) {
         const p = products[i];
-        const textX = includeImagesInPDF ? textXwithImg : textXnoImg;
-        const textW = cW - (textX - margin);
 
-        const nameLines = doc.splitTextToSize(p.name || "", textW);
-        const rawDesc   = (p.description || "").replace(/\n/g, " ");
-        const descLines = doc.splitTextToSize(rawDesc, textW).slice(0, 3);
-
-        const minH   = includeImagesInPDF ? imgSize + 8 : 0;
-        const textH  =
-          nameLines.length * 5 +
-          5 +
-          5 +
-          (descLines.length > 0 ? descLines.length * 4 + 2 : 0);
-        const blockH = Math.max(minH, textH) + 8;
-
-        if (y + blockH > pageH - margin) {
+        // Quebra de página ao iniciar nova linha
+        if (col === 0 && i > 0 && rowY + cardH > pageH - margin) {
           doc.addPage();
-          y = 14;
+          rowY = 14;
         }
+
+        const cardX  = margin + col * (colW + colGap);
+        const textX  = cardX + cardPad;
+        const textW  = colW - cardPad * 2;
 
         // Card
         doc.setFillColor(248, 250, 255);
-        doc.roundedRect(margin, y, cW, blockH, 2.5, 2.5, "F");
+        doc.roundedRect(cardX, rowY, colW, cardH, 2, 2, "F");
         doc.setDrawColor(226, 232, 240);
-        doc.roundedRect(margin, y, cW, blockH, 2.5, 2.5, "S");
+        doc.roundedRect(cardX, rowY, colW, cardH, 2, 2, "S");
 
-        // Número badge
+        // Número badge (topo direito)
         doc.setFillColor(11, 31, 143);
-        doc.circle(margin + 4.5, y + 5.5, 3.5, "F");
-        doc.setFontSize(7);
+        doc.circle(cardX + colW - 5, rowY + 5, 3, "F");
+        doc.setFontSize(6);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(255, 255, 255);
-        doc.text(String(i + 1), margin + 4.5, y + 6.8, { align: "center" });
+        doc.text(String(i + 1), cardX + colW - 5, rowY + 6.2, { align: "center" });
 
-        // Imagem
+        let ty = rowY + cardPad;
+
+        // Imagem centralizada
         if (includeImagesInPDF && p.image) {
           const b64 = await loadImageAsBase64(p.image);
           if (b64) {
-            doc.addImage(b64, "JPEG", margin + 8, y + 4, imgSize, imgSize);
+            const imgX = cardX + (colW - imgSize) / 2;
+            doc.addImage(b64, "JPEG", imgX, ty, imgSize, imgSize);
           }
+          ty += imgBlockH;
         }
 
-        let ty = y + 6;
-
-        // Nome
-        doc.setFontSize(10);
+        // Nome (1 linha max para manter grid compacto)
+        doc.setFontSize(8.5);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(20, 20, 20);
+        const nameLines = doc.splitTextToSize(p.name || "", textW).slice(0, 1);
         doc.text(nameLines, textX, ty);
-        ty += nameLines.length * 5;
+        ty += 4.5;
 
         // Marca · Categoria
         const brandCat = [p.brand, p.category].filter(Boolean).join(" · ");
-        doc.setFontSize(8);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(120, 120, 120);
-        if (brandCat) { doc.text(brandCat, textX, ty); }
-        ty += 5;
+        if (brandCat) {
+          doc.setFontSize(7);
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(120, 120, 120);
+          doc.text(doc.splitTextToSize(brandCat, textW).slice(0, 1), textX, ty);
+        }
+        ty += 3.5;
 
-        // Preço
-        const priceStr = `R$ ${Number(p.price || 0).toFixed(2).replace(".", ",")}`;
+        // Preço (sem estoque)
         doc.setFontSize(9);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(11, 31, 143);
-        doc.text(priceStr, textX, ty);
+        doc.text(`R$ ${Number(p.price || 0).toFixed(2).replace(".", ",")}`, textX, ty);
+        ty += 4.5;
 
-        // Estoque (mesma linha)
-        const priceW = doc.getTextWidth(priceStr);
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(8);
-        doc.setTextColor(130, 130, 130);
-        doc.text(`  Estoque: ${p.stock ?? 0}`, textX + priceW + 1, ty);
-        ty += 5;
-
-        // Descrição
-        if (descLines.length > 0) {
-          doc.setFontSize(7.5);
-          doc.setFont("helvetica", "normal");
-          doc.setTextColor(80, 80, 80);
-          doc.text(descLines, textX, ty);
+        // Descrição — preserva quebras de linha originais
+        if (p.description) {
+          const paragraphs = p.description.split(/\n+/).filter((s) => s.trim());
+          const descLines  = paragraphs
+            .flatMap((para) => doc.splitTextToSize(para.trim(), textW))
+            .slice(0, 2);
+          if (descLines.length > 0) {
+            doc.setFontSize(7);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(80, 80, 80);
+            doc.text(descLines, textX, ty);
+          }
         }
 
-        y += blockH + 3;
+        // Avança coluna
+        col++;
+        if (col >= ncols) {
+          col  = 0;
+          rowY += cardH + rowGap;
+        }
       }
 
       const ts = new Date().toISOString().slice(0, 10);
