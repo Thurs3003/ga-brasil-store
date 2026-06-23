@@ -2693,6 +2693,7 @@ section {
   font-size: 15px;
   line-height: 1.7;
   margin-bottom: 6px;
+  white-space: pre-line;
 }
 
 .descToggle {
@@ -5170,6 +5171,7 @@ section {
   font-size: 15px;
   line-height: 1.7;
   margin: 0;
+  white-space: pre-line;
 }
 
 .productPageDesc.clamped {
