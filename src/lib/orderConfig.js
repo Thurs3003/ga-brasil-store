@@ -1,1 +1,1 @@
-export const ORDER_MINIMUM = 200;
+export const ORDER_MINIMUM = 300;
