@@ -8373,6 +8373,180 @@ a:focus-visible {
   .catalogSortSelect { width: 100%; }
 }
 
+/* ── Vendedoras — settings section ───────────────────── */
+.sellersList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.sellerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8f9fc;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.sellerInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sellerName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.sellerPhone {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.sellerRemoveBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ef4444;
+  font-size: 14px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.sellerRemoveBtn:hover {
+  background: #fee2e2;
+}
+
+.sellerAddForm {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sellerInput {
+  flex: 1;
+  min-width: 120px;
+  padding: 8px 12px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 13px;
+  background: #fafbfc;
+  transition: border-color 0.2s;
+}
+
+.sellerInput:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(11, 31, 143, 0.08);
+}
+
+.sellerAddBtn {
+  padding: 8px 16px;
+  background: var(--primary-blue);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.sellerAddBtn:hover {
+  background: var(--primary-blue-dark);
+}
+
+/* ── Seller picker modal ──────────────────────────────── */
+.sellerPickerModal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px 28px 24px;
+  width: 420px;
+  max-width: 92vw;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+}
+
+.sellerPickerTitle {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--primary-blue);
+  margin-bottom: 4px;
+}
+
+.sellerPickerSubtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 18px;
+}
+
+.sellerPickerEmpty {
+  font-size: 13px;
+  color: #9ca3af;
+  text-align: center;
+  padding: 16px 0 24px;
+}
+
+.sellerPickerList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.sellerPickerItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.sellerPickerItem:hover {
+  border-color: var(--primary-blue);
+  background: #f0f3ff;
+}
+
+.sellerPickerItemActive {
+  border-color: var(--primary-blue);
+  background: #eef1ff;
+}
+
+.sellerPickerRadio {
+  font-size: 18px;
+  color: var(--primary-blue);
+  line-height: 1;
+  user-select: none;
+}
+
+.sellerPickerInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sellerPickerName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.sellerPickerPhone {
+  font-size: 12px;
+  color: #6b7280;
+}
+
 @media (max-width: 420px) {
   .productGrid.catalogGrid { grid-template-columns: 1fr; }
 }

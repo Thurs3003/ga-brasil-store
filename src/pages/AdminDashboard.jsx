@@ -190,6 +190,14 @@ function AdminDashboard() {
   const [waFooter, setWaFooter] = useState(DEFAULT_WA_NUMBER);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
+  // Vendedoras
+  const [sellers, setSellers] = useState([]);
+  const [isSellersOpen, setIsSellersOpen] = useState(false);
+  const [sellerNameInput, setSellerNameInput] = useState("");
+  const [sellerPhoneInput, setSellerPhoneInput] = useState("");
+  const [sellerPickerOrder, setSellerPickerOrder] = useState(null);
+  const [selectedSellerId, setSelectedSellerId] = useState(null);
+
   // Promotions settings
   const [isPromoOpen, setIsPromoOpen] = useState(false);
   const [promoActive, setPromoActive] = useState(false);
@@ -628,6 +636,60 @@ function AdminDashboard() {
     }
   }
 
+  async function saveSellers(list) {
+    const err = await saveSetting("sellers", list);
+    if (err) showToast("Erro ao salvar vendedoras", "error");
+    else { setSellers(list); showToast("Vendedoras salvas!"); }
+  }
+
+  function addSeller() {
+    const name = sellerNameInput.trim();
+    const digits = sellerPhoneInput.replace(/\D/g, "");
+    if (!name || digits.length < 10) {
+      showToast("Informe nome e telefone com DDD", "error");
+      return;
+    }
+    const phone = digits.startsWith("55") ? digits : `55${digits}`;
+    const updated = [...sellers, { id: Date.now(), name, phone }];
+    saveSellers(updated);
+    setSellerNameInput("");
+    setSellerPhoneInput("");
+  }
+
+  function removeSeller(id) {
+    saveSellers(sellers.filter((s) => s.id !== id));
+  }
+
+  async function confirmOrderWithSeller(seller) {
+    const order = sellerPickerOrder;
+    setSellerPickerOrder(null);
+    setSelectedSellerId(null);
+
+    await updateOrderStatus(order.id, "novo");
+
+    await supabase.from("orders").update({ seller_name: seller.name }).eq("id", order.id);
+    setOrders((prev) => prev.map((o) => o.id === order.id ? { ...o, seller_name: seller.name } : o));
+
+    if (!order.customer_phone) return;
+
+    const rawPhone = order.customer_phone.replace(/\D/g, "");
+    const phone = rawPhone.startsWith("55") ? rawPhone : `55${rawPhone}`;
+    const firstName = (order.customer_name || "cliente").split(" ")[0];
+
+    const itemsText = (order.items || [])
+      .map((item) => {
+        const v = item.selectedVariant ? ` (${item.selectedVariant})` : "";
+        const sub = (item.price * item.quantity).toFixed(2).replace(".", ",");
+        return `• ${item.name}${v} ×${item.quantity} — R$ ${sub}`;
+      })
+      .join("\n");
+
+    const total = Number(order.total).toFixed(2).replace(".", ",");
+    const msg = `Olá, ${firstName}! 😊\n\nSeu pedido *#${order.id}* foi confirmado e já está sendo preparado!\n\n*Produtos:*\n${itemsText}\n\n*Total: R$ ${total}*\n\nEm breve entraremos em contato com as informações de pagamento e entrega. Obrigada pela preferência! 💄✨\n\n— ${seller.name}\nG.A Brasil`;
+
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
+  }
+
   async function duplicateProduct(product) {
     const { id, created_at, sort_order, ...rest } = product;
     const { error } = await supabase.from("products").insert([{
@@ -1050,6 +1112,7 @@ function AdminDashboard() {
         if (key === "promotions_start") setPromoStart(value || "");
         if (key === "promotions_end")   setPromoEnd(value || "");
         if (key === "category_icons" && value && typeof value === "object") setCategoryIcons(value);
+        if (key === "sellers" && Array.isArray(value)) setSellers(value);
       });
     });
   }, []);
@@ -1411,6 +1474,55 @@ function AdminDashboard() {
         )}
       </div>
 
+      {/* Vendedoras */}
+      <div className="adminCarouselSection">
+        <button className="adminSectionHeader" onClick={() => setIsSellersOpen((o) => !o)}>
+          <span>👩‍💼 Vendedoras</span>
+          <span className="adminSectionToggle">{isSellersOpen ? "▲ Fechar" : "▼ Abrir"}</span>
+        </button>
+        {isSellersOpen && (
+          <div className="adminCarouselBody">
+            <p className="adminCatIconsHint">
+              Cadastre as vendedoras que serão selecionadas ao confirmar pedidos. O número deve incluir o DDI (55) e o DDD.
+            </p>
+
+            {sellers.length > 0 && (
+              <div className="sellersList">
+                {sellers.map((s) => (
+                  <div key={s.id} className="sellerRow">
+                    <div className="sellerInfo">
+                      <span className="sellerName">{s.name}</span>
+                      <span className="sellerPhone">+{s.phone}</span>
+                    </div>
+                    <button className="sellerRemoveBtn" onClick={() => removeSeller(s.id)} title="Remover">✕</button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="sellerAddForm">
+              <input
+                type="text"
+                placeholder="Nome da vendedora"
+                value={sellerNameInput}
+                onChange={(e) => setSellerNameInput(e.target.value)}
+                className="sellerInput"
+              />
+              <div className="waInputWrapper">
+                <span className="waPrefix">+</span>
+                <input
+                  type="text"
+                  placeholder="5511999999999"
+                  value={sellerPhoneInput}
+                  onChange={(e) => setSellerPhoneInput(e.target.value.replace(/\D/g, ""))}
+                />
+              </div>
+              <button className="adminSaveBtn" onClick={addSeller}>Adicionar</button>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Category Icons */}
       <div className="adminCarouselSection">
         <button className="adminSectionHeader" onClick={() => setIsCatIconsOpen((o) => !o)}>
@@ -1651,7 +1763,7 @@ function AdminDashboard() {
                           <div className="orderAwaitingBanner">
                             <p>Cliente abriu o WhatsApp mas ainda não confirmou. Confirme quando receber a mensagem ou descarte se não chegar.</p>
                             <div className="orderAwaitingActions">
-                              <button className="orderConfirmBtn" onClick={() => updateOrderStatus(order.id, "novo")}>
+                              <button className="orderConfirmBtn" onClick={() => { setSellerPickerOrder(order); setSelectedSellerId(null); }}>
                                 ✅ Recebi a mensagem — confirmar pedido
                               </button>
                               <button className="orderDiscardBtn" onClick={() => updateOrderStatus(order.id, "cancelado")}>
@@ -1690,6 +1802,12 @@ function AdminDashboard() {
                                       ? `${order.cep.slice(0, 5)}-${order.cep.slice(5)}`
                                       : order.cep}
                                   </span>
+                                </div>
+                              )}
+                              {order.seller_name && (
+                                <div className="orderCustomerRow">
+                                  <span className="orderCustomerKey">Vendedora</span>
+                                  <span className="orderCustomerVal">👩‍💼 {order.seller_name}</span>
                                 </div>
                               )}
                             </div>
@@ -2215,6 +2333,58 @@ function AdminDashboard() {
           </div>
         )}
       </div>
+
+      {sellerPickerOrder && (
+        <div className="confirmModalBackdrop" onClick={() => { setSellerPickerOrder(null); setSelectedSellerId(null); }}>
+          <div className="sellerPickerModal" onClick={(e) => e.stopPropagation()}>
+            <h3 className="sellerPickerTitle">👩‍💼 Escolher vendedora</h3>
+            <p className="sellerPickerSubtitle">
+              Pedido <strong>#{sellerPickerOrder.id}</strong> de <strong>{sellerPickerOrder.customer_name || "cliente"}</strong>
+            </p>
+
+            {sellers.length === 0 ? (
+              <p className="sellerPickerEmpty">Nenhuma vendedora cadastrada. Adicione em Configurações → Vendedoras.</p>
+            ) : (
+              <div className="sellerPickerList">
+                {sellers.map((s) => (
+                  <div
+                    key={s.id}
+                    className={`sellerPickerItem ${selectedSellerId === s.id ? "sellerPickerItemActive" : ""}`}
+                    onClick={() => setSelectedSellerId(s.id)}
+                  >
+                    <div className="sellerPickerRadio">
+                      {selectedSellerId === s.id ? "●" : "○"}
+                    </div>
+                    <div className="sellerPickerInfo">
+                      <span className="sellerPickerName">{s.name}</span>
+                      {s.phone && <span className="sellerPickerPhone">{s.phone}</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="confirmModalActions">
+              <button
+                className="confirmModalCancel"
+                onClick={() => { setSellerPickerOrder(null); setSelectedSellerId(null); }}
+              >
+                Cancelar
+              </button>
+              <button
+                className="confirmModalConfirm"
+                disabled={!selectedSellerId}
+                onClick={() => {
+                  const seller = sellers.find((s) => s.id === selectedSellerId);
+                  if (seller) confirmOrderWithSeller(seller);
+                }}
+              >
+                ✅ Confirmar pedido
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {confirmModal && (
         <div className="confirmModalBackdrop" onClick={() => { confirmModal.resolve(false); setConfirmModal(null); }}>
