@@ -4321,6 +4321,27 @@ section {
   gap: 16px;
 }
 
+.orderExportPdfBtn {
+  grid-column: 1 / -1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  background: none;
+  border: 1.5px solid var(--primary-blue);
+  border-radius: 10px;
+  color: var(--primary-blue);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  width: fit-content;
+  transition: background 0.15s, color 0.15s;
+}
+.orderExportPdfBtn:hover {
+  background: var(--primary-blue);
+  color: #fff;
+}
+
 .orderStatusChange label,
 .orderNotes label {
   display: block;

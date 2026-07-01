@@ -883,6 +883,145 @@ function AdminDashboard() {
     setIsExportingExcel(false);
   }
 
+  function exportOrderPDF(order) {
+    const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+    const pageW = 210;
+    const margin = 14;
+    const cW = pageW - margin * 2;
+    const now = new Date().toLocaleDateString("pt-BR");
+    const orderDate = order.created_at
+      ? new Date(order.created_at).toLocaleDateString("pt-BR") + " às " +
+        new Date(order.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
+      : "—";
+    const statusInfo = ORDER_STATUSES.find((s) => s.value === order.status) || ORDER_STATUSES[0];
+    const statusLabel = statusInfo.label.replace(/^[^\w\s]+\s*/, "").trim();
+
+    // Cabeçalho azul
+    doc.setFillColor(11, 31, 143);
+    doc.rect(0, 0, pageW, 22, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text(`G.A Brasil — Pedido #${order.id}`, margin, 14);
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Gerado em ${now}`, pageW - margin, 14, { align: "right" });
+
+    let y = 30;
+
+    // Bloco de status e total
+    doc.setFillColor(248, 250, 255);
+    doc.roundedRect(margin, y, cW, 20, 2, 2, "F");
+    doc.setDrawColor(226, 232, 240);
+    doc.roundedRect(margin, y, cW, 20, 2, 2, "S");
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(11, 31, 143);
+    doc.text("PEDIDO", margin + 4, y + 7);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(50, 50, 50);
+    doc.setFontSize(8.5);
+    doc.text(`Data: ${orderDate}`, margin + 4, y + 14);
+    doc.text(`Status: ${statusLabel}`, margin + 75, y + 14);
+    doc.setFont("helvetica", "bold");
+    doc.text(`Total: R$ ${Number(order.total).toFixed(2).replace(".", ",")}`, margin + 145, y + 14);
+    y += 26;
+
+    // Dados do cliente
+    const customerLines = [
+      order.customer_name  && `Nome: ${order.customer_name}`,
+      order.customer_email && `E-mail: ${order.customer_email}`,
+      order.customer_phone && `Telefone: ${order.customer_phone}`,
+      order.cep            && `CEP: ${order.cep.length === 8 ? `${order.cep.slice(0,5)}-${order.cep.slice(5)}` : order.cep}`,
+    ].filter(Boolean);
+
+    if (customerLines.length > 0) {
+      const blockH = 10 + customerLines.length * 6;
+      doc.setFillColor(248, 250, 255);
+      doc.roundedRect(margin, y, cW, blockH, 2, 2, "F");
+      doc.setDrawColor(226, 232, 240);
+      doc.roundedRect(margin, y, cW, blockH, 2, 2, "S");
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(11, 31, 143);
+      doc.text("DADOS DO CLIENTE", margin + 4, y + 7);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8.5);
+      doc.setTextColor(50, 50, 50);
+      customerLines.forEach((line, i) => doc.text(line, margin + 4, y + 13 + i * 6));
+      y += blockH + 6;
+    }
+
+    // Cabeçalho da tabela de itens
+    const colProd  = margin + 4;
+    const colQty   = margin + cW - 62;
+    const colUnit  = margin + cW - 36;
+    const colSub   = margin + cW - 4;
+
+    doc.setFillColor(11, 31, 143);
+    doc.rect(margin, y, cW, 8, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(7.5);
+    doc.setFont("helvetica", "bold");
+    doc.text("PRODUTO / VARIANTE", colProd, y + 5.5);
+    doc.text("QTD", colQty, y + 5.5, { align: "center" });
+    doc.text("UNIT.", colUnit, y + 5.5, { align: "right" });
+    doc.text("SUBTOTAL", colSub, y + 5.5, { align: "right" });
+    y += 8;
+
+    // Linhas de itens
+    (order.items || []).forEach((item, i) => {
+      const subtotal = item.price * item.quantity;
+      const nameText = item.selectedVariant ? `${item.name} — ${item.selectedVariant}` : item.name;
+      const nameLines = doc.splitTextToSize(nameText, cW - 72);
+      const rowH = Math.max(8, nameLines.length * 4.5 + 4);
+
+      doc.setFillColor(i % 2 === 0 ? 255 : 248);
+      doc.rect(margin, y, cW, rowH, "F");
+      doc.setDrawColor(226, 232, 240);
+      doc.line(margin, y + rowH, margin + cW, y + rowH);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8.5);
+      doc.setTextColor(30, 30, 30);
+      doc.text(nameLines, colProd, y + 5.5);
+      doc.text(`×${item.quantity}`, colQty, y + 5.5, { align: "center" });
+      doc.setTextColor(80, 80, 80);
+      doc.text(`R$ ${Number(item.price).toFixed(2).replace(".", ",")}`, colUnit, y + 5.5, { align: "right" });
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(30, 30, 30);
+      doc.text(`R$ ${subtotal.toFixed(2).replace(".", ",")}`, colSub, y + 5.5, { align: "right" });
+      y += rowH;
+    });
+
+    // Total
+    y += 4;
+    doc.setFillColor(11, 31, 143);
+    doc.roundedRect(margin + cW - 72, y, 72, 10, 2, 2, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.text("TOTAL", margin + cW - 68, y + 6.8);
+    doc.text(`R$ ${Number(order.total).toFixed(2).replace(".", ",")}`, colSub, y + 6.8, { align: "right" });
+
+    // Observações (se houver)
+    if (order.notes) {
+      y += 16;
+      const noteLines = doc.splitTextToSize(order.notes, cW - 8);
+      const noteH = 10 + noteLines.length * 5;
+      doc.setFillColor(255, 251, 235);
+      doc.setDrawColor(251, 191, 36);
+      doc.roundedRect(margin, y, cW, noteH, 2, 2, "FD");
+      doc.setTextColor(120, 80, 0);
+      doc.setFontSize(7.5);
+      doc.setFont("helvetica", "bold");
+      doc.text("Observações:", margin + 4, y + 6);
+      doc.setFont("helvetica", "normal");
+      doc.text(noteLines, margin + 4, y + 11);
+    }
+
+    doc.save(`pedido-${order.id}.pdf`);
+  }
 
   useEffect(() => {
     const channel = supabase
@@ -1599,6 +1738,13 @@ function AdminDashboard() {
                               onBlur={(e) => updateOrderNotes(order.id, e.target.value)}
                             />
                           </div>
+
+                          <button
+                            className="orderExportPdfBtn"
+                            onClick={() => exportOrderPDF(order)}
+                          >
+                            📄 Exportar PDF
+                          </button>
                         </div>
                       </div>
                     )}
