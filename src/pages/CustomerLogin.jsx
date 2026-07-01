@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
+import { Mail, Lock } from "lucide-react";
 import logo from "../assets/ga_brasil_sem_fundo.png";
 
 function CustomerLogin() {
@@ -89,14 +90,17 @@ function CustomerLogin() {
           <form onSubmit={handleForgot} className="authForm">
             <div className="authField">
               <label>E-mail</label>
-              <input
-                type="email"
-                placeholder="seu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoFocus
-              />
+              <div className="authInputWrapper">
+                <Mail className="authInputIcon" size={16} />
+                <input
+                  type="email"
+                  placeholder="seu@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoFocus
+                />
+              </div>
             </div>
 
             {error && <p className="authError">{error}</p>}
@@ -122,30 +126,34 @@ function CustomerLogin() {
         <form onSubmit={handleLogin} className="authForm">
           <div className="authField">
             <label>E-mail</label>
-            <input
-              type="email"
-              placeholder="seu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoFocus
-            />
+            <div className="authInputWrapper">
+              <Mail className="authInputIcon" size={16} />
+              <input
+                type="email"
+                placeholder="seu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoFocus
+              />
+            </div>
           </div>
 
           <div className="authField">
-            <div className="authFieldLabelRow">
-              <label>Senha</label>
-              <button type="button" className="authForgotLink" onClick={goToForgot}>
-                Esqueceu a senha?
-              </button>
+            <label>Senha</label>
+            <div className="authInputWrapper">
+              <Lock className="authInputIcon" size={16} />
+              <input
+                type="password"
+                placeholder="Sua senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
             </div>
-            <input
-              type="password"
-              placeholder="Sua senha"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <button type="button" className="authForgotLink" onClick={goToForgot}>
+              Esqueceu a senha?
+            </button>
           </div>
 
           {error && <p className="authError">{error}</p>}

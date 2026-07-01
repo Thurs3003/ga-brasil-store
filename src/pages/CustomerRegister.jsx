@@ -1,7 +1,20 @@
 import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
+import { Mail, Lock, User, Phone } from "lucide-react";
 import logo from "../assets/ga_brasil_sem_fundo.png";
+
+function getPasswordStrength(pwd) {
+  let score = 0;
+  if (pwd.length >= 8) score++;
+  if (pwd.length >= 12) score++;
+  if (/[A-Z]/.test(pwd)) score++;
+  if (/[0-9]/.test(pwd)) score++;
+  if (/[^A-Za-z0-9]/.test(pwd)) score++;
+  if (score <= 1) return { label: "Fraca", color: "#ef4444", pct: 33 };
+  if (score <= 3) return { label: "Média", color: "#f59e0b", pct: 66 };
+  return { label: "Forte", color: "#10b981", pct: 100 };
+}
 
 function CustomerRegister() {
   const navigate = useNavigate();
@@ -26,6 +39,11 @@ function CustomerRegister() {
     e.preventDefault();
     setError("");
 
+    const phoneDigits = form.phone.replace(/\D/g, "");
+    if (phoneDigits.length < 10) {
+      setError("Informe um telefone válido com DDD, ex: (11) 99999-9999.");
+      return;
+    }
     if (form.password !== form.confirm) {
       setError("As senhas não coincidem.");
       return;
@@ -55,12 +73,14 @@ function CustomerRegister() {
       return;
     }
 
-    if (data.user && form.phone) {
+    if (data.user) {
       await supabase.from("profiles").upsert({ id: data.user.id, name: form.name, phone: form.phone });
     }
 
     navigate(location.state?.from || "/");
   }
+
+  const strength = form.password ? getPasswordStrength(form.password) : null;
 
   return (
     <div className="authPage">
@@ -79,58 +99,87 @@ function CustomerRegister() {
         <form onSubmit={handleRegister} className="authForm">
           <div className="authField">
             <label>Nome completo</label>
-            <input
-              type="text"
-              placeholder="Seu nome"
-              value={form.name}
-              onChange={field("name")}
-              required
-              autoFocus
-            />
+            <div className="authInputWrapper">
+              <User className="authInputIcon" size={16} />
+              <input
+                type="text"
+                placeholder="Seu nome"
+                value={form.name}
+                onChange={field("name")}
+                required
+                autoFocus
+              />
+            </div>
           </div>
 
           <div className="authField">
             <label>E-mail</label>
-            <input
-              type="email"
-              placeholder="seu@email.com"
-              value={form.email}
-              onChange={field("email")}
-              required
-            />
+            <div className="authInputWrapper">
+              <Mail className="authInputIcon" size={16} />
+              <input
+                type="email"
+                placeholder="seu@email.com"
+                value={form.email}
+                onChange={field("email")}
+                required
+              />
+            </div>
           </div>
 
           <div className="authField">
-            <label>Telefone / WhatsApp <span className="authOptional">(opcional)</span></label>
-            <input
-              type="tel"
-              placeholder="(11) 99999-9999"
-              value={form.phone}
-              onChange={(e) => setForm((f) => ({ ...f, phone: formatPhone(e.target.value) }))}
-              inputMode="numeric"
-            />
+            <label>Telefone / WhatsApp</label>
+            <div className="authInputWrapper">
+              <Phone className="authInputIcon" size={16} />
+              <input
+                type="tel"
+                placeholder="(11) 99999-9999"
+                value={form.phone}
+                onChange={(e) => setForm((f) => ({ ...f, phone: formatPhone(e.target.value) }))}
+                inputMode="numeric"
+                required
+              />
+            </div>
           </div>
 
           <div className="authField">
             <label>Senha</label>
-            <input
-              type="password"
-              placeholder="Mínimo 8 caracteres"
-              value={form.password}
-              onChange={field("password")}
-              required
-            />
+            <div className="authInputWrapper">
+              <Lock className="authInputIcon" size={16} />
+              <input
+                type="password"
+                placeholder="Mínimo 8 caracteres"
+                value={form.password}
+                onChange={field("password")}
+                required
+              />
+            </div>
+            {strength && (
+              <div className="authStrength">
+                <div className="authStrengthTrack">
+                  <div
+                    className="authStrengthFill"
+                    style={{ width: `${strength.pct}%`, background: strength.color }}
+                  />
+                </div>
+                <span className="authStrengthLabel" style={{ color: strength.color }}>
+                  {strength.label}
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="authField">
             <label>Confirmar senha</label>
-            <input
-              type="password"
-              placeholder="Repita a senha"
-              value={form.confirm}
-              onChange={field("confirm")}
-              required
-            />
+            <div className="authInputWrapper">
+              <Lock className="authInputIcon" size={16} />
+              <input
+                type="password"
+                placeholder="Repita a senha"
+                value={form.confirm}
+                onChange={field("confirm")}
+                required
+              />
+            </div>
           </div>
 
           {error && <p className="authError">{error}</p>}
