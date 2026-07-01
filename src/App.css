@@ -4310,6 +4310,7 @@ section {
 }
 
 .orderItemName  { font-weight: 700; color: #1e293b; }
+.orderItemVariant { font-weight: 500; color: #6b7280; font-size: 13px; }
 .orderItemBrand { color: #94a3b8; font-size: 12px; }
 .orderItemQty   { font-weight: 700; color: #6366f1; }
 .orderItemPrice { font-weight: 700; color: #1e293b; white-space: nowrap; }

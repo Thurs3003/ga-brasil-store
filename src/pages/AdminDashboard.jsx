@@ -1560,7 +1560,12 @@ function AdminDashboard() {
                         <div className="orderItems">
                           {(order.items || []).map((item, i) => (
                             <div key={i} className="orderItemRow">
-                              <span className="orderItemName">{item.name}</span>
+                              <span className="orderItemName">
+                                {item.name}
+                                {item.selectedVariant && (
+                                  <span className="orderItemVariant"> — {item.selectedVariant}</span>
+                                )}
+                              </span>
                               <span className="orderItemBrand">{item.brand}</span>
                               <span className="orderItemQty">×{item.quantity}</span>
                               <span className="orderItemPrice">R$ {(item.price * item.quantity).toFixed(2).replace(".", ",")}</span>
