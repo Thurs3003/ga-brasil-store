@@ -8373,6 +8373,76 @@ a:focus-visible {
   .catalogSortSelect { width: 100%; }
 }
 
+/* ── Minha conta / perfil ────────────────────────────── */
+.profileMain {
+  max-width: 980px;
+}
+
+.profileGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.profileSection {
+  background: white;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  padding: 28px 28px 24px;
+}
+
+.profileSectionTitle {
+  font-size: 17px;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 4px;
+}
+
+.profileSectionDesc {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0 0 20px;
+}
+
+.profileForm {
+  gap: 14px;
+}
+
+.profileFieldHint {
+  display: block;
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.profileSuccess {
+  font-size: 13px;
+  font-weight: 600;
+  color: #10b981;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 0;
+}
+
+.profileBottom {
+  margin-top: 28px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+@media (max-width: 760px) {
+  .profileGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .myOrdersMain {
+    padding: 28px 16px;
+  }
+}
+
 /* ── Vendedoras — settings section ───────────────────── */
 .sellersList {
   display: flex;

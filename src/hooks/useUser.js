@@ -33,11 +33,19 @@ export function useUser() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
+  async function refreshProfile() {
+    const { data: { user: u } } = await supabase.auth.getUser();
+    if (u) {
+      setUser(u);
+      await loadProfile(u.id);
+    }
+  }
+
   async function signOut() {
     await supabase.auth.signOut();
     setUser(null);
     setProfile(null);
   }
 
-  return { user, profile, loading, signOut };
+  return { user, profile, loading, signOut, refreshProfile };
 }

@@ -186,6 +186,9 @@ function Header({
 
         {user ? (
           <>
+            <Link to="/minha-conta" onClick={() => setIsMenuOpen(false)}>
+              👤 Minha conta
+            </Link>
             <Link to="/meus-pedidos" onClick={() => setIsMenuOpen(false)}>
               📋 Meus pedidos
             </Link>
@@ -216,6 +219,7 @@ function Header({
             </button>
             {isUserMenuOpen && (
               <div className="userMenuDropdown">
+                <Link to="/minha-conta" onClick={() => setIsUserMenuOpen(false)}>👤 Minha conta</Link>
                 <Link to="/meus-pedidos" onClick={() => setIsUserMenuOpen(false)}>📋 Meus pedidos</Link>
                 <button onClick={async () => { await signOut(); setIsUserMenuOpen(false); navigate("/"); }}>
                   Sair

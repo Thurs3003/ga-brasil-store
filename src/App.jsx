@@ -15,6 +15,7 @@ const CustomerLogin = lazy(() => import("./pages/CustomerLogin"));
 const CustomerRegister = lazy(() => import("./pages/CustomerRegister"));
 const CustomerResetPassword = lazy(() => import("./pages/CustomerResetPassword"));
 const MyOrders = lazy(() => import("./pages/MyOrders"));
+const CustomerProfile = lazy(() => import("./pages/CustomerProfile"));
 const Promocoes = lazy(() => import("./pages/Promocoes"));
 
 function App() {
@@ -177,6 +178,7 @@ function App() {
         <Route path="/cadastro" element={<CustomerRegister />} />
         <Route path="/reset-senha" element={<CustomerResetPassword />} />
         <Route path="/meus-pedidos" element={<MyOrders repeatOrderToCart={repeatOrderToCart} setIsCartOpen={setIsCartOpen} />} />
+        <Route path="/minha-conta" element={<CustomerProfile />} />
         <Route path="/promocoes" element={<Promocoes {...cartProps} toastMessage={toastMessage} />} />
 
         <Route path="/admin/login" element={<AdminLogin />} />
