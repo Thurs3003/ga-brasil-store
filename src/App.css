@@ -6123,6 +6123,36 @@ section {
   margin: 8px 0 0;
 }
 
+.freightResultFree {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: #ecfdf5;
+  border-radius: 10px;
+  border: 1.5px solid #6ee7b7;
+}
+
+.freightFreeIcon { font-size: 22px; line-height: 1; }
+
+.freightFreeText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.freightFreeText strong {
+  font-size: 13px;
+  font-weight: 800;
+  color: #065f46;
+}
+
+.freightFreeText span {
+  font-size: 11px;
+  color: #059669;
+}
+
 .freightResult {
   display: flex;
   align-items: center;
@@ -6131,7 +6161,7 @@ section {
   padding: 10px 12px;
   background: white;
   border-radius: 10px;
-  border: 1.5px solid #d1fae5;
+  border: 1.5px solid #e2e8f0;
 }
 
 .freightResultLeft { display: flex; flex-direction: column; gap: 2px; }

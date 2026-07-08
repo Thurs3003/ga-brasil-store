@@ -4,9 +4,12 @@ import { supabase } from "../lib/supabaseClient";
 import { getOrdersWA, buildWAUrl } from "../lib/whatsapp";
 import { ORDER_MINIMUM } from "../lib/orderConfig";
 
-// CEP de origem da loja: 01027-001 — São Paulo, SP
-const STORE_LAT = -23.5414;
-const STORE_LNG = -46.6353;
+// Loja: Rua 25 de Março, Sé — São Paulo, SP (CEP 01027-001)
+const STORE_LAT = -23.5382;
+const STORE_LNG = -46.6308;
+
+// Raio de entrega local gratuita (Brás, Pari, Bom Retiro, Luz, Sé, Mooca)
+const FREE_DELIVERY_KM = 5;
 
 function haversineKm(lat1, lng1, lat2, lng2) {
   const R = 6371;
@@ -20,45 +23,45 @@ function haversineKm(lat1, lng1, lat2, lng2) {
 }
 
 function rateByDistance(km) {
-  if (km <= 50)   return { price: 0,  days: "1-2 dias úteis" };
-  if (km <= 150)  return { price: 15, days: "2-3 dias úteis" };
-  if (km <= 300)  return { price: 22, days: "2-3 dias úteis" };
-  if (km <= 600)  return { price: 32, days: "3-5 dias úteis" };
-  if (km <= 1000) return { price: 42, days: "4-6 dias úteis" };
-  if (km <= 1500) return { price: 52, days: "5-8 dias úteis" };
-  if (km <= 2500) return { price: 62, days: "7-10 dias úteis" };
-  return { price: 75, days: "10-14 dias úteis" };
+  if (km <= FREE_DELIVERY_KM) return { price: 0,  days: "Entrega local — 1 dia útil" };
+  if (km <= 30)   return { price: 12, days: "1-2 dias úteis" };  // SP capital (resto)
+  if (km <= 150)  return { price: 20, days: "2-3 dias úteis" };  // Grande SP + interior próximo
+  if (km <= 400)  return { price: 30, days: "3-5 dias úteis" };  // Interior SP distante
+  if (km <= 800)  return { price: 42, days: "4-6 dias úteis" };  // RJ, PR, MG, ES
+  if (km <= 1500) return { price: 52, days: "5-8 dias úteis" };  // Sul, GO, DF, BA
+  if (km <= 2500) return { price: 62, days: "7-10 dias úteis" }; // Nordeste, MT, MS
+  return { price: 75, days: "10-14 dias úteis" };                // Norte extremo
 }
 
-// Fallback por UF caso o geocoding falhe
+// Fallback por UF quando o geocoding falha
 const FREIGHT_FALLBACK = {
-  SP: { price: 0,  days: "1-2 dias úteis" },
-  RJ: { price: 22, days: "2-3 dias úteis" },
-  MG: { price: 18, days: "2-3 dias úteis" },
-  ES: { price: 28, days: "3-4 dias úteis" },
-  PR: { price: 22, days: "2-3 dias úteis" },
-  SC: { price: 28, days: "3-4 dias úteis" },
-  RS: { price: 32, days: "3-5 dias úteis" },
-  GO: { price: 30, days: "3-5 dias úteis" },
-  DF: { price: 30, days: "3-5 dias úteis" },
-  MT: { price: 38, days: "4-6 dias úteis" },
-  MS: { price: 35, days: "4-6 dias úteis" },
-  BA: { price: 35, days: "4-6 dias úteis" },
-  SE: { price: 38, days: "5-7 dias úteis" },
-  AL: { price: 38, days: "5-7 dias úteis" },
-  PE: { price: 40, days: "5-7 dias úteis" },
-  PB: { price: 42, days: "5-7 dias úteis" },
-  RN: { price: 42, days: "5-7 dias úteis" },
-  CE: { price: 42, days: "5-7 dias úteis" },
-  PI: { price: 45, days: "6-8 dias úteis" },
-  MA: { price: 45, days: "6-8 dias úteis" },
-  PA: { price: 48, days: "7-10 dias úteis" },
-  AP: { price: 52, days: "8-12 dias úteis" },
-  AM: { price: 55, days: "8-12 dias úteis" },
-  RO: { price: 50, days: "7-10 dias úteis" },
-  AC: { price: 58, days: "10-14 dias úteis" },
-  RR: { price: 58, days: "10-14 dias úteis" },
-  TO: { price: 38, days: "5-7 dias úteis" },
+  SP: { price: 20, days: "2-3 dias úteis" }, // SP interior — geolocalização falhou
+  RJ: { price: 42, days: "4-6 dias úteis" },
+  MG: { price: 38, days: "3-5 dias úteis" },
+  ES: { price: 42, days: "4-6 dias úteis" },
+  PR: { price: 42, days: "4-6 dias úteis" },
+  SC: { price: 45, days: "4-6 dias úteis" },
+  RS: { price: 52, days: "5-8 dias úteis" },
+  GO: { price: 52, days: "5-8 dias úteis" },
+  DF: { price: 52, days: "5-8 dias úteis" },
+  MT: { price: 62, days: "7-10 dias úteis" },
+  MS: { price: 55, days: "5-8 dias úteis" },
+  BA: { price: 55, days: "5-8 dias úteis" },
+  SE: { price: 58, days: "5-7 dias úteis" },
+  AL: { price: 58, days: "5-7 dias úteis" },
+  PE: { price: 62, days: "5-7 dias úteis" },
+  PB: { price: 62, days: "5-7 dias úteis" },
+  RN: { price: 62, days: "5-7 dias úteis" },
+  CE: { price: 62, days: "5-7 dias úteis" },
+  PI: { price: 65, days: "6-8 dias úteis" },
+  MA: { price: 65, days: "6-8 dias úteis" },
+  PA: { price: 68, days: "7-10 dias úteis" },
+  AP: { price: 72, days: "8-12 dias úteis" },
+  AM: { price: 75, days: "8-12 dias úteis" },
+  RO: { price: 70, days: "7-10 dias úteis" },
+  AC: { price: 75, days: "10-14 dias úteis" },
+  RR: { price: 75, days: "10-14 dias úteis" },
+  TO: { price: 58, days: "5-7 dias úteis" },
 };
 
 
@@ -363,18 +366,28 @@ Aguardo as informações para pagamento e entrega.`;
                 {freightError && <p className="freightError">{freightError}</p>}
 
                 {freight && (
-                  <div className="freightResult">
-                    <div className="freightResultLeft">
-                      <span className="freightCity">
-                        {freight.city} — {freight.state}
-                        {freight.km != null && <em className="freightKm"> ≈ {freight.km} km</em>}
-                      </span>
-                      <span className="freightDays">⏱ {freight.days}</span>
+                  freight.price === 0 ? (
+                    <div className="freightResultFree">
+                      <span className="freightFreeIcon">🎉</span>
+                      <div className="freightFreeText">
+                        <strong>Frete grátis para sua região!</strong>
+                        <span>{freight.city} — {freight.state} · {freight.days}</span>
+                      </div>
                     </div>
-                    <span className="freightPrice">
-                      {freight.price === 0 ? "Grátis" : `R$ ${freight.price.toFixed(2).replace(".", ",")}`}
-                    </span>
-                  </div>
+                  ) : (
+                    <div className="freightResult">
+                      <div className="freightResultLeft">
+                        <span className="freightCity">
+                          {freight.city} — {freight.state}
+                          {freight.km != null && <em className="freightKm"> ≈ {freight.km} km</em>}
+                        </span>
+                        <span className="freightDays">⏱ {freight.days}</span>
+                      </div>
+                      <span className="freightPrice">
+                        R$ {freight.price.toFixed(2).replace(".", ",")}
+                      </span>
+                    </div>
+                  )
                 )}
 
                 <p className="freightDisclaimer">ℹ️ Valores estimados. Frete confirmado pelo WhatsApp.</p>
